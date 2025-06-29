@@ -10,6 +10,9 @@ const connectDB = async () => {
         console.error('Mongo connection error:', err);
         process.exit(1);
     }
+    // finally {
+    //     await mongoose.disconnect();
+    // }
 };
 
 export default connectDB;

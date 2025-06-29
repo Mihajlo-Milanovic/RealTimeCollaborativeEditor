@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface IFile extends Document {
+    _id: Types.ObjectId;
     name: string;
     owner: Types.ObjectId;
     collaborators: Record<string, 'read' | 'write'>;
