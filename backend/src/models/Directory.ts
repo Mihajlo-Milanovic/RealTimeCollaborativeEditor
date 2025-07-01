@@ -1,22 +1,41 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
+import { Schema, Document, SchemaTypes, Types, model } from 'mongoose';
 
 export interface IDirectory extends Document {
-    _id: Types.ObjectId;
     name: string;
     owner: Types.ObjectId;
     parent: Types.ObjectId | null;
-    children: Types.ObjectId[];
-    files: Types.ObjectId[];
-    collaborators: Record<string, 'read' | 'write'>;
+    children: Array<Types.ObjectId>;
+    files: Array<Types.ObjectId>;
+    collaborators: Array<Types.ObjectId>;
 }
 
-const DirectorySchema: Schema<IDirectory> = new Schema({
-    name: { type: String, required: true },
-    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    parent: { type: Schema.Types.ObjectId, ref: 'Directory', default: null },
-    children: [{ type: Schema.Types.ObjectId, ref: 'Directory' }],
-    files: [{ type: Schema.Types.ObjectId, ref: 'File' }],
-    collaborators: { type: Map, of: String, default: {} },
+const directorySchema: Schema<IDirectory> = new Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    owner: {
+        type: SchemaTypes.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    parent: {
+        type: SchemaTypes.ObjectId,
+        ref: 'Directory',
+        default: null
+    },
+    children: [{
+        type: SchemaTypes.ObjectId,
+        ref: 'Directory'
+    }],
+    files: [{
+        type: SchemaTypes.ObjectId,
+        ref: 'File',
+    }],
+    collaborators: [{
+        type: SchemaTypes.ObjectId,
+        ref: 'User',
+    }],
 }, { timestamps: true });
 
-export default mongoose.model<IDirectory>('Directory', DirectorySchema);
+export default model<IDirectory>('Directory', directorySchema);

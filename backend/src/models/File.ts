@@ -1,18 +1,31 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
+import { Schema, Document, SchemaTypes, Types, model } from 'mongoose';
 
 export interface IFile extends Document {
-    _id: Types.ObjectId;
     name: string;
     owner: Types.ObjectId;
-    collaborators: Record<string, 'read' | 'write'>;
-    parentDirectory: Types.ObjectId;
+    parent: Types.ObjectId;
+    collaborators: Array<Types.ObjectId>;
 }
 
 const FileSchema: Schema<IFile> = new Schema({
-    name: { type: String, required: true },
-    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    collaborators: { type: Map, of: String, default: {} },
-    parentDirectory: { type: Schema.Types.ObjectId, ref: 'Directory' },
+    name: {
+        type: SchemaTypes.String,
+        required: true
+    },
+    owner: {
+        type: SchemaTypes.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    parent: {
+        type: SchemaTypes.ObjectId,
+        ref: 'Directory',
+        required: true
+    },
+    collaborators: [{
+        type: SchemaTypes.ObjectId,
+        ref: 'User',
+    }],
 }, { timestamps: true });
 
-export default mongoose.model<IFile>('File', FileSchema);
+export default model<IFile>('File', FileSchema);
