@@ -8,8 +8,8 @@ export default function VerifySuccessPage() {
 
   useEffect(() => {
     alert("Email je uspešno verifikovan! Možete se sada prijaviti.");
-    router.push("/"); // ili "/login" ako koristiš tu rutu
+    router.push("/"); 
   }, []);
 
-  return null; // Ne moraš da prikazuješ ništa
+  return null; 
 }

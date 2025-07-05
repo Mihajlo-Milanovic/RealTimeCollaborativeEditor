@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ThemeToggle } from "../src/components/tiptap-templates/simple/theme-toggle"
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -12,6 +12,10 @@ export default function LoginForm() {
   const [error, setError] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [showSendEmailLink, setShowSendEmailLink] = useState(false);
+  const [emailToVerify, setEmailToVerify] = useState("");
 
   const router = useRouter();
 
@@ -32,8 +36,16 @@ export default function LoginForm() {
         redirect: false,
       });
 
-      if (res.error) {
-        setError("Nevalidni kredencijali!");
+      if (res?.error) {
+        if (res.error === "Email is not verified!") {
+          setError("Nalog nije verifikovan. Proverite svoj mejl.");
+          setEmailToVerify(email);
+          setShowSendEmailLink(true);
+        } else {
+          setError("Nevalidni kredencijali!");
+          setShowSendEmailLink(false);
+        }
+
         setIsLoading(false);
         return;
       }
@@ -41,17 +53,22 @@ export default function LoginForm() {
       const userRes = await fetch(`/api/user?email=${email}`);
       const userData = await userRes.json();
 
-      if (!userData.verified) {
-        setError("Niste verifikovali nalog!");
-        setIsLoading(false);
-        return;
-      }
-
       router.replace("editor");
     } catch (error) {
       console.log(error);
       setIsLoading(false);
     }
+  };
+
+  const handleResendVerification = (e) => {
+    // TODO 
+
+    //e.preventDefault();
+   // const verificationTokenNew = crypto.randomBytes(32).toString("hex");
+    // pozvati api poziv koji handluje ovo...
+    setEmailToVerify("");
+    setShowSendEmailLink(false);
+    setError("");
   };
 
   return (
@@ -75,12 +92,22 @@ export default function LoginForm() {
               placeholder="Email"
               className="px-4 py-3 rounded-md bg-[#0f172a] text-white placeholder-gray-400 border border-[#334155] focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
-            <input
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-              placeholder="Šifra"
-              className="px-4 py-3 rounded-md bg-[#0f172a] text-white placeholder-gray-400 border border-[#334155] focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-            />
+
+            <div className="relative">
+              <input
+                onChange={(e) => setPassword(e.target.value)}
+                type={showPassword ? "text" : "password"}
+                placeholder="Šifra"
+                className="w-full px-4 py-3 pr-10 rounded-md bg-[#0f172a] text-white placeholder-gray-400 border border-[#334155] focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              />
+              <div
+                className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-400"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </div>
+            </div>
+
             <button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md transition duration-200"
@@ -90,7 +117,18 @@ export default function LoginForm() {
 
             {error && (
               <div className="bg-red-500/10 text-red-400 text-sm py-2 px-4 rounded-md border border-red-400/30">
-                {error}
+                <div>{error}</div>
+                {showSendEmailLink && (
+                  <div className="text-sm mt-2 text-red-400">
+                    <button
+                      type="button"
+                      onClick={handleResendVerification}
+                      className="text-blue-400 hover:underline ml-2"
+                    >
+                      Pošalji ponovo verifikacioni mejl
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

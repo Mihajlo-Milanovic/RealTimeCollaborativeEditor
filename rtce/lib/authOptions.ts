@@ -29,6 +29,9 @@ export const authOptions: AuthOptions = {
         const passwordsMatch = await bcrypt.compare(password, user.password);
         if (!passwordsMatch) return null;
 
+        if (!user.verified)
+          throw new Error("Email is not verified!");
+
         return user;
       },
     }),
