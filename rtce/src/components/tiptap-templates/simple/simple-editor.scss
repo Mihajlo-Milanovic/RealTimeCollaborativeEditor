@@ -6,6 +6,9 @@ body {
 
   .dark & {
     --tt-theme-text: var(--tt-gray-dark-900);
+    --tt-bg-color: #0f172a; 
+    --tt-scrollbar-color: #475569;
+    --tt-toolbar-bg-color: #0f172a;
   }
 }
 

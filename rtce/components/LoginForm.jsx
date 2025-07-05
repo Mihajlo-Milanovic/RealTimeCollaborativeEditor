@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { ThemeToggle } from "../src/components/tiptap-templates/simple/theme-toggle"
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
