@@ -1,26 +1,28 @@
 'use client';
 import { SimpleEditor } from "../src/components/tiptap-templates/simple/simple-editor";
+import FileExplorer from "../components/file-explorer/FileExplorer"
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 export default function EditorPage() {
-    // odavde se uzimaju podaci..
-    const { data: session } = useSession();
-    const router = useRouter();
+  const { data: session } = useSession();
+  const router = useRouter();
 
   return (
     <div className="flex h-screen">
-      {/* Levi deo sa editorom i toolbar-om */}
-      <div className="flex flex-col flex-grow">
+      <div className="w-[20%] bg-transparent"  >  
+        <FileExplorer/>
+      </div>
+
+      {/* Srednji deo sa editorom (80%) */}
+      <div className="w-[72%] flex flex-col">
         <SimpleEditor />
       </div>
 
-      {/* Desni deo sa dugmetom, pomerenim ispod toolbar-a */}
-      <div className="w-32 p-4 flex flex-col">
-        {/* Koristimo marginu da pomerimo dugme ispod toolbar-a */}
-        <div className="mt-[60px]"> {/* Prilagodi vrednost prema visini toolbar-a */}
+      {/* Desni deo sa logout dugmetom (5%) */}
+      <div className="w-[8%] p-2 flex flex-col">
+        <div className="mt-[60px]">
           <button
             onClick={() => {
               signOut();
@@ -28,18 +30,14 @@ export default function EditorPage() {
               console.log("Logout clicked");
             }}
             className="
-              bg-red-600 hover:bg-red-700
-              text-white font-semibold
-              py-2 px-4 rounded-md
-              shadow-md
-              transition
-              duration-300
-              ease-in-out
-              focus:outline-none
-              focus:ring-2 focus:ring-red-400
-              focus:ring-offset-1
-              w-full
-            "
+              min-w-[100px]
+              flex-shrink-0
+             bg-red-600
+             hover:bg-red-700
+             text-white 
+              font-semibold
+              py-2 px-4 rounded-md shadow-md transition duration-300
+               ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 w-full"
           >
             Logout
           </button>
