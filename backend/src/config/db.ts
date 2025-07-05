@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
-import {configDotenv} from "dotenv";
-configDotenv();
+import { mongoURI } from "./config";
 
 export const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI!);
+        await mongoose.connect(mongoURI);
         console.log('MongoDB connected');
     } catch (err) {
         console.error('Mongo connection error:', err);
@@ -15,5 +14,3 @@ export const connectDB = async () => {
 export const disconnectDB = async () => {
     await mongoose.disconnect();
 }
-
-export default { connectDB, disconnectDB };

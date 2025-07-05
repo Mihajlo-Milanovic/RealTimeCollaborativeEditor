@@ -1,10 +1,5 @@
-import { Schema, Document, SchemaTypes, model } from 'mongoose';
-
-export interface IUser extends Document {
-    username: string;
-    email: string;
-    avatar?: string;
-}
+import { Schema, SchemaTypes, model } from 'mongoose';
+import { IUser } from '../interfaces/IUser';
 
 const UserSchema: Schema<IUser> = new Schema({
     username: {
@@ -16,7 +11,8 @@ const UserSchema: Schema<IUser> = new Schema({
     email: {
         type: SchemaTypes.String,
         required: true,
-        unique: true
+        unique: true,
+        isEmail: true,
     },
     avatar: {
         type: SchemaTypes.String

@@ -1,34 +1,42 @@
 import User from './models/User';
-import Document from './models/File';
+import File from './models/File';
 import Directory from './models/Directory';
-import { Types } from "mongoose";
-import { connectDB, disconnectDB } from './db';
+import {Document, Model, Types} from "mongoose";
+import {connectDB, disconnectDB} from './config/db';
+import {IDirectory} from "./interfaces/IDirectory";
+import {IFile} from "./interfaces/IFile";
+import {IUser} from "./interfaces/IUser";
 
 const populate = async () => {
     await connectDB();
 
     await User.deleteMany({});
-    await Document.deleteMany({});
+    await File.deleteMany({});
     await Directory.deleteMany({});
 
     console.log("First user...")
-    const alice = await User.create({
+    const alice: IUser = await User.create({
         username: 'Alice',
         email: 'alice@example.com'
     });
-    console.log(alice);
 
     console.log("Second user...")
-    const bob = await User.create({
+    let bob: IUser = await User.create({
         username: 'Bob',
         email: 'bob@example.com'
     });
-    console.log(bob);
 
-    console.log("First directory...")
-    const dir1 = await Directory.create({
-        name: 'Project 1',
-        owner: alice._id,
+    ////This throws because E-mail
+    // console.log("Third user...")
+    // let bob2: IUser = await User.create({
+    //     username: 'BobAgain',
+    //     email: 'bob@example.com'
+    // });
+
+    console.log("Directory [owner: Alice]...")
+    let dirAlcie: IDirectory = await Directory.create({
+        name: 'Alices #root directory',
+        owner: alice?._id,
         parent: null,
         path: './',
         children: [],
@@ -37,36 +45,104 @@ const populate = async () => {
         createdAt: new Date(),
         updatedAt: new Date(),
     });
-    console.log(dir1);
 
-    console.log("Second directory...");
-    const dir2 = await Directory.create({
-        name: 'Project 2',
-        owner: bob._id,
+    console.log("Nesting directories [1->3->2] ...");
+    let dirNumerator = 3
+    for (;dirNumerator < 6; dirNumerator++){
+        let newDir: IDirectory = await Directory.create({
+            name: `Project 1 -> dir ${dirNumerator}`,
+            owner: alice?._id,
+            parent: dirAlcie,
+            path: './',
+            children: [],
+            files: [],
+            collaborators: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        dirAlcie.children.push(newDir._id as Types.ObjectId);
+        await newDir.save();
+
+        for (let i = 0; i < 2; i++) {
+            let leafDir: IDirectory = await Directory.create({
+                name: `Project 1 -> dir ${dirNumerator} -> Leaf Dir ${i}`,
+                owner: alice,
+                parent: newDir,
+                path: './',
+                children: [],
+                files: [],
+                collaborators: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+
+            newDir.children.push(leafDir._id as Types.ObjectId);
+            await newDir.save();
+        }
+    }
+
+    console.log("Directory [owner: Bob]...");
+    let dirBob : IDirectory = await Directory.create({
+        name: 'Bobs #root directory',
+        owner: bob?._id,
         parent: null,
-        children: [dir1._id],
+        children: [],
         files: [],
         collaborators: [],
         createdAt: new Date(),
         updatedAt: new Date(),
     });
-    console.log(dir2);
 
-    console.log("Document...");
-    const doc1 = await Document.create({
-        name: 'DesignDoc.md',
-        owner: alice._id,
-        collaborators: [bob._id],
-        parent: dir2._id,
+    console.log("Nesting directories [Bobs #root directory->1->2->3->4->5] ...");
+    dirNumerator = 1
+    let currentDir = dirBob
+    for (;dirNumerator < 6; dirNumerator++){
+
+        let newDir: IDirectory = await Directory.create({
+            name: `Bobs nested directory #${dirNumerator}`,
+            owner: bob?._id,
+            parent: currentDir,
+            path: './',
+            children: [],
+            files: [],
+            collaborators: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        currentDir.children.push(newDir._id as Types.ObjectId)
+        await currentDir.save();
+        currentDir = newDir
+    }
+
+    console.log("File for Alice...");
+    let docAlice: IFile = await File.create({
+        name: 'AliceDoc.md',
+        owner: alice?._id,
+        collaborators: [bob?._id],
+        parent: dirBob?._id,
         createdAt: new Date(),
         updatedAt: new Date(),
     });
-    console.log(doc1);
+    dirAlcie?.files.push(docAlice?._id as Types.ObjectId);
+    await dirAlcie?.save();
 
-    dir1.files.push(doc1._id as Types.ObjectId);
-    await dir1.save();
+    console.log("File for Bob...");
+    let docBob: IFile = await File.create({
+        name: 'BobDoc.md',
+        owner: bob?._id,
+        collaborators: [bob?._id],
+        parent: dirBob?._id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    });
+    currentDir.files.push(docBob._id as Types.ObjectId)
+    await currentDir.save();
+
 
     console.log('Population complete ');
+    await disconnectDB();
     process.exit(0);
 };
 

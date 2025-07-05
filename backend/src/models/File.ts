@@ -1,11 +1,5 @@
-import { Schema, Document, SchemaTypes, Types, model } from 'mongoose';
-
-export interface IFile extends Document {
-    name: string;
-    owner: Types.ObjectId;
-    parent: Types.ObjectId;
-    collaborators: Array<Types.ObjectId>;
-}
+import { Schema, SchemaTypes, model } from 'mongoose';
+import { IFile } from "../interfaces/IFile";
 
 const FileSchema: Schema<IFile> = new Schema({
     name: {

@@ -14,9 +14,9 @@
   },
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/app.ts",
     "build": "tsc",
     "test-db": "npx ts-node src/dbTests.ts",
     "test": "echo \"Error: no test specified\" && exit 1"

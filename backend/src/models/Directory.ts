@@ -1,13 +1,5 @@
-import { Schema, Document, SchemaTypes, Types, model } from 'mongoose';
-
-export interface IDirectory extends Document {
-    name: string;
-    owner: Types.ObjectId;
-    parent: Types.ObjectId | null;
-    children: Array<Types.ObjectId>;
-    files: Array<Types.ObjectId>;
-    collaborators: Array<Types.ObjectId>;
-}
+import { Schema, SchemaTypes, model } from 'mongoose';
+import { IDirectory } from '../interfaces/IDirectory';
 
 const directorySchema: Schema<IDirectory> = new Schema({
     name: {
