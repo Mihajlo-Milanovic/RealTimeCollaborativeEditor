@@ -1,7 +1,6 @@
 import express from "express";
 import * as dc from "../controllers/directoryController";
 
-
 export const directoryRoute = express.Router();
 
 directoryRoute.get('/getUsersDirectories/', dc.getUsersDirectories);

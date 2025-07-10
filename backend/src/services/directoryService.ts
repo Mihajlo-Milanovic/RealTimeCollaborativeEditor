@@ -26,7 +26,7 @@ export async function getDirectoriesStructured (ownerId: string): Promise<Array<
         await directory.populate('children');
 
         if (directory.populated('children')) {
-            directories = directories.concat( directory.children as unknown as Array<IDirectory>);
+            directories = directories.concat(directory.children as unknown as Array<IDirectory>);
         }
     }
 
@@ -46,13 +46,12 @@ async function populateChildren (directories: Array<IDirectory>) {
         await directory.populate("children");
 
         if (directory.populated("children")) {
-
             await populateChildren(directory.children as unknown as Array<IDirectory>);
         }
     }
 }
 
-export async function makeDirectory (directory: IDirectory): Promise<IDirectory> {
+export async function createDirectory (directory: IDirectory): Promise<IDirectory> {
 
     return Directory.create(directory);
 }

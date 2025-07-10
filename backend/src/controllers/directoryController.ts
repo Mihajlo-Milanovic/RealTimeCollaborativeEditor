@@ -22,7 +22,7 @@ export async function getUsersDirectoriesStructured (req: any, res: any) {
 
 export async function createDirectory (req: any, res: any) {
 
-    const newDirectory = await ds.makeDirectory(req.body);
+    const newDirectory = await ds.createDirectory(req.body);
     res.status(201).json(newDirectory);
 }
 
