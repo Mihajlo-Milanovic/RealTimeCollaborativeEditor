@@ -1,23 +1,27 @@
 import Directory from "../models/Directory";
 import {IDirectory} from "../interfaces/IDirectory";
-import populate from "mongoose";
+import { Types } from "mongoose"
+import {IFile} from "../interfaces/IFile";
 
-export const getDirectoriesByOwnerId = async (ownerId: string): Promise<Array<IDirectory>> => {
+export async function getDirectoriesByOwnerId (ownerId: string): Promise<Array<IDirectory>> {
 
     return Directory.find({ owner: ownerId });
 }
 
-export const getDirectoriesStructured = async (ownerId: string): Promise<Array<IDirectory>> => {
+export async function getDirectoriesStructured (ownerId: string): Promise<Array<IDirectory>> {
 
     const dirs: Array<IDirectory> = await Directory.find({
         owner: ownerId,
         parent: null
     })
 
-    let directories: Array<IDirectory> = dirs.concat()
+    let directories: Array<IDirectory> = dirs.concat([])
 
     while(directories.length > 0) {
-        let directory = directories.pop() as IDirectory;
+        let directory = directories.pop();
+
+        if (directory == undefined)
+            continue;
 
         await directory.populate('children');
 
@@ -30,9 +34,9 @@ export const getDirectoriesStructured = async (ownerId: string): Promise<Array<I
     // await populateChildren(dirs);
 
     return dirs;
-};
+}
 
-const populateChildren = async (directories: Array<IDirectory>) => {
+async function populateChildren (directories: Array<IDirectory>) {
 
     if (directories.length < 0) {
         return
@@ -46,4 +50,64 @@ const populateChildren = async (directories: Array<IDirectory>) => {
             await populateChildren(directory.children as unknown as Array<IDirectory>);
         }
     }
+}
+
+export async function makeDirectory (directory: IDirectory): Promise<IDirectory> {
+
+    return Directory.create(directory);
+}
+
+export async function addChildrenByIds (directoryId: string, childrenIds: Array<string>): Promise<IDirectory | null> {
+
+    const dir: IDirectory | null = await Directory.findById(directoryId);
+    if (dir == null)
+        return null
+
+    const cids = childrenIds.map(childId =>
+        new Types.ObjectId(childId)
+    );
+    dir.children.push(...cids);
+    await dir.save()
+
+    return dir
+}
+
+export async function addChildrenByIdsAsObjectId (directoryId: string, childrenIds: Array<Types.ObjectId>): Promise<IDirectory | null> {
+
+    const dir: IDirectory | null = await Directory.findById(directoryId);
+    if (dir == null)
+        return null
+
+    dir.children.push(...childrenIds);
+    await dir.save()
+
+    return dir
+}
+
+export async function addFilesById (directoryId: string, filesIds: Array<string>): Promise<IDirectory | null> {
+
+    const dir: IDirectory | null = await Directory.findById(directoryId);
+    if (dir == null)
+        return null
+
+    const fids = filesIds.map(fileId =>
+        new Types.ObjectId(fileId)
+    );
+
+    dir.files.push(...fids);
+    await dir.save()
+
+    return dir
+}
+
+export async function addFilesByIdAsObjectId (directoryId: string, filesIds: Array<Types.ObjectId>): Promise<IDirectory | null> {
+
+    const dir: IDirectory | null = await Directory.findById(directoryId);
+    if (dir == null)
+        return null
+
+    dir.files.push(...filesIds);
+    await dir.save()
+
+    return dir
 }

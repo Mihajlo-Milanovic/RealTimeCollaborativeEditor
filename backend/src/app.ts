@@ -5,6 +5,7 @@ import { userRoute } from "./routes/userRoutes";
 import { port } from "./config/config";
 import { connectDB } from "./config/db";
 import {directoryRoute} from "./routes/directoryRoutes";
+import {fileRoute} from "./routes/fileRoutes";
 
 const app = express();
 app.use(express.json());
@@ -13,6 +14,7 @@ app.use(errorHandler)
 
 app.use("/user", userRoute);
 app.use("/directory", directoryRoute);
+app.use("/file", fileRoute)
 
 app.get('/',
     (req, res) => {
