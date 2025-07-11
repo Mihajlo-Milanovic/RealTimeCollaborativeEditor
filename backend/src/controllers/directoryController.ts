@@ -28,6 +28,12 @@ export async function createDirectory (req: any, res: any) {
 
 export async function addChildrenByIds (req: any, res: any) {
 
-    await ds.addChildrenByIds(req.body.directory, req.body.children)
+    await ds.addChildrenByIds(req.body.directory, req.body.children);
+    res.status(204);
+}
+
+export async function addFilesByIds (req: any, res: any) {
+
+    await ds.addFilesByIds(req.body.directory, req.body.files);
     res.status(204);
 }

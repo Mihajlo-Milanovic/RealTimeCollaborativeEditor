@@ -71,19 +71,7 @@ export async function addChildrenByIds (directoryId: string, childrenIds: Array<
     return dir
 }
 
-export async function addChildrenByIdsAsObjectId (directoryId: string, childrenIds: Array<Types.ObjectId>): Promise<IDirectory | null> {
-
-    const dir: IDirectory | null = await Directory.findById(directoryId);
-    if (dir == null)
-        return null
-
-    dir.children.push(...childrenIds);
-    await dir.save()
-
-    return dir
-}
-
-export async function addFilesById (directoryId: string, filesIds: Array<string>): Promise<IDirectory | null> {
+export async function addFilesByIds (directoryId: string, filesIds: Array<string>): Promise<IDirectory | null> {
 
     const dir: IDirectory | null = await Directory.findById(directoryId);
     if (dir == null)
@@ -94,18 +82,6 @@ export async function addFilesById (directoryId: string, filesIds: Array<string>
     );
 
     dir.files.push(...fids);
-    await dir.save()
-
-    return dir
-}
-
-export async function addFilesByIdAsObjectId (directoryId: string, filesIds: Array<Types.ObjectId>): Promise<IDirectory | null> {
-
-    const dir: IDirectory | null = await Directory.findById(directoryId);
-    if (dir == null)
-        return null
-
-    dir.files.push(...filesIds);
     await dir.save()
 
     return dir
