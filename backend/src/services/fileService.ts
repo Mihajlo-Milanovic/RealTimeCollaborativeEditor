@@ -7,6 +7,7 @@ export const getFileById = async (fileId: string): Promise<IFile | null> => {
     return File.findById(fileId);
 };
 
+//Treba li ovo da bude ovde???
 export const getDirectoriesFiles = async (dirId: string): Promise<Array<IFile>> => {
     const dir: IDirectory | null = await Directory.findById(dirId).populate('files');
     let result: Array<IFile> = [];
