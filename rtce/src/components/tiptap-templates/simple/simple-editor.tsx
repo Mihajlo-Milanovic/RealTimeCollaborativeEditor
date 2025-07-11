@@ -77,6 +77,16 @@ import "@/components/tiptap-templates/simple/simple-editor.scss"
 
 import content from "@/components/tiptap-templates/simple/data/content.json"
 
+// ---  Y.JS BY FILIP PETROVIC ---
+import * as Y from "yjs"
+import { WebrtcProvider } from "y-webrtc"
+import Collaboration from "@tiptap/extension-collaboration"
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor"
+
+const ydoc = new Y.Doc()
+const provider = new WebrtcProvider("my-local-room", ydoc)
+
+
 const MainToolbarContent = ({
   onHighlighterClick,
   onLinkClick,
@@ -222,6 +232,18 @@ export function SimpleEditor() {
       }),
       TrailingNode,
       Link.configure({ openOnClick: false }),
+      // Y.JS EKSTENZIJE 
+      Collaboration.configure({
+        document: ydoc,
+      }),
+      CollaborationCursor.configure({
+        provider: provider,
+        user: {
+          name: "OPREM DOBRO" + Math.floor(Math.random() * 1000),
+          color: "#f783ac",
+        },
+      }),      
+      // ...
     ],
     content: content,
   })
