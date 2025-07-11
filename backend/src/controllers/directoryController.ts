@@ -1,5 +1,6 @@
 import * as ds from "../services/directoryService";
 import {IDirectory} from "../interfaces/IDirectory";
+import {IFile} from "../interfaces/IFile";
 
 
 export async function getUsersDirectories (req: any, res: any) {
@@ -18,6 +19,14 @@ export async function getUsersDirectoriesStructured (req: any, res: any) {
         res.status(200).json(dirs);
     else
         res.status(404).end().set("Not Found");
+}
+
+export async function getFilesInDirectory(req: any, res: any) {
+
+    const dirId: string = req.query[`dirId`];
+
+    const files: Array<IFile> = await ds.getFilesForDirectory(dirId);
+    res.json(files).status(200);
 }
 
 export async function createDirectory (req: any, res: any) {

@@ -52,6 +52,15 @@ async function populateChildren (directories: Array<IDirectory>) {
     }
 }
 
+export async function getFilesForDirectory(dirId: string): Promise<Array<IFile>> {
+    const dir: IDirectory | null = await Directory.findById(dirId).populate('files');
+    let result: Array<IFile> = [];
+    if (dir && dir.populated('files'))
+        result = dir.files as unknown as Array<IFile>;
+
+    return result;
+}
+
 export async function createDirectory (directory: IDirectory): Promise<IDirectory | null> {
 
     const parentDirectory: IDirectory | null = await Directory.findById(directory.parent);
