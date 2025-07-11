@@ -14,7 +14,7 @@ app.use(errorHandler)
 
 app.use("/user", userRoute);
 app.use("/directory", directoryRoute);
-app.use("/file", fileRoute)
+app.use("/file", fileRoute);
 
 app.get('/',
     (req, res) => {

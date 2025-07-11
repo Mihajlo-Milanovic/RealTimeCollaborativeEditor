@@ -7,3 +7,4 @@ export const fileRoute = express.Router();
 fileRoute.get('/getFileById', fc.getFile);
 fileRoute.post('/getFilesInDirectory', fc.getFilesInDirectory);
 fileRoute.put('/createFile', fc.createFile);
+fileRoute.delete('/deleteFile', fc.deleteFile);

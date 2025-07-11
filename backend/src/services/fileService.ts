@@ -20,14 +20,34 @@ export const getDirectoriesFiles = async (dirId: string): Promise<Array<IFile>> 
 
 export async function createFile (file: IFile): Promise<IFile | null> {
 
-    const dir: IDirectory | null = await Directory.findById(file.parent)
+    const dir: IDirectory | null = await Directory.findById(file.parent);
 
-    let newFile: IFile | null = null
+    let newFile: IFile | null = null;
 
     if (dir != null) {
         newFile = await File.create(file);
         dir.files.push(newFile._id as Types.ObjectId);
-        await dir.save()
+        await dir.save();
     }
-    return newFile
+    return newFile;
+}
+
+export async function deleteFile(file: IFile): Promise<boolean> {
+    try {
+        const parentDir: IDirectory | null = await Directory.findById(file.parent);
+        if (!parentDir) {
+            console.error("Nije pronadjen roditeljski diraktorijum.");
+            return false;
+        }
+
+        parentDir.files = parentDir.files.filter(fId => !fId.equals(file.id));
+        await parentDir.save();
+
+        await File.findByIdAndDelete(file.id);
+
+        return true;
+    } catch (err) {
+        console.error("Greska pri brisanju fajla:", err);
+        return false;
+    }
 }
