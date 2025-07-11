@@ -22,11 +22,17 @@ export async function createFile (file: IFile): Promise<IFile | null> {
     return newFile;
 }
 
-export async function deleteFile(file: IFile): Promise<boolean> {
+export async function deleteFile(fileId: string): Promise<boolean> {
     try {
+        const file: IFile | null = await File.findById(fileId);
+        if (!file) {
+            console.error("Fajl nije pronađen.");
+            return false;
+        }
+
         const parentDir: IDirectory | null = await Directory.findById(file.parent);
         if (!parentDir) {
-            console.error("Nije pronadjen roditeljski diraktorijum.");
+            console.error("Nije pronadjen roditeljski direktorijum.");
             return false;
         }
 
@@ -37,7 +43,7 @@ export async function deleteFile(file: IFile): Promise<boolean> {
 
         return true;
     } catch (err) {
-        console.error("Greska pri brisanju fajla:", err);
+        console.error("Greška pri brisanju fajla:", err);
         return false;
     }
 }

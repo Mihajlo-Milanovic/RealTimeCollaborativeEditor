@@ -7,11 +7,11 @@ import { IComment } from "../interfaces/IComment";
 export async function getCommentById(commentId: string): Promise<IComment | null> {
     //if (!Types.ObjectId.isValid(commentId))  Ovo mozda dodati u buducnosti, bukvalno regex za IDjeve ako ne ispunjava formu da ne zove uopste
        // return null;
-    return await Comment.findById(commentId);
+    return Comment.findById(commentId);
 }
 
 export async function getCommentsForFile(fileId: string): Promise<IComment[]> {
-    return await Comment.find({ file: fileId });
+    return Comment.find({ file: fileId });
 }
 
 export async function createComment(data: IComment): Promise<IComment> {
@@ -20,7 +20,7 @@ export async function createComment(data: IComment): Promise<IComment> {
 }
 
 export async function updateComment(commentId: string, data: IComment): Promise<IComment | null> {
-    return await Comment.findByIdAndUpdate(commentId, data, { new: true });
+    return Comment.findByIdAndUpdate(commentId, data, { new: true });
 }
 
 export async function deleteComment(commentId: string): Promise<boolean> {

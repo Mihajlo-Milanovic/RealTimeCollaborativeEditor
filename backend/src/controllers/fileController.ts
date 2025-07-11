@@ -25,20 +25,16 @@ export const createFile = async (req: any, res: any) => {
 export const deleteFile = async (req: any, res: any) => {
     try {
         const fileId: string = req.query[`fileId`];
-        const file: IFile | null = await fs.getFileById(fileId);
 
-        if (!file) {
-            return res.status(404).json({ message: "Fajl nije nadjen." });
-        }
-
-        const success = await fs.deleteFile(file);
+        const success = await fs.deleteFile(fileId);
         if (!success) {
-            return res.status(500).json({ message: "Neuspesno obrisan fajl." });
+            return res.status(404).json({ message: "Fajl nije uspesno obrisan." });
         }
 
-        return res.status(200).json({ message: "Fajl obrisan uspeno." });
+        return res.status(200).json({ message: "Fajl uspesno obrisan." });
     } catch (error) {
-        console.error("Greska pri brisanju fajla:", error);
+        console.error("Greška pri brisanju fajla:", error);
         return res.status(500).json({ message: "Internal server error." });
     }
 };
+
