@@ -4,9 +4,9 @@ import { Types } from "mongoose"
 import {IFile} from "../interfaces/IFile";
 import {IDirectory} from "../interfaces/IDirectory";
 
-export const getFileById = async (fileId: string): Promise<IFile | null> => {
+export async function getFileById(fileId: string): Promise<IFile | null> {
     return File.findById(fileId);
-};
+}
 
 export async function createFile (file: IFile): Promise<IFile | null> {
 
@@ -43,11 +43,11 @@ export async function deleteFile(file: IFile): Promise<boolean> {
 }
 
 //Treba li ovo da bude ovde???
-export const getDirectoriesFiles = async (dirId: string): Promise<Array<IFile>> => {
+export async function getDirectoriesFiles(dirId: string): Promise<Array<IFile>> {
     const dir: IDirectory | null = await Directory.findById(dirId).populate('files');
     let result: Array<IFile> = [];
     if (dir && dir.populated('files'))
         result = dir.files as unknown as Array<IFile>;
 
    return result;
-};
+}
