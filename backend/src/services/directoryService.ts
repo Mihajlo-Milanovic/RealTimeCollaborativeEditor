@@ -63,7 +63,7 @@ export async function createDirectory (directory: IDirectory): Promise<IDirector
         parentDirectory.children.push(newDirectory._id as Types.ObjectId)
         await parentDirectory.save()
     }
-    return newDirectory
+    return newDirectory;
 }
 
 export async function addChildrenByIds (directoryId: string, childrenIds: Array<string>): Promise<IDirectory | null> {
@@ -76,9 +76,9 @@ export async function addChildrenByIds (directoryId: string, childrenIds: Array<
         new Types.ObjectId(childId)
     );
     dir.children.push(...cids);
-    await dir.save()
+    await dir.save();
 
-    return dir
+    return dir;
 }
 
 export async function addFilesByIds (directoryId: string, filesIds: Array<string>): Promise<IDirectory | null> {
@@ -92,9 +92,9 @@ export async function addFilesByIds (directoryId: string, filesIds: Array<string
     );
 
     dir.files.push(...fids);
-    await dir.save()
+    await dir.save();
 
-    return dir
+    return dir;
 }
 
 export async function deleteDirectory (directoryId: string) {

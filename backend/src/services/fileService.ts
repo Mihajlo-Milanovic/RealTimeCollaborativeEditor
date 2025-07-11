@@ -8,16 +8,6 @@ export const getFileById = async (fileId: string): Promise<IFile | null> => {
     return File.findById(fileId);
 };
 
-//Treba li ovo da bude ovde???
-export const getDirectoriesFiles = async (dirId: string): Promise<Array<IFile>> => {
-    const dir: IDirectory | null = await Directory.findById(dirId).populate('files');
-    let result: Array<IFile> = [];
-    if (dir && dir.populated('files'))
-        result = dir.files as unknown as Array<IFile>;
-
-   return result;
-};
-
 export async function createFile (file: IFile): Promise<IFile | null> {
 
     const dir: IDirectory | null = await Directory.findById(file.parent);
@@ -51,3 +41,13 @@ export async function deleteFile(file: IFile): Promise<boolean> {
         return false;
     }
 }
+
+//Treba li ovo da bude ovde???
+export const getDirectoriesFiles = async (dirId: string): Promise<Array<IFile>> => {
+    const dir: IDirectory | null = await Directory.findById(dirId).populate('files');
+    let result: Array<IFile> = [];
+    if (dir && dir.populated('files'))
+        result = dir.files as unknown as Array<IFile>;
+
+   return result;
+};
