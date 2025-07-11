@@ -1,6 +1,7 @@
 import File from "../models/File"
-import {IFile} from "../interfaces/IFile";
 import Directory from "../models/Directory";
+import { Types } from "mongoose"
+import {IFile} from "../interfaces/IFile";
 import {IDirectory} from "../interfaces/IDirectory";
 
 export const getFileById = async (fileId: string): Promise<IFile | null> => {
@@ -17,7 +18,16 @@ export const getDirectoriesFiles = async (dirId: string): Promise<Array<IFile>> 
    return result;
 };
 
-export async function createFile (file: IFile): Promise<IFile> {
+export async function createFile (file: IFile): Promise<IFile | null> {
 
-    return File.create(file);
+    const dir: IDirectory | null = await Directory.findById(file.parent)
+
+    let newFile: IFile | null = null
+
+    if (dir != null) {
+        newFile = await File.create(file);
+        dir.files.push(newFile._id as Types.ObjectId);
+        await dir.save()
+    }
+    return newFile
 }

@@ -1,4 +1,5 @@
 import Directory from "../models/Directory";
+import File from "../models/File";
 import {IDirectory} from "../interfaces/IDirectory";
 import { Types } from "mongoose"
 import {IFile} from "../interfaces/IFile";
@@ -51,9 +52,18 @@ async function populateChildren (directories: Array<IDirectory>) {
     }
 }
 
-export async function createDirectory (directory: IDirectory): Promise<IDirectory> {
+export async function createDirectory (directory: IDirectory): Promise<IDirectory | null> {
 
-    return Directory.create(directory);
+    const parentDirectory: IDirectory | null = await Directory.findById(directory.parent);
+
+    let newDirectory: IDirectory | null = null;
+    if (parentDirectory != null) {
+
+        newDirectory = await Directory.create(directory);
+        parentDirectory.children.push(newDirectory._id as Types.ObjectId)
+        await parentDirectory.save()
+    }
+    return newDirectory
 }
 
 export async function addChildrenByIds (directoryId: string, childrenIds: Array<string>): Promise<IDirectory | null> {
@@ -85,4 +95,58 @@ export async function addFilesByIds (directoryId: string, filesIds: Array<string
     await dir.save()
 
     return dir
+}
+
+export async function deleteDirectory (directoryId: string) {
+
+    const dir: IDirectory | null = await Directory.findById(directoryId).populate(['children', 'parent']).exec();
+
+    if (dir == null)
+        return;
+
+    if(dir.parent != null && dir.populated('parent')){
+
+        const dirParent = dir.parent as unknown as IDirectory;
+
+        const dirIndex: number = dirParent.children.findIndex(child => child == dir._id);
+        dirParent.children.splice(1, dirIndex);
+        await dirParent.save();
+    }
+
+    let filesDeleted = 0;
+    let directoriesDeleted = 0;
+
+    if (dir.populated('children')) {
+
+        const dc: Array<IDirectory> = dir.children as unknown as Array<IDirectory>;
+
+        let forDeletion: Array<IDirectory> = [dir];
+        forDeletion.push(...dc);
+
+        while (forDeletion.length > 0) {
+
+            let d = forDeletion.pop();
+
+            if (d == undefined)
+                continue;
+
+            await d.populate(['children','files']);
+
+            if (d.populated('files') && d.files.length > 0){
+                for (const file of d.files) {
+                    await File.findByIdAndDelete(file._id);
+                    filesDeleted++;
+                }
+            }
+
+            if (d.populated('children')) {
+                forDeletion.push(...d.children as unknown as Array<IDirectory>);
+            }
+
+            await Directory.findByIdAndDelete(d._id);
+            directoriesDeleted++;
+        }
+    }
+
+    return { directoriesDeleted, filesDeleted };
 }

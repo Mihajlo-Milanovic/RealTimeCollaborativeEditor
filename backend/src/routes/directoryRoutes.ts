@@ -8,3 +8,4 @@ directoryRoute.get('/getUsersDirectoriesStructured/', dc.getUsersDirectoriesStru
 directoryRoute.put('/createDirectory', dc.createDirectory);
 directoryRoute.post('/addChildren', dc.addChildrenByIds);
 directoryRoute.post('/addFiles', dc.addFilesByIds);
+directoryRoute.delete('/deleteDirectory', dc.deleteDirectory);

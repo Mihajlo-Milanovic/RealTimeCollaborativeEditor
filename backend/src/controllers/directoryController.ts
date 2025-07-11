@@ -37,3 +37,10 @@ export async function addFilesByIds (req: any, res: any) {
     await ds.addFilesByIds(req.body.directory, req.body.files);
     res.status(204);
 }
+
+export async function deleteDirectory (req: any, res: any) {
+
+    const dirId = req.query[`dirId`];
+    const result = await ds.deleteDirectory(dirId);
+    res.status(200).json(result);
+}
