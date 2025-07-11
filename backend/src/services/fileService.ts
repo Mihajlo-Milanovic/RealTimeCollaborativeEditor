@@ -17,6 +17,7 @@ export const getDirectoriesFiles = async (dirId: string): Promise<Array<IFile>> 
    return result;
 };
 
-export const createNewFile = async (file: IFile): Promise<IFile> => {
-    return await File.create(file);
+export async function createFile (file: IFile): Promise<IFile> {
+
+    return File.create(file);
 }

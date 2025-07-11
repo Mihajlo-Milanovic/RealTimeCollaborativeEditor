@@ -18,5 +18,6 @@ export const getFilesInDirectory = async (req: any, res: any) => {
 }
 
 export const createFile = async (req: any, res: any) => {
-    await fs.createNewFile(req.body)
+    const result = await fs.createFile(req.body);
+    res.status(200).json(result);
 }
