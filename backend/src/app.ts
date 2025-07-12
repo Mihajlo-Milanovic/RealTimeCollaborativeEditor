@@ -7,7 +7,11 @@ import { connectDB } from "./config/db";
 import {directoryRoute} from "./routes/directoryRoutes";
 import {fileRoute} from "./routes/fileRoutes";
 import {commentRoute} from "./routes/commentRoutes";
+
+
+
 const app = express();
+
 app.use(express.json());
 app.use(logger)
 app.use(errorHandler)

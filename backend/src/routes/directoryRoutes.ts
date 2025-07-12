@@ -1,9 +1,17 @@
 import express from "express";
+import * as validator from "express-validator";
 import * as dc from "../controllers/directoryController";
 
 export const directoryRoute = express.Router();
 
-directoryRoute.get('/getUsersDirectories/', dc.getUsersDirectories);
+directoryRoute.get('/getUsersDirectories/',
+    validator.query('uuid', "Invalid uuid!")
+        .notEmpty().bail().withMessage("Field 'uuid' is missing!")
+        .isMongoId().bail(),
+    dc.getUsersDirectories
+);
+
+
 directoryRoute.get('/getUsersDirectoriesStructured/', dc.getUsersDirectoriesStructured);
 directoryRoute.post('/getFilesInDirectory', dc.getFilesInDirectory);
 directoryRoute.put('/createDirectory', dc.createDirectory);

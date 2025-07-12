@@ -1,14 +1,27 @@
 import * as ds from "../services/directoryService";
 import {IDirectory} from "../interfaces/IDirectory";
 import {IFile} from "../interfaces/IFile";
+import {validationResult} from "express-validator";
 
 
 export async function getUsersDirectories (req: any, res: any) {
 
-    const userId: string = req.query[`uuid`];
-    const dirs = await ds.getDirectoriesByOwnerId(userId);
-    res.json(dirs).status(200);
+    const validationErrors = validationResult(req);
 
+    if (!validationErrors.isEmpty()) {
+        res.status(400).send({errors: validationErrors.array()}).end();
+        return;
+    }
+
+    try {
+        const userId: string = req.query['uuid'];
+        const dirs = await ds.getDirectoriesByOwnerId(userId);
+        res.json(dirs).status(200);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.");
+    }
 }
 
 export async function getUsersDirectoriesStructured (req: any, res: any) {
