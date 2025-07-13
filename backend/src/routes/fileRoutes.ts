@@ -2,8 +2,8 @@ import express from "express";
 import * as fc from "../controllers/fileController";
 
 
-export const fileRoute = express.Router();
+export const fileRouter = express.Router();
 
-fileRoute.get('/getFileById', fc.getFile);
-fileRoute.put('/createFile', fc.createFile);
-fileRoute.delete('/deleteFile', fc.deleteFile);
+fileRouter.get('/getFileById', fc.getFile);
+fileRouter.put('/createFile', fc.createFile);
+fileRouter.delete('/deleteFile', fc.deleteFile);

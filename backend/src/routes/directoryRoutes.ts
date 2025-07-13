@@ -1,20 +1,29 @@
 import express from "express";
-import * as validator from "express-validator";
 import * as dc from "../controllers/directoryController";
+import * as validation from "../middlewares/validation/httpRequestValidation";
 
-export const directoryRoute = express.Router();
+export const directoryRouter = express.Router();
 
-directoryRoute.get('/getUsersDirectories/',
-    validator.query('uuid', "Invalid uuid!")
-        .notEmpty().bail().withMessage("Field 'uuid' is missing!")
-        .isMongoId().bail(),
+directoryRouter.get('/getUsersDirectories/',
+    validation.validateUUID(),
     dc.getUsersDirectories
 );
 
+directoryRouter.get('/getUsersDirectoriesStructured/',
+    validation.validateUUID(),
+    dc.getUsersDirectoriesStructured
+);
 
-directoryRoute.get('/getUsersDirectoriesStructured/', dc.getUsersDirectoriesStructured);
-directoryRoute.post('/getFilesInDirectory', dc.getFilesInDirectory);
-directoryRoute.put('/createDirectory', dc.createDirectory);
-directoryRoute.post('/addChildren', dc.addChildrenByIds);
-directoryRoute.post('/addFiles', dc.addFilesByIds);
-directoryRoute.delete('/deleteDirectory', dc.deleteDirectory);
+directoryRouter.get('/getFilesInDirectory',
+    validation.validateDirectoryId(),
+    dc.getFilesInDirectory
+);
+
+directoryRouter.put('/createDirectory',
+    validation.validateDirectory(),
+    dc.createDirectory
+);
+
+directoryRouter.post('/addChildren', dc.addChildrenByIds);
+directoryRouter.post('/addFiles', dc.addFilesByIds);
+directoryRouter.delete('/deleteDirectory', dc.deleteDirectory);

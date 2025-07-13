@@ -7,4 +7,5 @@ export interface IDirectory extends Document {
     children: Array<Types.ObjectId>;
     files: Array<Types.ObjectId>;
     collaborators: Array<Types.ObjectId>;
+    createdAt: Date;
 }

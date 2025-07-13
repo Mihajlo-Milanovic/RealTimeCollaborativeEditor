@@ -2,10 +2,10 @@ import express from "express";
 import * as cc from "../controllers/commentController";
 
 
-export const commentRoute = express.Router();
+export const commentRouter = express.Router();
 
-commentRoute.get('/getCommentById', cc.getCommentById);
-commentRoute.get('/getCommentsForFile', cc.getCommentsForFile);
-commentRoute.post('/createComment', cc.createComment);
-commentRoute.delete('/deleteComment', cc.deleteComment);
-commentRoute.put('/updateComment', cc.updateComment);
+commentRouter.get('/getCommentById', cc.getCommentById);
+commentRouter.get('/getCommentsForFile', cc.getCommentsForFile);
+commentRouter.post('/createComment', cc.createComment);
+commentRouter.delete('/deleteComment', cc.deleteComment);
+commentRouter.put('/updateComment', cc.updateComment);

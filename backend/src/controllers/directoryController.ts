@@ -1,21 +1,18 @@
 import * as ds from "../services/directoryService";
-import {IDirectory} from "../interfaces/IDirectory";
 import {IFile} from "../interfaces/IFile";
-import {validationResult} from "express-validator";
+import {validationResult, matchedData } from "express-validator";
+import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
+import {IDirectory} from "../interfaces/IDirectory";
 
 
 export async function getUsersDirectories (req: any, res: any) {
 
-    const validationErrors = validationResult(req);
-
-    if (!validationErrors.isEmpty()) {
-        res.status(400).send({errors: validationErrors.array()}).end();
+    if (checkForValidationErrors(req, res))
         return;
-    }
 
     try {
-        const userId: string = req.query['uuid'];
-        const dirs = await ds.getDirectoriesByOwnerId(userId);
+        const queryParams = matchedData(req);
+        const dirs = await ds.getDirectoriesByOwnerId(queryParams.uuid);
         res.json(dirs).status(200);
     }
     catch (err) {
@@ -26,32 +23,71 @@ export async function getUsersDirectories (req: any, res: any) {
 
 export async function getUsersDirectoriesStructured (req: any, res: any) {
 
-    const userId: string = req.query[`uuid`];
-    const dirs = await ds.getDirectoriesStructured(userId);
-    if (dirs)
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const queryParams = matchedData(req);
+        const dirs = await ds.getDirectoriesStructured(queryParams.uuid);
         res.status(200).json(dirs);
-    else
-        res.status(404).end().set("Not Found");
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.");
+    }
 }
 
 export async function getFilesInDirectory(req: any, res: any) {
 
-    const dirId: string = req.query[`dirId`];
+    if (checkForValidationErrors(req, res))
+        return;
 
-    const files: Array<IFile> = await ds.getFilesForDirectory(dirId);
-    res.json(files).status(200);
+    try {
+        const queryParams = matchedData(req);
+        const files: Array<IFile> = await ds.getFilesForDirectory(queryParams.dirId);
+        res.json(files).status(200);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.");
+    }
 }
 
 export async function createDirectory (req: any, res: any) {
 
-    const newDirectory = await ds.createDirectory(req.body);
-    res.status(201).json(newDirectory);
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const bodyObj = matchedData(req);
+        const newDirectory = await ds.createDirectory(bodyObj as IDirectory);
+        res.status(201).json(newDirectory);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.");
+    }
+
 }
 
 export async function addChildrenByIds (req: any, res: any) {
 
-    await ds.addChildrenByIds(req.body.directory, req.body.children);
-    res.status(204);
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+
+
+        await ds.addChildrenByIds(req.body.directory, req.body.children);
+        res.status(204);
+
+    }
+    catch (err){
+        console.error(err);
+        res.status(500).send("Internal server error occurred.");
+    }
+
+
 }
 
 export async function addFilesByIds (req: any, res: any) {

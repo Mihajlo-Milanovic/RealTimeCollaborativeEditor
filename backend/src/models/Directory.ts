@@ -1,9 +1,9 @@
 import { Schema, SchemaTypes, model } from 'mongoose';
 import { IDirectory } from '../interfaces/IDirectory';
 
-const directorySchema: Schema<IDirectory> = new Schema({
+const DirectorySchema: Schema<IDirectory> = new Schema({
     name: {
-        type: String,
+        type: SchemaTypes.String,
         required: true
     },
     owner: {
@@ -28,6 +28,10 @@ const directorySchema: Schema<IDirectory> = new Schema({
         type: SchemaTypes.ObjectId,
         ref: 'User',
     }],
+    createdAt: {
+        type: SchemaTypes.Date,
+        default: new Date
+    }
 }, { timestamps: true });
 
-export default model<IDirectory>('Directory', directorySchema);
+export default model<IDirectory>('Directory', DirectorySchema);

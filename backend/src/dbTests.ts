@@ -36,13 +36,12 @@ const populate = async () => {
     console.log("Directory [owner: Alice]...")
     let dirAlcie: IDirectory = await Directory.create({
         name: 'Alices #root directory',
-        owner: alice?._id,
+        owner: alice._id,
         parent: null,
         children: [],
         files: [],
         collaborators: [],
         createdAt: new Date(),
-        updatedAt: new Date(),
     });
 
     console.log("Nesting directories [1->3->2] ...");
@@ -56,7 +55,6 @@ const populate = async () => {
             files: [],
             collaborators: [],
             createdAt: new Date(),
-            updatedAt: new Date(),
         });
 
         dirAlcie.children.push(newDir._id as Types.ObjectId);
