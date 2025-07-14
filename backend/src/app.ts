@@ -9,7 +9,6 @@ import {fileRouter} from "./routes/fileRoutes";
 import {commentRouter} from "./routes/commentRoutes";
 
 
-
 const app = express();
 
 app.use(express.json());
@@ -22,7 +21,7 @@ app.use("/file", fileRouter);
 app.use("/comment", commentRouter);
 
 app.get('/',
-    (req, res) => {
+    (req: express.Request, res: express.Response) => {
         res.send('Collaborative Editor Backend is running')
     }
 );

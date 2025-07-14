@@ -1,8 +1,8 @@
-import express from "express";
+import { Router } from "express";
 import * as dc from "../controllers/directoryController";
 import * as validation from "../middlewares/validation/httpRequestValidation";
 
-export const directoryRouter = express.Router();
+export const directoryRouter = Router();
 
 directoryRouter.get('/getUsersDirectories/',
     validation.validateId('uuid'),
@@ -29,9 +29,20 @@ directoryRouter.put('/addChildren',
     dc.addChildrenByIds
 );
 
+directoryRouter.put('/removeChildren',
+    validation.validateChildrenAdmission(),
+    dc.removeFromChildrenByIds
+);
+
 directoryRouter.put('/addFiles',
     validation.validateFilesAdmission(),
-    dc.addFilesByIds);
+    dc.addFilesByIds
+);
+
+directoryRouter.put('/removeFiles',
+    validation.validateFilesAdmission(),
+    dc.removeFromFilesByIds
+);
 
 directoryRouter.delete('/deleteDirectory',
     validation.validateId('dirId'),
