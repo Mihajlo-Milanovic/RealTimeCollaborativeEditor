@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as ds from "../services/directoryService";
 import {IFile} from "../interfaces/IFile";
-import {validationResult, matchedData } from "express-validator";
+import { matchedData } from "express-validator";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
 import {IDirectory} from "../interfaces/IDirectory";
 

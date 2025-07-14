@@ -197,10 +197,7 @@ export async function deleteDirectory (directoryId: string) {
 
     if (dir.populated('children')) {
 
-        const dc: Array<IDirectory> = dir.children as unknown as Array<IDirectory>;
-
-        let forDeletion: Array<IDirectory> = [dir];
-        forDeletion.push(...dc);
+        let forDeletion: Array<IDirectory> = [dir, ...dir.children as unknown as Array<IDirectory>];
 
         while (forDeletion.length > 0) {
 

@@ -1,4 +1,5 @@
 import * as validator from 'express-validator';
+import { getUserWithUsername, getUserWithEmail } from "../../services/userService";
 import {IDirectory} from "../../interfaces/IDirectory";
 
 
@@ -70,6 +71,35 @@ export function validateDirectory()  {
 }
 
 /**
+ * @return
+ * Validation chain for validating User from Body
+ */
+export function validateUser()  {
+    return validator.checkSchema(
+        {
+            username: {
+                trim: true,
+                notEmpty: { errorMessage: "Field 'name' is required!" },
+                unique:{
+                    custom: validateUsernameUniqueness,
+                    errorMessage: "Specified username is already taken."
+                }
+            },
+            email: {
+                trim: true,
+                isEmail: { errorMessage: "Invalid E-mail address!" },
+                unique: {
+                    custom: validateEmailUniqueness,
+                    errorMessage: "Specified e-mail is already taken."
+                }
+            }
+        },
+        ['body']
+    );
+}
+
+
+/**
  *@return
  * Validation chain for validating children to be added to directory
  */
@@ -95,4 +125,17 @@ export function validateFilesAdmission(){
         },
         ['body']
     )
+}
+
+
+async function validateUsernameUniqueness(username: string){
+    const user = await getUserWithUsername(username);
+    if (user)
+        throw new Error("Username is already taken!");
+}
+
+async function validateEmailUniqueness(email: string){
+    const user = await getUserWithEmail(email);
+    if (user)
+        throw new Error("E-mail is already taken!");
 }

@@ -7,11 +7,21 @@ export async function getAllUsers(): Promise<Array<IUser>> {
 }
 
 export async function getUserById(uuid: string): Promise<IUser | null> {
-
     return User.findById(uuid);
 }
 
-export async function createNewUser(req: any, res: any): Promise<IUser> {
-    //todo: validation of data and error handling
-    return User.create(req.body);
+export async function getUserWithUsername(username: string): Promise<IUser | null> {
+    return User.findOne({username: username});
+}
+
+export async function getUserWithEmail(email: string): Promise<IUser | null> {
+    return User.findOne({email: email});
+}
+
+export async function createNewUser(user: IUser): Promise<IUser> {
+    return User.create(user);
+}
+
+export async function deleteUserWithId(uuid: string) {
+    await User.findByIdAndDelete(uuid).exec();
 }

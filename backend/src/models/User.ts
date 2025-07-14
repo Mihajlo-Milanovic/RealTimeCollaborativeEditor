@@ -14,9 +14,9 @@ const UserSchema: Schema<IUser> = new Schema({
         unique: true,
         isEmail: true,
     },
-    avatar: {
-        type: SchemaTypes.String
-    },
+    // avatar: {
+    //     type: SchemaTypes.String
+    // },
 }, { timestamps: true });
 
 export default model<IUser>('User', UserSchema);
