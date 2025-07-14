@@ -1,7 +1,5 @@
 # Created by https://www.gitignore.io/api/node,vim,git,macos,linux,sublimetext
 
-dist
-
 ### Git ###
 *.orig
 

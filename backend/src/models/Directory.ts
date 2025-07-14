@@ -18,7 +18,7 @@ const DirectorySchema: Schema<IDirectory> = new Schema({
     },
     children: [{
         type: SchemaTypes.ObjectId,
-        ref: 'Directory'
+        ref: 'Directory',
     }],
     files: [{
         type: SchemaTypes.ObjectId,

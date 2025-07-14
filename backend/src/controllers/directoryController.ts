@@ -44,8 +44,11 @@ export async function getFilesInDirectory(req: any, res: any) {
 
     try {
         const queryParams = matchedData(req);
-        const files: Array<IFile> = await ds.getFilesForDirectory(queryParams.dirId);
-        res.json(files).status(200);
+        const files: Array<IFile> | null = await ds.getFilesForDirectory(queryParams.dirId);
+        if (files)
+            res.json(files).status(200);
+        else
+            res.status(404).send("Specified directory could not be found.");
     }
     catch (err) {
         console.error(err);
@@ -59,9 +62,13 @@ export async function createDirectory (req: any, res: any) {
         return;
 
     try {
-        const bodyObj = matchedData(req);
-        const newDirectory = await ds.createDirectory(bodyObj as IDirectory);
-        res.status(201).json(newDirectory);
+        const bodyObj = matchedData(req) as IDirectory;
+        console.log(bodyObj);
+        const newDirectory = await ds.createDirectory(bodyObj);
+        if (newDirectory)
+            res.status(201).json(newDirectory);
+        else
+            res.status(500).send("Internal server error occurred.");
     }
     catch (err) {
         console.error(err);
@@ -76,29 +83,52 @@ export async function addChildrenByIds (req: any, res: any) {
         return;
 
     try {
+        const directory: string = req.body.directory;
+        const children: Array<string> = req.body.children;
 
-
-        await ds.addChildrenByIds(req.body.directory, req.body.children);
-        res.status(204);
-
+        const dir = await ds.addChildrenByIds(directory, children);
+        if (dir)
+            res.status(204);
+        else
+            res.status(404).send("Directory not found.");
     }
     catch (err){
         console.error(err);
         res.status(500).send("Internal server error occurred.");
     }
-
-
 }
 
 export async function addFilesByIds (req: any, res: any) {
 
-    await ds.addFilesByIds(req.body.directory, req.body.files);
-    res.status(204);
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const bodyObj: {directory: string, files: Array<string>} = matchedData(req);
+        const dir = await ds.addFilesByIds(bodyObj.directory, bodyObj.files);
+        if (dir)
+            res.status(204);
+        else
+            res.status(404).send("Directory not found.");
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.");
+    }
 }
 
 export async function deleteDirectory (req: any, res: any) {
 
-    const dirId = req.query[`dirId`];
-    const result = await ds.deleteDirectory(dirId);
-    res.status(200).json(result);
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const queryParams: { dirId: string } = matchedData(req);
+        const result = await ds.deleteDirectory(queryParams.dirId);
+        res.status(200).json(result);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.");
+    }
 }

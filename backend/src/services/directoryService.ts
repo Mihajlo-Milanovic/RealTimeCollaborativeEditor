@@ -1,7 +1,7 @@
 import Directory from "../models/Directory";
 import File from "../models/File";
 import {IDirectory} from "../interfaces/IDirectory";
-import { Types } from "mongoose"
+import {Types} from "mongoose"
 import {IFile} from "../interfaces/IFile";
 
 export async function getDirectoriesByOwnerId (ownerId: string): Promise<Array<IDirectory>> {
@@ -31,7 +31,7 @@ export async function getDirectoriesStructured (ownerId: string): Promise<Array<
         }
     }
 
-    // This is recursive
+    // recursive solution
     // await populateChildren(dirs);
 
     return dirs;
@@ -52,59 +52,71 @@ async function populateChildren (directories: Array<IDirectory>) {
     }
 }
 
-export async function getFilesForDirectory(dirId: string): Promise<Array<IFile>> {
-    const dir: IDirectory | null = await Directory.findById(dirId).populate('files');
-    let result: Array<IFile> = [];
-    if (dir && dir.populated('files'))
-        result = dir.files as unknown as Array<IFile>;
+export async function getFilesForDirectory(dirId: string): Promise<Array<IFile> | null> {
 
+    const dir: IDirectory | null = await Directory.findById(dirId).populate('files');
+
+    let result: Array<IFile> | null = null;
+    if (dir) {
+        result = [];
+        if (dir.populated('files'))
+            result = dir.files as unknown as Array<IFile>;
+    }
     return result;
 }
 
 export async function createDirectory (directory: IDirectory): Promise<IDirectory | null> {
 
-    const parentDirectory: IDirectory | null = await Directory.findById(directory.parent);
-
     let newDirectory: IDirectory | null = null;
-    if (parentDirectory != null) {
 
-        newDirectory = await Directory.create(directory);
-        parentDirectory.children.push(newDirectory._id as Types.ObjectId)
-        await parentDirectory.save()
+    if(directory.parent) {
+        const parentDirectory: IDirectory | null = await Directory.findById(directory.parent);
+
+        if (parentDirectory != null) {
+            newDirectory = await Directory.create(directory);
+            parentDirectory.children.push(newDirectory._id as Types.ObjectId)
+            await parentDirectory.save()
+        }
     }
+    else {
+        newDirectory = await Directory.create(directory);
+    }
+
     return newDirectory;
 }
 
 export async function addChildrenByIds (directoryId: string, childrenIds: Array<string>): Promise<IDirectory | null> {
 
     const dir: IDirectory | null = await Directory.findById(directoryId);
-    if (dir == null)
-        return null
 
-    const cids = childrenIds.map(childId =>
-        new Types.ObjectId(childId)
-    );
-    dir.children.push(...cids);
-    await dir.save();
+    if (dir) {
+        childrenIds = [...new Set(childrenIds.concat(dir.children.map(child => child.toHexString())))];
 
+        dir.children = childrenIds.map(childId =>
+            new Types.ObjectId(childId)
+        );
+        await dir.save();
+    }
     return dir;
 }
 
 export async function addFilesByIds (directoryId: string, filesIds: Array<string>): Promise<IDirectory | null> {
 
     const dir: IDirectory | null = await Directory.findById(directoryId);
-    if (dir == null)
-        return null
 
-    const fids = filesIds.map(fileId =>
-        new Types.ObjectId(fileId)
-    );
+    if (dir) {
 
-    dir.files.push(...fids);
-    await dir.save();
+        filesIds = [...new Set(filesIds.concat(dir.files.map(file => file.toHexString())))];
 
+        dir.files = filesIds.map(fileId =>
+            new Types.ObjectId(fileId)
+        );
+        await dir.save();
+    }
     return dir;
 }
+
+
 
 export async function deleteDirectory (directoryId: string) {
 

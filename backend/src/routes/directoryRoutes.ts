@@ -5,25 +5,35 @@ import * as validation from "../middlewares/validation/httpRequestValidation";
 export const directoryRouter = express.Router();
 
 directoryRouter.get('/getUsersDirectories/',
-    validation.validateUUID(),
+    validation.validateId('uuid'),
     dc.getUsersDirectories
 );
 
 directoryRouter.get('/getUsersDirectoriesStructured/',
-    validation.validateUUID(),
+    validation.validateId('uuid'),
     dc.getUsersDirectoriesStructured
 );
 
 directoryRouter.get('/getFilesInDirectory',
-    validation.validateDirectoryId(),
+    validation.validateId('dirId'),
     dc.getFilesInDirectory
 );
 
-directoryRouter.put('/createDirectory',
+directoryRouter.post('/createDirectory',
     validation.validateDirectory(),
     dc.createDirectory
 );
 
-directoryRouter.post('/addChildren', dc.addChildrenByIds);
-directoryRouter.post('/addFiles', dc.addFilesByIds);
-directoryRouter.delete('/deleteDirectory', dc.deleteDirectory);
+directoryRouter.put('/addChildren',
+    validation.validateChildrenAdmission(),
+    dc.addChildrenByIds
+);
+
+directoryRouter.put('/addFiles',
+    validation.validateFilesAdmission(),
+    dc.addFilesByIds);
+
+directoryRouter.delete('/deleteDirectory',
+    validation.validateId('dirId'),
+    dc.deleteDirectory
+);

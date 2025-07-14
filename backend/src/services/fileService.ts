@@ -14,7 +14,7 @@ export async function createFile (file: IFile): Promise<IFile | null> {
 
     let newFile: IFile | null = null;
 
-    if (dir != null) {
+    if (dir) {
         newFile = await File.create(file);
         dir.files.push(newFile._id as Types.ObjectId);
         await dir.save();
