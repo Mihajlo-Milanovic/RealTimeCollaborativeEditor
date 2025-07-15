@@ -1,9 +1,16 @@
-import { Document, ObjectId, Types } from "mongoose";
+import { Document, Types } from "mongoose";
+import {IReaction} from "./IReaction";
 
-// podlozan promenama...
 export interface IComment extends Document {
     commenter: Types.ObjectId;
     file: Types.ObjectId;
     content: string;
-    reactions: Array<string>; // za sada niz stringova, videcemo...
+    edited: boolean;
+    reactions: Array<IReaction>;
+}
+
+export type SimpleComment = {
+    commenter: string;
+    file: string;
+    content: string;
 }
