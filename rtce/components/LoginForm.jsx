@@ -49,8 +49,8 @@ export default function LoginForm() {
         setIsLoading(false);
         return;
       }
-
-      const userRes = await fetch(`/api/user?email=${email}`);
+      const userRes = await fetch("http://localhost:5000" + "/user/getUserByEmail" + `?email=${email}`);
+      //const userRes = await fetch(`/api/user?email=${email}`);
       const userData = await userRes.json();
 
       router.replace("editor");

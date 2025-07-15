@@ -14,6 +14,17 @@ const UserSchema: Schema<IUser> = new Schema({
         unique: true,
         isEmail: true,
     },
+    password: {
+      type: String,
+      required: true,
+    },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
     // avatar: {
     //     type: SchemaTypes.String
     // },

@@ -35,41 +35,45 @@ export default function RegisterForm() {
     }
 
     try {
-      const resUserExists = await fetch("api/userExists", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+      // const resUserExists = await fetch("http://localhost:5000/" + "user/getUser", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ email }),
+      // });
 
-      const { user } = await resUserExists.json();
+      // const { user } = await resUserExists.json();
 
-      if (user) {
-        setError("Korisnik sa ovim mailom već postoji!");
-        setIsLoading(false);
-        return;
-      }
+      // if (user) {
+      //   setError("Korisnik sa ovim mailom već postoji!");
+      //   setIsLoading(false);
+      //   return;
+      // }
 
-      const res = await fetch("api/register", {
+      const res = await fetch("http://localhost:5000/" + "user/createUser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
+          username: name,
           email,
           password,
         }),
       });
 
+      const ans = await res.json();
+
       if (res.ok) {
+        console.log("Registracija uspela.");
         const form = e.target;
         form.reset();
         router.push("/");
       } else {
         console.log("Registracija nije uspela.");
         setIsLoading(false);
+        setError(ans.message);
       }
     } catch (error) {
       console.log("Greška prilikom registracije: ", error);

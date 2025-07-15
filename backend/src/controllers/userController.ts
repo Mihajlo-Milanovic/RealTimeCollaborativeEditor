@@ -36,19 +36,45 @@ export async function getUserById(req: Request, res: Response) {
     }
 }
 
-export async function createUser(req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
+export async function getUserByEmail(req: Request, res: Response) {
     try {
-        const bodyObj: IUser = matchedData(req);
-        const newUser = await us.createNewUser(bodyObj);
+        const email = req.query.email as string;
 
-        res.status(201).json(newUser).end();
+        const user = await us.getUserWithEmail(email);
+        if (user)
+            res.status(200).json(user).end();
+        else
+            res.status(404).send("User not found.");
     }
     catch (err) {
         console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
+export async function createUser(req: Request, res: Response) {
+
+    // if (checkForValidationErrors(req, res)) {
+    //     return;
+    // }
+
+    try {
+        //console.log("telo: ", req.body);
+        //const bodyObj: IUser = matchedData(req);
+
+        // ZA SAD !!!! ovako sam jer sam crko debagirajuci + se zurim, ce se dogovorimo
+        const result = await us.createNewUser(req.body);
+
+        if (result instanceof Error) {
+            console.log(result.message);
+            res.status(403).json({message: result.message});
+            return;
+        }
+
+        res.status(201).json(result).end();
+    }
+    catch (err) {
+        console.log((err as Error).message);
         res.status(500).send("Internal server error occurred.").end();
     }
 }

@@ -13,8 +13,13 @@ userRouter.get('/getUser',
     uc.getUserById
 );
 
+userRouter.get('/getUserByEmail',
+    uc.getUserByEmail
+);
+
 userRouter.post('/createUser',
-    validation.validateUser(),
+    // !!! za sad
+    //validation.validateUser(),
     uc.createUser
 );
 

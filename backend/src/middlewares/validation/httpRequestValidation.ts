@@ -92,6 +92,13 @@ export function validateUser()  {
                     custom: validateEmailUniqueness,
                     errorMessage: "Specified e-mail is already taken."
                 }
+            },
+            password: {
+                notEmpty: { errorMessage: "Password is required!" },
+                isLength: {
+                    options: { min: 8 },
+                    errorMessage: "Password must be at least 8 characters long",
+                }
             }
         },
         ['body']

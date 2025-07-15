@@ -7,9 +7,16 @@ import { connectDB } from "./config/db";
 import {directoryRouter} from "./routes/directoryRoutes";
 import {fileRouter} from "./routes/fileRoutes";
 import {commentRouter} from "./routes/commentRoutes";
+import cors from "cors";
 
 
 const app = express();
+
+app.use(cors({
+  origin: "*", // "*" za sve domene
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type"]
+}));
 
 app.use(express.json());
 app.use(logger);

@@ -2,7 +2,7 @@ import { connectMongoDB } from "../lib/mongodb";
 import User from "../models/user";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { AuthOptions } from "next-auth";
+import { AuthOptions, User } from "next-auth";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -21,9 +21,12 @@ export const authOptions: AuthOptions = {
         }
 
         const { email, password } = credentials as { email: string; password: string };
-        await connectMongoDB();
-        const user = await User.findOne({ email });
+        //await connectMongoDB();
+        //const user = await User.findOne({ email });
 
+        // TODO
+        const userData = await fetch("http://localhost:5000" + "/user/getUserByEmail" + `?email=${email}`);
+        const user = await userData.json();
         if (!user) return null;
 
         const passwordsMatch = await bcrypt.compare(password, user.password);
