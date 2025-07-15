@@ -88,7 +88,6 @@ export async function createDirectory (req: Request, res: Response) {
 
     try {
         const bodyObj = matchedData(req) as IDirectory;
-        console.log(bodyObj);
         const newDirectory = await ds.createDirectory(bodyObj);
         if (newDirectory)
             res.status(201).json(newDirectory).end();
