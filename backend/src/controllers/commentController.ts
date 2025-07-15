@@ -1,32 +1,98 @@
-import { IComment } from "../interfaces/IComment";
+import { Request, Response } from "express";
+import {IComment, SimpleComment} from "../interfaces/IComment";
 import * as cs from "../services/commentService";
+import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
+import {matchedData} from "express-validator";
 
-export const createComment = async (req: any, res: any) => {
-    const result = await cs.createComment(req.body);
-    res.status(200).json(result);
-};
+export async function getCommentById (req: Request, res: Response) {
 
-export const getCommentById = async (req: any, res: any) => {
-    const commentId: string = req.query[`commentId`];
-    const comment: IComment | null = await cs.getCommentById(commentId);
-    res.status(200).json(comment);
-};
+    if (checkForValidationErrors(req, res))
+        return;
 
-export const getCommentsForFile = async (req: any, res: any) => {
-    const fileId: string = req.query[`fileId`];
-    const comments: Array<IComment> = await cs.getCommentsForFile(fileId);
-    res.status(200).json(comments);
-};
+    try {
+        const queryParams: { commentId: string } = matchedData(req);
+        const comment = await cs.getCommentById(queryParams.commentId);
+        if (comment)
+            res.status(200).json(comment).end();
+        else
+            res.status(404).send("Comment not found.").end();
+    }
+    catch (err){
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
 
-export const updateComment = async (req: any, res: any) => {
-    const commentId: string = req.query[`commentId`];
-    const updated = await cs.updateComment(commentId, req.body);
-    res.status(200).json(updated);
-};
+export async function getCommentsForFile(req: Request, res: Response) {
 
-export const deleteComment = async (req: any, res: any) => {
-    const commentId: string = req.query[`commentId`];
-    const success = await cs.deleteComment(commentId);
-    if (!success) return res.status(404).json({ message: "Komentar nije pronadjen." });
-    res.status(200).json({ message: "Komentar obrisan uspesno." });
-};
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const queryParams: { fileId: string } = matchedData(req);
+        const comments = await cs.getCommentsForFile(queryParams.fileId);
+        if(comments != null)
+            res.status(200).json(comments).end();
+        else
+            res.status(404).send("File not found.").end();
+    }
+    catch (err){
+        console.error(err);
+        res.status(500).send("Internal server error occurred");
+    }
+}
+
+export async function createComment (req: Request, res: Response) {
+
+    if(checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const bodyObj = matchedData(req) as SimpleComment;
+        const newComment = await cs.createComment(bodyObj);
+        if(newComment)
+            res.status(201).json(newComment).end();
+        else
+            res.status(404).send((newComment as Error).message).end();
+    }
+    catch(err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred!").end()
+    }
+
+}
+
+export async function updateComment (req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try{
+        const bodyObj: SimpleComment & {commentId: string} = matchedData(req);
+        const updatedComment = await cs.updateComment(bodyObj);
+        if (updatedComment)
+            res.status(200).json(updatedComment).end();
+        else
+            res.status(404).send("Comment not found.").end();
+    }
+    catch (err){
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
+export async function deleteComment (req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try{
+        const queryParams: {commentId: string} = matchedData(req);
+        await cs.deleteComment(queryParams.commentId);
+        res.status(200).send("Comment deleted successfully.").end();
+    }
+    catch (err){
+        console.error(err);
+        res.status(500).send("Internal server error occurred!").end();
+    }
+}

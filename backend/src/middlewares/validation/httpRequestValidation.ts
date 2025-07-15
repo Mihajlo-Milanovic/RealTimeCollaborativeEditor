@@ -1,7 +1,18 @@
 import * as validator from 'express-validator';
 import { getUserWithUsername, getUserWithEmail } from "../../services/userService";
-import {IDirectory} from "../../interfaces/IDirectory";
+import {IReaction} from "../../interfaces/IReaction";
+import { Types } from "mongoose";
 
+
+/**
+ * Use in pair with <code>validate{Object}</code> to check if the 'id' is included
+ * Field 'id' is needed for the update methods
+ * @return
+ * Validation chain that checks if the body of request has field 'id'
+ */
+export function validateIdExistsInBody(idName: string){
+    return validator.body(idName).exists();
+}
 
 /**
  * @param fieldName
@@ -98,7 +109,61 @@ export function validateUser()  {
     );
 }
 
+/**
+ * This validation chain gives option to omit 'id' field.
+ * If this function is used to validate request data for
+ * update methods use it in pair with <code>validateIdExistsInBody</code>.
+ *
+ * @return
+ * Validation chain for validating Comment from Body
+ */
+export function validateComment()  {
+    return validator.checkSchema(
+        {
+            commentId:{
+                optional: true,
+                ...mongoIdObject('commentId')
+            },
+            commenter: mongoIdObject('commenter'),
+            file: mongoIdObject('file'),
+            content: {
+                trim: true,
+                notEmpty: true,
+                errorMessage: `Field 'content' is required!`,
+            },
+        },
+        ['body']
+    );
+}
 
+export function validateCommentUpdate()  {
+    return validator.checkSchema(
+        {
+            commentId: mongoIdObject('commentId'),
+            content: {
+                trim: true,
+                notEmpty: true,
+                errorMessage: `Field 'content' is required!`,
+            },
+        },
+        ['body']
+    );
+}
+
+export function validateReaction()  {
+    return validator.checkSchema(
+        {
+            comment: mongoIdObject('commentId'),
+            reactor: mongoIdObject('reactor'),
+            reactionType: {
+                trim: true,
+                notEmpty: true,
+                errorMessage: `Field 'reactionType' is required!`,
+            },
+        },
+        ['body']
+    );
+}
 /**
  *@return
  * Validation chain for validating children to be added to directory

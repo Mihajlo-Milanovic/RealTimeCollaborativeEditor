@@ -17,9 +17,14 @@ const commentSchema: Schema<IComment> = new Schema({
         required: true,
         trim: true
     },
+    edited: {
+        type: SchemaTypes.Boolean,
+        default: false
+    },
     reactions: [{
-        type: SchemaTypes.String
-    }]
+        type: SchemaTypes.ObjectId,
+        ref: 'Reaction',
+    }],
 }, { timestamps: true });
 
 export default model<IComment>('Comment', commentSchema);

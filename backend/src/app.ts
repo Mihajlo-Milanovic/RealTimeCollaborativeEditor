@@ -7,6 +7,7 @@ import { connectDB } from "./config/db";
 import {directoryRouter} from "./routes/directoryRoutes";
 import {fileRouter} from "./routes/fileRoutes";
 import {commentRouter} from "./routes/commentRoutes";
+import {reactionRouter} from "./routes/reactionRoutes";
 
 
 const app = express();
@@ -19,10 +20,11 @@ app.use("/user", userRouter);
 app.use("/directory", directoryRouter);
 app.use("/file", fileRouter);
 app.use("/comment", commentRouter);
+app.use("/reaction", reactionRouter);
 
 app.get('/',
     (req: express.Request, res: express.Response) => {
-        res.send('Collaborative Editor Backend is running')
+        res.send('Collaborative Editor Backend is running');
     }
 );
 
