@@ -1,5 +1,12 @@
 import nodemailer from "nodemailer";
 
+/**
+ * @deprecated This function has been moved to the backend.
+ * @param email
+ * @param token
+ * Safe to delete after verification.
+ */
+
 export const sendVerificationEmail = async (email: string, token: string) => {
   const verificationUrl = `${process.env.NEXTAUTH_URL}/verify?token=${token}`;
 

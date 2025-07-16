@@ -2,6 +2,12 @@ import { connectMongoDB } from "../../../../lib/mongodb"
 import User from "../../../../models/user";
 import { NextResponse } from "next/server";
 
+/**
+ * @deprecated This function has been moved to the backend.
+ * @param req
+ * Safe to delete after verification.
+ */
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const email = searchParams.get("email");

@@ -17,10 +17,18 @@ userRouter.get('/getUserByEmail',
     uc.getUserByEmail
 );
 
+userRouter.get('/getUserByVerificationToken',
+    uc.getUserByVerificationToken
+);
+
 userRouter.post('/createUser',
     // !!! za sad
     //validation.validateUser(),
     uc.createUser
+);
+
+userRouter.get('/verifyUser',
+    uc.verifyUser
 );
 
 userRouter.delete('/deleteUser',

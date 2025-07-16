@@ -5,6 +5,12 @@ import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "../../../../lib/mailer";
 import crypto from "crypto";
 
+/**
+ * @deprecated This function has been moved to the backend.
+ * @param req
+ * Safe to delete after verification.
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const { name, email, password } = await req.json();
