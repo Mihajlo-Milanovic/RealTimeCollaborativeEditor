@@ -1,26 +1,58 @@
-import { redirect } from "next/navigation";
-import { connectMongoDB } from "../../../lib/mongodb";
-import User from "../../../models/user";
+"use client";
 
-export default async function VerifyPage({ searchParams }: { searchParams: { token?: string } }) {
-  const token = searchParams.token;
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
-  if (!token) {
-    return <p>Nedostaje verifikacioni token.</p>;
+let verifySent = false;
+
+export default function VerifyPage() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  //const [verifySent, setVerifySent] = useState(false);
+
+  // 2 puta salje zahtev ispraviti ovaj bug!!!
+  useEffect(() => {
+    if (!token) {
+      setError("Nedostaje verifikacioni token.");
+      return;
+    }
+
+    const verify = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/user/getUserByVerificationToken?verificationToken=${token}`
+        );
+
+        if (!res.ok) {
+          setError("Nevalidan ili istekao token za verifikaciju.");
+          return;
+        }
+
+        const verifyRes = await fetch(
+          `http://localhost:5000/user/verifyUser?verificationToken=${token}`
+        );
+
+        if (verifyRes.ok) {
+          router.push("/verify/success");
+        } else {
+          setError("Došlo je do greške prilikom verifikacije.");
+        }
+      } catch (e) {
+        setError("Greška u komunikaciji sa serverom.");
+        console.error(e);
+      }
+    };
+    if (!verifySent) {
+      verify();
+      verifySent = true;
+    }
+  }, [token]);
+
+  if (error) {
+    return <p>{error}</p>;
   }
 
-  await connectMongoDB();
-
-  const user = await User.findOne({ verificationToken: token });
-
-  if (!user) {
-    return <p>Nevalidan ili istekao token za verifikaciju.</p>;
-  }
-
-  user.verified = true;
-  user.verificationToken = undefined;
-  await user.save();
-
-  // Redirektuj na novu klijentsku komponentu koja prikazuje alert
-  redirect("/verify/success");
+  return <p>Verifikujem vaš nalog...</p>;
 }

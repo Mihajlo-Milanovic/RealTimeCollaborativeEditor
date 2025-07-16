@@ -2,6 +2,12 @@ import { connectMongoDB } from "../../../../lib/mongodb";
 import User from "../../../../models/user";
 import { NextResponse, NextRequest } from "next/server";
 
+/**
+ * @deprecated This function has been moved to the backend.
+ * @param req
+ * Safe to delete after verification.
+ */
+
 export async function POST(req: NextRequest) {
   try {
     await connectMongoDB();

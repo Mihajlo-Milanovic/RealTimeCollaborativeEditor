@@ -52,6 +52,22 @@ export async function getUserByEmail(req: Request, res: Response) {
     }
 }
 
+export async function getUserByVerificationToken(req: Request, res: Response) {
+    try {
+        const token = req.query.verificationToken as string;
+
+        const user = await us.getUserByVerificationToken(token);
+        if (user)
+            res.status(200).json(user).end();
+        else
+            res.status(404).send("User not found.");
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
 export async function createUser(req: Request, res: Response) {
 
     // if (checkForValidationErrors(req, res)) {
@@ -78,6 +94,30 @@ export async function createUser(req: Request, res: Response) {
         res.status(500).send("Internal server error occurred.").end();
     }
 }
+
+export async function verifyUser(req: Request, res: Response) {
+  try {
+    const token = req.query.verificationToken as string;
+
+    if (!token) { 
+      res.status(400).send("Verification token is required.");
+      return;
+    }
+
+    const user = await us.verifyUser(token);
+
+    if (!user) {
+      res.status(404).send("Invalid or expired token.");
+      return;
+    }
+
+    res.status(200).json({ message: "User verified successfully.", user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error.");
+  }
+}
+
 
 export async function deleteUserWithId(req: Request, res: Response) {
 

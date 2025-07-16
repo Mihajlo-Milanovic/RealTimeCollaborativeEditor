@@ -24,7 +24,6 @@ export const authOptions: AuthOptions = {
         //await connectMongoDB();
         //const user = await User.findOne({ email });
 
-        // TODO
         const userData = await fetch("http://localhost:5000" + "/user/getUserByEmail" + `?email=${email}`);
         const user = await userData.json();
         if (!user) return null;

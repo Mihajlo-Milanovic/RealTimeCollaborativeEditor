@@ -5,7 +5,7 @@ export interface IUser extends Document {
     email: string;
     password: string;
     verified: boolean;
-    verificationToken: string;
+    verificationToken?: string;
 
     // avatar?: string;
 }

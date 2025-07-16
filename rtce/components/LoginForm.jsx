@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import {getRequestSingle} from "../src/app/api/serverRequests/methods"
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -49,7 +50,8 @@ export default function LoginForm() {
         setIsLoading(false);
         return;
       }
-      const userRes = await fetch("http://localhost:5000" + "/user/getUserByEmail" + `?email=${email}`);
+      const userRes = await getRequestSingle("user/getUserByEmail","email", email);
+      //const userRes = await fetch("http://localhost:5000" + "/user/getUserByEmail" + `?email=${email}`);
       //const userRes = await fetch(`/api/user?email=${email}`);
       const userData = await userRes.json();
 

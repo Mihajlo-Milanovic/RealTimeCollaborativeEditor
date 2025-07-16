@@ -5,6 +5,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {postRequest} from "../src/app/api/serverRequests/methods"
 
 export default function RegisterForm() {
   const [name, setName] = useState("");
@@ -50,19 +51,12 @@ export default function RegisterForm() {
       //   setIsLoading(false);
       //   return;
       // }
-
-      const res = await fetch("http://localhost:5000/" + "user/createUser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const data = {
           username: name,
           email,
           password,
-        }),
-      });
-
+        };
+      const res = await postRequest("user/createUser", data);
       const ans = await res.json();
 
       if (res.ok) {
