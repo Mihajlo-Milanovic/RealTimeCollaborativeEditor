@@ -35,8 +35,7 @@ export async function createOrUpdateReaction(req: Request, res: Response) {
         let reaction = await rs.getReactionByCommentAndUser(bodyObj.reactor, bodyObj.comment);
 
         if (reaction) {
-            reaction.reactionType = bodyObj.reactionType;
-            reaction = await rs.updateReaction(reaction);
+            reaction = await rs.updateReaction(reaction, bodyObj.reactionType);
             if (reaction)
                 res.status(200).json(reaction).end();
             else

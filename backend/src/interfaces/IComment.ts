@@ -14,3 +14,10 @@ export type SimpleComment = {
     file: string;
     content: string;
 }
+
+export function isSimpleComment(obj:any): obj is SimpleComment {
+    return typeof obj === "object" && obj !== null &&
+        "commenter" in obj && typeof obj.commenter === "string" &&
+        "file" in obj && typeof obj.file === "string" &&
+        "content" in obj && typeof obj.content === "string";
+}
