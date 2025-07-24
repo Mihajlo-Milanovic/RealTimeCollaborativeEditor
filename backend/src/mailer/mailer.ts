@@ -1,19 +1,20 @@
 import nodemailer from "nodemailer";
+import {emailAppPass, emailUser, nextAuthUrl} from "../config/config";
 
-export const sendVerificationEmail = async (email: string, token: string) => {
-  const verificationUrl = `${process.env.NEXTAUTH_URL}/verify?token=${token}`;
+export async function sendVerificationEmail(email: string, token: string) {
+  const verificationUrl = `${nextAuthUrl}/verify?token=${token}`;
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER,  
-      pass: process.env.EMAIL_APP_PASS,  
+      user: emailUser,
+      pass: emailAppPass,
     },
   });
 
   try {
     const info = await transporter.sendMail({
-      from: `"RTC App" <${process.env.EMAIL_USER}>`,
+      from: `"RTC App" <${emailUser}>`,
       to: email,
       subject: "Verify your email",
       html: `
@@ -29,4 +30,4 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     console.error("Error sending email via Gmail SMTP:", error);
     throw new Error("Email nije mogao biti poslat.");
   }
-};
+}

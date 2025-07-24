@@ -25,9 +25,6 @@ const UserSchema: Schema<IUser> = new Schema({
     verificationToken: {
       type: String,
     },
-    // avatar: {
-    //     type: SchemaTypes.String
-    // },
 }, { timestamps: true });
 
 export default model<IUser>('User', UserSchema);
