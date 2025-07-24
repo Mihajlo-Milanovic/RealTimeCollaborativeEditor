@@ -1,30 +1,34 @@
+export class UIUser {
+  private static instance: UIUser;
+  
+  id: string | null = null;
+  email: string | null = null;
+  username: string | null = null;
 
-import mongoose, { Schema, models } from "mongoose";
+  private constructor() {}
 
-const userSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    verified: {
-      type: Boolean,
-      default: false,
-    },
-    verificationToken: {
-      type: String,
+  static getInstance(): UIUser {
+    if (!UIUser.instance) {
+      UIUser.instance = new UIUser();
     }
-  },
-  { timestamps: true }
-);
+    return UIUser.instance;
+  }
 
-const User = models.User || mongoose.model("User", userSchema);
-export default User;
+  fillFromSession(sessionUser: any) {
+    if (!sessionUser) {
+      this.reset();
+      return;
+    }
+    this.id = sessionUser.id ?? null;
+    this.email = sessionUser.email ?? null;
+    this.username = sessionUser.username ?? null;
+  }
+
+  reset() {
+    this.id = null;
+    this.email = null;
+    this.username = null;
+  }
+}
+
+export default UIUser;

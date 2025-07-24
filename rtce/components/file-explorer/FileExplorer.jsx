@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { Folder, FolderOpen, FileText } from "lucide-react";
+import {getRequestSingle} from "../../src/app/api/serverRequests/methods"
+import { useSession } from "next-auth/react";
 
 // Dummy struktura fajlova i foldera
 const dummyStructure = [
@@ -31,6 +33,8 @@ const dummyStructure = [
 
 function FileItem({ node }) {
   const [open, setOpen] = useState(false);
+    const { data: session } = useSession();
+    //console.log(session.user);
 
   if (node.type === "file") {
     return (
@@ -63,6 +67,20 @@ function FileItem({ node }) {
 }
 
 export default function FileExplorer() {
+  const [structure, setStructure] = useState([]);
+
+  // useEffect(() => {
+  //   async function fetchStructure() {
+  //     // const res = await getRequestSingle("directory/getgetUsersDirectoriesStructured", "uuid", );
+
+  //     // if (res.ok) {
+  //     //   const data = await res.json();
+  //     //   setStructure(data);
+  //     // }
+  //   }
+  //   fetchStructure();
+  // }, [userId]);
+
   return (
     <div className="w-full h-full text-sm font-mono overflow-y-auto p-2 flex-100%">
       {dummyStructure.map((node, index) => (
@@ -70,4 +88,17 @@ export default function FileExplorer() {
       ))}
     </div>
   );
+  // const { data: session, status } = useSession();
+
+  // if (status === "loading") return <p>Učitavanje sesije...</p>;
+  // if (!session) return <p>Nema sesije, korisnik nije ulogovan.</p>;
+
+  // return (
+  //   <div className="p-4">
+  //     <h2 className="font-bold mb-2">Podaci iz sesije:</h2>
+  //     <pre className="bg-gray-100 p-4 rounded text-sm">
+  //       {JSON.stringify(session, null, 2)}
+  //     </pre>
+  //   </div>
+  // );
 }

@@ -1,8 +1,7 @@
 import { connectMongoDB } from "../lib/mongodb";
-import User from "../models/user";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { AuthOptions, User } from "next-auth";
+import { AuthOptions } from "next-auth";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -34,7 +33,11 @@ export const authOptions: AuthOptions = {
         if (!user.verified)
           throw new Error("Email is not verified!");
 
-        return user;
+        return {
+          id: user._id,
+          email: user.email,
+          username: user.username,
+        };
       },
     }),
   ],
@@ -42,7 +45,27 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
     maxAge: 60 * 60 * 24, 
   },
+  callbacks: {
+    
+  async jwt({ token, user }) {
+    if (user) {
+      token.id = (user as any).id || (user as any)._id || token.id;
+      token.username = (user as any).username || token.username;
+    }
+    return token;
+  },
+
+  async session({ session, token }) {
+  if (token) {
+    (session.user as any).id = token.id as string;
+    (session.user as any).username = token.username as string;
+  }
+  return session;
+  },
+},
+
   secret: process.env.NEXTAUTH_SECRET,
+
   pages: {
     signIn: "/",
   },

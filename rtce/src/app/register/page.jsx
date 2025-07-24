@@ -6,7 +6,7 @@ import { authOptions } from "../../../lib/authOptions";
 export default async function Register() {
   const session = await getServerSession(authOptions);
 
-  if (session) redirect("/dashboard");
+  if (session) redirect("/editor");
 
   return <RegisterForm />;
 }

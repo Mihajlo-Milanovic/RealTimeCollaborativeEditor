@@ -14,6 +14,11 @@ directoryRouter.get('/getUsersDirectoriesStructured/',
     dc.getUsersDirectoriesStructured
 );
 
+directoryRouter.get('/getChildrenAndFilesForDirectory',
+    validation.validateId('dirId'),
+    dc.getChildrenAndFilesForDirectory
+);
+
 directoryRouter.get('/getFilesInDirectory',
     validation.validateId('dirId'),
     dc.getFilesInDirectory
