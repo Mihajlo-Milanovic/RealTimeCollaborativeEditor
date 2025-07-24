@@ -3,7 +3,6 @@ import { getUserWithUsername, getUserWithEmail } from "../../services/userServic
 import {IReaction} from "../../interfaces/IReaction";
 import { Types } from "mongoose";
 
-
 /**
  * Use in pair with <code>validate{Object}</code> to check if the 'id' is included
  * Field 'id' is needed for the update methods
@@ -12,6 +11,22 @@ import { Types } from "mongoose";
  */
 export function validateIdExistsInBody(idName: string){
     return validator.body(idName).exists();
+}
+
+export function validateEmail(){
+    return validator.query("email", "Field 'email' is required.")
+        .trim()
+        .isEmail().withMessage("E-mail format is incorrect.");
+}
+
+/**
+ * @experimental
+ */
+export function validateToken() {
+    return validator.query('verificationToken', "Field 'verificationToken' is missing.")
+    .trim()
+    //TODO: WHAT IS TOKEN?
+    // @Petrovic
 }
 
 /**
@@ -105,6 +120,7 @@ export function validateUser()  {
                 }
             },
             password: {
+                trim: true,
                 notEmpty: { errorMessage: "Password is required!" },
                 isLength: {
                     options: { min: 8 },
@@ -117,10 +133,6 @@ export function validateUser()  {
 }
 
 /**
- * This validation chain gives option to omit 'id' field.
- * If this function is used to validate request data for
- * update methods use it in pair with <code>validateIdExistsInBody</code>.
- *
  * @return
  * Validation chain for validating Comment from Body
  */
@@ -143,6 +155,10 @@ export function validateComment()  {
     );
 }
 
+/**
+ * @return
+ * Validation chain for validating Comment update from Body
+ */
 export function validateCommentUpdate()  {
     return validator.checkSchema(
         {
@@ -157,6 +173,10 @@ export function validateCommentUpdate()  {
     );
 }
 
+/**
+ * @return
+ * Validation chain for validating Reaction from Body
+ */
 export function validateReaction()  {
     return validator.checkSchema(
         {
@@ -171,6 +191,7 @@ export function validateReaction()  {
         ['body']
     );
 }
+
 /**
  *@return
  * Validation chain for validating children to be added to directory

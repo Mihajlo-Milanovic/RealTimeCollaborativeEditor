@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as us from "../services/userService";
-import {IUser} from "../interfaces/IUser";
+import {isIUser, IUser} from "../interfaces/IUser";
 import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
 import { matchedData } from "express-validator";
 
@@ -37,10 +37,14 @@ export async function getUserById(req: Request, res: Response) {
 }
 
 export async function getUserByEmail(req: Request, res: Response) {
-    try {
-        const email = req.query.email as string;
 
-        const user = await us.getUserWithEmail(email);
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const queryParams: { email: string } = matchedData(req);
+
+        const user = await us.getUserWithEmail(queryParams.email);
         if (user)
             res.status(200).json(user).end();
         else
@@ -53,10 +57,14 @@ export async function getUserByEmail(req: Request, res: Response) {
 }
 
 export async function getUserByVerificationToken(req: Request, res: Response) {
-    try {
-        const token = req.query.verificationToken as string;
 
-        const user = await us.getUserByVerificationToken(token);
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const queryParams: { token: string } = matchedData(req);
+
+        const user = await us.getUserByVerificationToken(queryParams.token);
         if (user)
             res.status(200).json(user).end();
         else
@@ -75,49 +83,44 @@ export async function createUser(req: Request, res: Response) {
     }
 
     try {
-        //console.log("telo: ", req.body);
-        //const bodyObj: IUser = matchedData(req);
+        const bodyObj: IUser = matchedData(req);
 
-        // ZA SAD !!!! ovako sam jer sam crko debagirajuci + se zurim, ce se dogovorimo
-        const result = await us.createNewUser(req.body);
+        const result = await us.createNewUser(bodyObj);
 
-        if (result instanceof Error) {
+        if (isIUser(result))
+            res.status(201).json(result).end();
+        else {
             console.log(result.message);
             res.status(403).json({message: result.message});
-            return;
         }
-
-        res.status(201).json(result).end();
     }
     catch (err) {
-        console.log((err as Error).message);
+        console.log(err);
         res.status(500).send("Internal server error occurred.").end();
     }
 }
 
 export async function verifyUser(req: Request, res: Response) {
-  try {
-    const token = req.query.verificationToken as string;
 
-    if (!token) { 
-      res.status(400).send("Verification token is required.");
-      return;
+    if (checkForValidationErrors(req, res)) {
+        return;
     }
 
-    const user = await us.verifyUser(token);
+    try {
+        const queryParams: { verificationToken: string } = matchedData(req);
 
-    if (!user) {
-      res.status(404).send("Invalid or expired token.");
-      return;
+        const user = await us.verifyUser(queryParams.verificationToken);
+
+        if (user)
+            res.status(200).json({ message: "User verified successfully.", user }).end();
+        else
+            res.status(404).send("Invalid or expired token.").end();
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
     }
-
-    res.status(200).json({ message: "User verified successfully.", user });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal server error.");
-  }
 }
-
 
 export async function deleteUserWithId(req: Request, res: Response) {
 

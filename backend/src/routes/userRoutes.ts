@@ -14,20 +14,22 @@ userRouter.get('/getUser',
 );
 
 userRouter.get('/getUserByEmail',
+    validation.validateEmail(),
     uc.getUserByEmail
 );
 
 userRouter.get('/getUserByVerificationToken',
+    validation.validateToken(),
     uc.getUserByVerificationToken
 );
 
 userRouter.post('/createUser',
-    // !!! za sad
-    //validation.validateUser(),
+    validation.validateUser(),
     uc.createUser
 );
 
-userRouter.get('/verifyUser',
+userRouter.post('/verifyUser',
+    validation.validateToken(),
     uc.verifyUser
 );
 

@@ -25,44 +25,43 @@ export async function getUserByVerificationToken(verificationToken: string): Pro
     return User.findOne({verificationToken: verificationToken});
 }
 
-export async function createNewUser(userData: IUser): Promise<IUser | Error> {
+export async function createNewUser(user: IUser): Promise<IUser | Error> {
 
-    console.log("userData:", userData);
-
-    const userE = await getUserWithEmail(userData.email);
-    if (userE != null)
+    let usr = await getUserWithEmail(user.email);
+    if (usr)
         return new Error("User with this email already exists!");
 
-    const userN = await getUserWithUsername(userData.username);
-    if (userN != null)
+    usr = await getUserWithUsername(user.username);
+    if (usr)
         return new Error("User with this username already exists!");
 
-  const hashedPassword = await bcrypt.hash(userData.password, 10);
-  const verificationToken = crypto.randomBytes(32).toString("hex");
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const verificationToken = crypto.randomBytes(32).toString("hex");
 
-  const newUser = await User.create({
-    ...userData,
-    password: hashedPassword,
-    verificationToken: verificationToken,
-    verified: false,
-  });
+    const newUser = await User.create({
+        username: user.username,
+        email: user.email,
+        password: hashedPassword,
+        verificationToken: verificationToken,
+        verified: false,
+    });
 
-  await sendVerificationEmail(newUser.email, verificationToken);
+    await sendVerificationEmail(newUser.email, verificationToken);
 
-  return newUser;
+    return newUser;
 }
 
 export async function verifyUser(verificationToken: string): Promise<IUser | null> {
-  const user = await User.findOne({ verificationToken: verificationToken });
 
-  if (!user) 
-    return null;
+    const user: IUser | null = await User.findOne({ verificationToken: verificationToken });
 
-  user.verified = true;
-  user.verificationToken = undefined;
+    if (user){
+        user.verified = true;
+        user.verificationToken = undefined;
+        await user.save();
+    }
 
-  await user.save();
-  return user;
+    return user;
 }
 
 export async function deleteUserWithId(uuid: string) {

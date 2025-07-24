@@ -43,6 +43,7 @@ export async function getUsersDirectoriesStructured (req: Request, res: Response
         res.status(500).send("Internal server error occurred.").end();
     }
 }
+
 export async function getChildrenAndFilesForDirectory(req: Request, res: Response) {
 
     if (checkForValidationErrors(req, res))

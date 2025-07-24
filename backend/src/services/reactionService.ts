@@ -29,7 +29,8 @@ export async function createNewReaction(reaction: SimpleReaction): Promise<IReac
     return newReaction;
 }
 
-export async function updateReaction(reaction: IReaction): Promise<IReaction | null> {
+export async function updateReaction(reaction: IReaction, newReactionType: string): Promise<IReaction | null> {
+    reaction.reactionType = newReactionType;
     return Reaction.findByIdAndUpdate(reaction._id, reaction, {new: true}).exec();
 }
 
