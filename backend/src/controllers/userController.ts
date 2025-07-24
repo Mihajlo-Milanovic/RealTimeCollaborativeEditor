@@ -70,9 +70,9 @@ export async function getUserByVerificationToken(req: Request, res: Response) {
 
 export async function createUser(req: Request, res: Response) {
 
-    // if (checkForValidationErrors(req, res)) {
-    //     return;
-    // }
+    if (checkForValidationErrors(req, res)) {
+        return;
+    }
 
     try {
         //console.log("telo: ", req.body);

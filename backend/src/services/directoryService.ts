@@ -15,6 +15,15 @@ export async function getDirectoriesByOwnerId (ownerId: string): Promise<Array<I
         return null;
 }
 
+export async function getChildrenAndFilesForDirectory(dirId: string): Promise<IDirectory | null> {
+    
+    const dir: IDirectory | null = await Directory.findById(dirId).populate(['files', 'children']);
+    
+    if (dir) 
+        return dir;
+    return null;
+}
+
 export async function getDirectoriesStructured (ownerId: string): Promise<Array<IDirectory> | null> {
 
     const owner: IUser | null = await User.findById(ownerId);
@@ -23,7 +32,7 @@ export async function getDirectoriesStructured (ownerId: string): Promise<Array<
         const dirs: Array<IDirectory> = await Directory.find({
             owner: ownerId,
             parent: null
-        })
+        });
 
         await populateChildrenIterative(dirs);
         // await populateChildrenRecursive(dirs);

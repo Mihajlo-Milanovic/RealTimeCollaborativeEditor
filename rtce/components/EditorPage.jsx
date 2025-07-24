@@ -4,10 +4,19 @@ import FileExplorer from "../components/file-explorer/FileExplorer"
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import {UIUser} from "../models/user"
 
 export default function EditorPage() {
   const { data: session } = useSession();
+  console.log(session);
   const router = useRouter();
+
+  const handleLogout = async () => {
+    UIUser.getInstance().reset();
+    await signOut({ redirect: false });  // da se ne desi automatski redirect
+    router.push("/");
+    console.log("Logout clicked");
+  };
 
   return (
     <div className="flex h-screen">
@@ -24,11 +33,7 @@ export default function EditorPage() {
       <div className="w-[8%] p-2 flex flex-col">
         <div className="mt-[60px]">
           <button
-            onClick={() => {
-              signOut();
-              router.push("/");
-              console.log("Logout clicked");
-            }}
+            onClick={handleLogout}
             className="
               min-w-[100px]
               flex-shrink-0
