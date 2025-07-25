@@ -36,30 +36,28 @@ export default function RegisterForm() {
     }
 
     try {
-      // const resUserExists = await fetch("http://localhost:5000/" + "user/getUser", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ email }),
-      // });
 
-      // const { user } = await resUserExists.json();
-
-      // if (user) {
-      //   setError("Korisnik sa ovim mailom već postoji!");
-      //   setIsLoading(false);
-      //   return;
-      // }
       const data = {
           username: name,
           email,
           password,
-        };
+      };
+      
       const res = await postRequest("user/createUser", data);
-      const ans = await res.json();
+      const ansUser = await res.json();
 
-      if (res.ok) {
+      const rootDirData = {
+        name: ansUser.username + "'s " + "root directory",
+        owner: ansUser._id,
+        children: [],
+        files: [],
+        collaborators: []
+      };
+
+      const userRootDirectory = await postRequest("directory/createDirectory", rootDirData);
+      const ansRootDir = await res.json();
+
+      if (res.ok && userRootDirectory.ok) {
         console.log("Registracija uspela.");
         const form = e.target;
         form.reset();
@@ -67,7 +65,7 @@ export default function RegisterForm() {
       } else {
         console.log("Registracija nije uspela.");
         setIsLoading(false);
-        setError(ans.message);
+        setError(ansUser.message + ansRootDir.message);
       }
     } catch (error) {
       console.log("Greška prilikom registracije: ", error);

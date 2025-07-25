@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as us from "../services/userService";
+import { createDirectory } from "../services/directoryService";
 import {isIUser, IUser} from "../interfaces/IUser";
 import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
 import { matchedData } from "express-validator";

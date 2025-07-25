@@ -20,12 +20,12 @@ export default function EditorPage() {
 
   return (
     <div className="flex h-screen">
-      <div className="w-[20%] bg-transparent"  >  
+      <div className="w-[25%] bg-transparent"  >  
         <FileExplorer/>
       </div>
 
       {/* Srednji deo sa editorom (80%) */}
-      <div className="w-[72%] flex flex-col">
+      <div className="w-[67%] flex flex-col">
         <SimpleEditor />
       </div>
 
