@@ -28,6 +28,11 @@ directoryRouter.get('/getChildrenAndFilesForDirectory',
     dc.getChildrenAndFilesForDirectory
 );
 
+directoryRouter.get('/getUserRootDirectory',
+    validation.validateId('uuid'),
+    dc.getUserRootDirectory
+);
+
 directoryRouter.get('/getFilesInDirectory',
     validation.validateId('dirId'),
     dc.getFilesInDirectory

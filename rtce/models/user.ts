@@ -1,5 +1,5 @@
-export class UIUser {
-  private static instance: UIUser;
+export class UserView {
+  private static instance: UserView;
   
   id: string | null = null;
   email: string | null = null;
@@ -7,11 +7,11 @@ export class UIUser {
 
   private constructor() {}
 
-  static getInstance(): UIUser {
-    if (!UIUser.instance) {
-      UIUser.instance = new UIUser();
+  static getInstance(): UserView {
+    if (!UserView.instance) {
+      UserView.instance = new UserView();
     }
-    return UIUser.instance;
+    return UserView.instance;
   }
 
   fillFromSession(sessionUser: any) {
@@ -31,4 +31,4 @@ export class UIUser {
   }
 }
 
-export default UIUser;
+export default UserView;

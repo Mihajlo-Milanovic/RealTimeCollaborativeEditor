@@ -1,10 +1,10 @@
 'use client';
 import { SimpleEditor } from "../src/components/tiptap-templates/simple/simple-editor";
-import FileExplorer from "../components/file-explorer/FileExplorer"
+import FileExplorer from "../components/file-explorer/FileExplorer.tsx"
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import {UIUser} from "../models/user"
+import {UserView} from "../models/user"
 
 export default function EditorPage() {
   const { data: session } = useSession();
@@ -12,7 +12,7 @@ export default function EditorPage() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    UIUser.getInstance().reset();
+    UserView.getInstance().reset();
     await signOut({ redirect: false });  // da se ne desi automatski redirect
     router.push("/");
     console.log("Logout clicked");

@@ -24,6 +24,10 @@ export async function getChildrenAndFilesForDirectory(dirId: string): Promise<ID
     return null;
 }
 
+export async function getUserRootDirectory(ownerId: string): Promise<IDirectory | null> {
+    return Directory.findOne({ owner: ownerId, parent: null });
+}
+
 export async function getDirectoriesStructured (ownerId: string): Promise<Array<IDirectory> | null> {
 
     const owner: IUser | null = await User.findById(ownerId);

@@ -1,6 +1,6 @@
 const server_address = "http://localhost:5000"// process.env.SERVER_ADDRESS
 
-export async function getRequestSingle(method_route: string, param: string, param_value: string) {
+export async function getRequestSingle(method_route: string, param: string, param_value: string | null) {
     method_route = method_route.trim();
     param = param.trim();
     const url = server_address + "/" + method_route + "?" + param + "=" + param_value;
