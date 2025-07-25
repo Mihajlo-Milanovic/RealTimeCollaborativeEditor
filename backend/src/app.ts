@@ -29,9 +29,9 @@ app.use("/file", fileRouter);
 app.use("/comment", commentRouter);
 app.use("/reaction", reactionRouter);
 
-app.get('/',
+app.all('/',
     (req: express.Request, res: express.Response) => {
-        res.send('Collaborative Editor Backend is running');
+        res.send('Collaborative Editor Backend is running...').end();
     }
 );
 

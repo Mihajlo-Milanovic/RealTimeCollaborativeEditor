@@ -1,9 +1,18 @@
-import express from "express";
+import {Request, Response, Router} from "express";
 import * as uc from "../controllers/userController";
 import * as validation from "../middlewares/validation/httpRequestValidation";
 
+export const userRouter = Router();
 
-export const userRouter = express.Router();
+userRouter.all('/',
+    (req: Request, res: Response) => {
+
+    const routes: Array<string> = userRouter.stack.map(({route}) =>
+        `[${[...new Set(route?.stack?.map(entry => entry.method))]}] ${route?.path}`
+    );
+    res.json(routes).end();
+});
+
 
 
 userRouter.get('/getUsers', uc.getUsers);
