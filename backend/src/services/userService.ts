@@ -55,6 +55,9 @@ export async function verifyUser(verificationToken: string): Promise<IUser | nul
 
     const user: IUser | null = await User.findOne({ verificationToken: verificationToken });
 
+    console.log(verificationToken);
+    console.log(user);
+
     if (user){
         user.verified = true;
         user.verificationToken = undefined;

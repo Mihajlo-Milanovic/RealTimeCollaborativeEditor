@@ -19,14 +19,12 @@ export function validateEmail(){
         .isEmail().withMessage("E-mail format is incorrect.");
 }
 
-/**
- * @experimental
- */
 export function validateToken() {
-    return validator.query('verificationToken', "Field 'verificationToken' is missing.")
+  return validator.query("verificationToken", "Field 'verificationToken' is missing or invalid.")
     .trim()
-    //TODO: WHAT IS TOKEN?
-    // @Petrovic
+    .isLength({ min: 64, max: 64 })
+    .isHexadecimal()
+    .withMessage("Token must be a 64-character hexadecimal string.");
 }
 
 /**

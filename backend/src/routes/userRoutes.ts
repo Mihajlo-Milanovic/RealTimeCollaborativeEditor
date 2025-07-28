@@ -32,15 +32,16 @@ userRouter.get('/getUserByVerificationToken',
     uc.getUserByVerificationToken
 );
 
+userRouter.get('/verifyUser',
+    validation.validateToken(),
+    uc.verifyUser
+);
+
 userRouter.post('/createUser',
     validation.validateUser(),
     uc.createUser
 );
 
-userRouter.post('/verifyUser',
-    validation.validateToken(),
-    uc.verifyUser
-);
 
 userRouter.delete('/deleteUser',
     validation.validateId('uuid'),

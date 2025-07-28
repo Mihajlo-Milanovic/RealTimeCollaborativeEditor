@@ -8,15 +8,15 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import {getRequestSingle} from "../src/app/api/serverRequests/methods"
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const [showSendEmailLink, setShowSendEmailLink] = useState(false);
-  const [emailToVerify, setEmailToVerify] = useState("");
+  const [showSendEmailLink, setShowSendEmailLink] = useState<boolean>(false);
+  const [emailToVerify, setEmailToVerify] = useState<string>("");
 
   const router = useRouter();
 
@@ -25,7 +25,7 @@ export default function LoginForm() {
   //   router.prefetch("/register");
   // },[]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
@@ -62,7 +62,7 @@ export default function LoginForm() {
     }
   };
 
-  const handleResendVerification = (e) => {
+  const handleResendVerification = (e: React.MouseEvent<HTMLButtonElement>) => {
     // TODO 
 
     //e.preventDefault();

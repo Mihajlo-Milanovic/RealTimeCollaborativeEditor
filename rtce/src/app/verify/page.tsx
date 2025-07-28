@@ -37,6 +37,7 @@ export default function VerifyPage() {
         if (verifyRes.ok) {
           router.push("/verify/success");
         } else {
+          console.log("OPREMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
           setError("Došlo je do greške prilikom verifikacije.");
         }
       } catch (e) {

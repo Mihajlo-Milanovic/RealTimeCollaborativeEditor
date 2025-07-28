@@ -19,7 +19,7 @@ export default function RegisterForm() {
 
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -59,7 +59,7 @@ export default function RegisterForm() {
 
       if (res.ok && userRootDirectory.ok) {
         console.log("Registracija uspela.");
-        const form = e.target;
+        const form = e.target as HTMLFormElement;
         form.reset();
         router.push("/");
       } else {

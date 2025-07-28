@@ -63,9 +63,11 @@ export async function getUserByVerificationToken(req: Request, res: Response) {
         return;
 
     try {
-        const queryParams: { token: string } = matchedData(req);
+        // const queryParams: { token: string } = matchedData(req); ovom linijom mi daje undefined za token!
+        const verificationToken = req.query.verificationToken as string;
+        //console.log("Token je: ", verificationToken);
 
-        const user = await us.getUserByVerificationToken(queryParams.token);
+        const user = await us.getUserByVerificationToken(verificationToken);
         if (user)
             res.status(200).json(user).end();
         else
@@ -108,9 +110,10 @@ export async function verifyUser(req: Request, res: Response) {
     }
 
     try {
-        const queryParams: { verificationToken: string } = matchedData(req);
+        //const queryParams: { verificationToken: string } = matchedData(req); ovom linijom mi daje undefined za token!
+        const verificationToken = req.query.verificationToken as string;
 
-        const user = await us.verifyUser(queryParams.verificationToken);
+        const user = await us.verifyUser(verificationToken);
 
         if (user)
             res.status(200).json({ message: "User verified successfully.", user }).end();
