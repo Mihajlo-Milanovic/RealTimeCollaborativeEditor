@@ -44,14 +44,14 @@ export async function getUsersDirectoriesStructured (req: Request, res: Response
     }
 }
 
-export async function getChildrenAndFilesForDirectory(req: Request, res: Response) {
+export async function getDirectoryWithChildrenAndFiles(req: Request, res: Response) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
         const queryParams = matchedData(req);
-        const dir: IDirectory | null = await ds.getChildrenAndFilesForDirectory(queryParams.dirId);
+        const dir: IDirectory | null = await ds.getDirectoryWithChildrenAndFiles(queryParams.dirId);
         if (dir)
             res.status(200).json(dir).end();
         else

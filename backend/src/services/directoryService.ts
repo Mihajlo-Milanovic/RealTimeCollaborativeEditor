@@ -15,13 +15,9 @@ export async function getDirectoriesByOwnerId (ownerId: string): Promise<Array<I
         return null;
 }
 
-export async function getChildrenAndFilesForDirectory(dirId: string): Promise<IDirectory | null> {
-    
-    const dir: IDirectory | null = await Directory.findById(dirId).populate(['files', 'children']);
-    
-    if (dir) 
-        return dir;
-    return null;
+export async function getDirectoryWithChildrenAndFiles(dirId: string): Promise<IDirectory | null> {
+
+    return await Directory.findById(dirId).populate(['files', 'children']).exec();
 }
 
 export async function getUserRootDirectory(ownerId: string): Promise<IDirectory | null> {

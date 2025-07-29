@@ -25,7 +25,7 @@ directoryRouter.get('/getUsersDirectoriesStructured/',
 
 directoryRouter.get('/getChildrenAndFilesForDirectory',
     validation.validateId('dirId'),
-    dc.getChildrenAndFilesForDirectory
+    dc.getDirectoryWithChildrenAndFiles
 );
 
 directoryRouter.get('/getUserRootDirectory',

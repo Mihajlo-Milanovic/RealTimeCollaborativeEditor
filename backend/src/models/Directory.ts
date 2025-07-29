@@ -11,11 +11,10 @@ const DirectorySchema: Schema<IDirectory> = new Schema({
         ref: 'User',
         required: true
     },
-    parent: {
+    parents: [{
         type: SchemaTypes.ObjectId,
         ref: 'Directory',
-        default: null
-    },
+    }],
     children: [{
         type: SchemaTypes.ObjectId,
         ref: 'Directory',
