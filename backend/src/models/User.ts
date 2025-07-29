@@ -14,9 +14,17 @@ const UserSchema: Schema<IUser> = new Schema({
         unique: true,
         isEmail: true,
     },
-    // avatar: {
-    //     type: SchemaTypes.String
-    // },
+    password: {
+      type: String,
+      required: true,
+    },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
 }, { timestamps: true });
 
 export default model<IUser>('User', UserSchema);

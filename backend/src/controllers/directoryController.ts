@@ -44,6 +44,43 @@ export async function getUsersDirectoriesStructured (req: Request, res: Response
     }
 }
 
+export async function getChildrenAndFilesForDirectory(req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const queryParams = matchedData(req);
+        const dir: IDirectory | null = await ds.getChildrenAndFilesForDirectory(queryParams.dirId);
+        if (dir)
+            res.status(200).json(dir).end();
+        else
+            res.status(404).send("Specified directory could not be found.").end();
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }  
+}
+
+export async function getUserRootDirectory(req: Request, res: Response) {
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const queryParams = matchedData(req);
+        const dir = await ds.getUserRootDirectory(queryParams.uuid);
+
+        if (dir)
+            res.status(200).json(dir).end();
+        else
+            res.status(404).send("Root directory not found.").end();
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
 export async function getFilesInDirectory(req: Request, res: Response) {
 
     if (checkForValidationErrors(req, res))
@@ -80,7 +117,6 @@ export async function createDirectory (req: Request, res: Response) {
         console.error(err);
         res.status(500).send("Internal server error occurred.").end();
     }
-
 }
 
 export async function addChildrenByIds (req: Request, res: Response) {

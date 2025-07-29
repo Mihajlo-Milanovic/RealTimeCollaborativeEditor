@@ -1,26 +1,36 @@
 {
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
-    "mongoose": "^8.16.1"
+    "mongoose": "^8.16.1",
+    "nodemailer": "^7.0.5"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^24.0.7",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
-    "typescript-svelte-plugin": "^0.3.48"
+    "@types/nodemailer": "^6.4.17",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "name": "backend",
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
-    "dev": "tsx watch src/app.ts",
+    "dev": "nodemon",
     "build": "tsc",
     "test-db": "npx ts-node src/dbTests.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:dev": "nodemon",
+    "docker-build:dev": "docker build -t img-rtce-backend-dev -f dev.Dockerfile .",
+    "docker-run:dev": "docker run --rm -it -p 5000:5000 --name rtce-backend-dev -v .:/app -v container_node_modules:/app/node_modules img-rtce-backend-dev",
+    "start": "node ./dist/app.js",
+    "docker-build": "docker build -t img-rtce-backend -f prod.Dockerfile .",
+    "docker-run": "docker run --rm -it -p 5000:5000 --name rtce-backend img-rtce-backend"
   },
   "keywords": [],
   "author": "",

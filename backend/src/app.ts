@@ -8,9 +8,16 @@ import {directoryRouter} from "./routes/directoryRoutes";
 import {fileRouter} from "./routes/fileRoutes";
 import {commentRouter} from "./routes/commentRoutes";
 import {reactionRouter} from "./routes/reactionRoutes";
+import cors from "cors";
 
 
 const app = express();
+
+app.use(cors({
+  origin: "*", // "*" za sve domene
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type"]
+}));
 
 app.use(express.json());
 app.use(logger);
@@ -24,7 +31,7 @@ app.use("/reaction", reactionRouter);
 
 app.get('/',
     (req: express.Request, res: express.Response) => {
-        res.send('Collaborative Editor Backend is running');
+        res.send('Collaborative Editor Backend is running...').end();
     }
 );
 

@@ -11,3 +11,10 @@ export type SimpleReaction = {
     reactionType: string;
     reactor: string;
 }
+
+export function isSimpleReaction(obj:any): obj is SimpleReaction {
+    return typeof obj === "object" && obj !== null &&
+        "comment" in obj && typeof obj.comment === "string" &&
+        "reactionType" in obj && typeof obj.reactionType === "string" &&
+        "reactor" in obj && typeof obj.reactor === "string";
+}

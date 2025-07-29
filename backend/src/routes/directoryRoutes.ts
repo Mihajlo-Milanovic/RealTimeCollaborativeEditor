@@ -1,8 +1,17 @@
-import { Router } from "express";
+import {Request, Response, Router} from "express";
 import * as dc from "../controllers/directoryController";
 import * as validation from "../middlewares/validation/httpRequestValidation";
 
 export const directoryRouter = Router();
+
+directoryRouter.all('/',
+    (req: Request, res: Response) => {
+
+        const routes: Array<string> = directoryRouter.stack.map(({route}) =>
+            `[${[...new Set(route?.stack?.map(entry => entry.method))]}] ${route?.path}`
+        );
+        res.json(routes).end();
+    });
 
 directoryRouter.get('/getUsersDirectories/',
     validation.validateId('uuid'),
@@ -12,6 +21,16 @@ directoryRouter.get('/getUsersDirectories/',
 directoryRouter.get('/getUsersDirectoriesStructured/',
     validation.validateId('uuid'),
     dc.getUsersDirectoriesStructured
+);
+
+directoryRouter.get('/getChildrenAndFilesForDirectory',
+    validation.validateId('dirId'),
+    dc.getChildrenAndFilesForDirectory
+);
+
+directoryRouter.get('/getUserRootDirectory',
+    validation.validateId('uuid'),
+    dc.getUserRootDirectory
 );
 
 directoryRouter.get('/getFilesInDirectory',

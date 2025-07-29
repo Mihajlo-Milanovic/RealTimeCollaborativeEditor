@@ -1,7 +1,14 @@
 import mongoose from 'mongoose';
 import { mongoURI } from "./config";
 
+let isConnected = false;
+
 export const connectDB = async () => {
+    if (isConnected) {
+        console.log("There is already an existing MongoDB connection!");
+        return;
+    }
+
     try {
         await mongoose.connect(mongoURI);
         console.log('MongoDB connected');
@@ -9,8 +16,12 @@ export const connectDB = async () => {
         console.error('Mongo connection error:', err);
         process.exit(1);
     }
+    
 };
 
 export const disconnectDB = async () => {
+    if (!isConnected)
+        return;
     await mongoose.disconnect();
+    console.log("MongoDB connection closed successfully!");
 }
