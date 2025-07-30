@@ -6,7 +6,7 @@ const OrganizationSchema: Schema<IOrganization> = new Schema({
         type: SchemaTypes.String,
         required: true
     },
-    creator: {
+    organizer: {
         type: SchemaTypes.ObjectId,
         ref: 'User',
         required: true
@@ -15,7 +15,11 @@ const OrganizationSchema: Schema<IOrganization> = new Schema({
         type: SchemaTypes.ObjectId,
         ref: 'Directory',
     }],
-    collaborators: [{
+    files: [{
+        type: SchemaTypes.ObjectId,
+        ref: 'File',
+    }],
+    members: [{
         type: SchemaTypes.ObjectId,
         ref: 'User',
     }],
