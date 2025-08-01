@@ -1,6 +1,6 @@
 import * as validator from 'express-validator';
 import { getUserWithUsername, getUserWithEmail } from "../../services/userService";
-import {IReaction} from "../../interfaces/IReaction";
+import {IReaction} from "../../data/interfaces/IReaction";
 import { Types } from "mongoose";
 
 /**

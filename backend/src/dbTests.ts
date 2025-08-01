@@ -1,11 +1,11 @@
-import User from './models/User';
-import File from './models/File';
-import Directory from './models/Directory';
+import User from './data/models/User';
+import File from './data/models/File';
+import Directory from './data/models/Directory';
 import {Document, Model, Types} from "mongoose";
 import {connectDB, disconnectDB} from './config/db';
-import {IDirectory} from "./interfaces/IDirectory";
-import {IFile} from "./interfaces/IFile";
-import {IUser} from "./interfaces/IUser";
+import {IDirectory} from "./data/interfaces/IDirectory";
+import {IFile} from "./data/interfaces/IFile";
+import {IUser} from "./data/interfaces/IUser";
 
 const populate = async () => {
     await connectDB();

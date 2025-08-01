@@ -1,4 +1,4 @@
-import {IFile} from "../interfaces/IFile";
+import {IFile} from "../data/interfaces/IFile";
 import * as fs from "../services/fileService";
 
 

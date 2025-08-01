@@ -1,11 +1,11 @@
-import Comment from "../models/Comment";
-import File from "../models/File";
-import User from "../models/User";
-import {IFile} from "../interfaces/IFile";
-import {IComment, SimpleComment} from "../interfaces/IComment";
-import {IUser} from "../interfaces/IUser";
-import {IReaction} from "../interfaces/IReaction";
-import Reaction from "../models/Reaction";
+import Comment from "../data/models/Comment";
+import File from "../data/models/File";
+import User from "../data/models/User";
+import {IFile} from "../data/interfaces/IFile";
+import {IComment, SimpleComment} from "../data/interfaces/IComment";
+import {IUser} from "../data/interfaces/IUser";
+import {IReaction} from "../data/interfaces/IReaction";
+import Reaction from "../data/models/Reaction";
 
 export async function getCommentById(commentId: string): Promise<IComment | null> {
 

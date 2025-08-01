@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {IComment, SimpleComment} from "../interfaces/IComment";
+import {IComment, SimpleComment} from "../data/interfaces/IComment";
 import * as cs from "../services/commentService";
 import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
 import {matchedData} from "express-validator";

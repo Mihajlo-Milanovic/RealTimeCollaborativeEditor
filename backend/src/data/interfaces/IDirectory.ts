@@ -20,6 +20,40 @@ export type SimpleDirectory = {
     collaborators: Array<string>;
 }
 
+export function isIDirectory(obj:any): obj is IDirectory {
+    if(typeof obj === "object" && obj !== null &&
+        "name" in obj && typeof obj.name === "string" &&
+        "owner" in obj && typeof obj.owner === typeof Types.ObjectId &&
+        "parents" in obj && Array.isArray(obj.parent) &&
+        "children" in obj && Array.isArray(obj.children) &&
+        "files" in obj && Array.isArray(obj.files) &&
+        "collaborators" in obj && Array.isArray(obj.collaborators)
+    ) {
+        for (const parent of obj.parents) {
+            if (typeof parent !== typeof Types.ObjectId)
+                return false;
+        }
+
+        for (const child of obj.children) {
+            if (typeof child !== typeof Types.ObjectId)
+                return false;
+        }
+
+        for (const file of obj.files) {
+            if (typeof file !== typeof Types.ObjectId)
+                return false;
+        }
+
+        for (const collaborator of obj.collaborators) {
+            if (typeof collaborator !== typeof Types.ObjectId)
+                return false;
+        }
+
+        return true;
+    }
+    return false;
+}
+
 export function isSimpleDirectory(obj:any): obj is SimpleDirectory {
     if(typeof obj === "object" && obj !== null &&
         "name" in obj && typeof obj.name === "string" &&
@@ -52,6 +86,4 @@ export function isSimpleDirectory(obj:any): obj is SimpleDirectory {
         return true;
     }
     return false;
-
-
 }

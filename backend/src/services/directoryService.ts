@@ -1,10 +1,10 @@
-import Directory from "../models/Directory";
-import File from "../models/File";
-import User from "../models/User";
-import {IDirectory} from "../interfaces/IDirectory";
+import Directory from "../data/models/Directory";
+import File from "../data/models/File";
+import User from "../data/models/User";
+import {IDirectory} from "../data/interfaces/IDirectory";
 import {Types} from "mongoose"
-import {IFile} from "../interfaces/IFile";
-import {IUser} from "../interfaces/IUser";
+import {IFile} from "../data/interfaces/IFile";
+import {IUser} from "../data/interfaces/IUser";
 
 export async function getDirectoriesByOwnerId (ownerId: string): Promise<Array<IDirectory> | null> {
 
@@ -93,17 +93,18 @@ export async function createDirectory (directory: IDirectory): Promise<IDirector
 
     let newDirectory: IDirectory | null = null;
 
-    if(directory.parent) {
-        const parentDirectory: IDirectory | null = await Directory.findById(directory.parent);
+    newDirectory = await Directory.create(directory);
 
-        if (parentDirectory != null) {
-            newDirectory = await Directory.create(directory);
-            parentDirectory.children.push(newDirectory._id as Types.ObjectId)
-            await parentDirectory.save()
+    if(directory.parents.length > 0) {
+        for(const parentId of directory.parents) {
+
+            const parentDirectory: IDirectory | null = await Directory.findById(parentId);
+
+            if (parentDirectory != null) {
+                parentDirectory.children.push(newDirectory._id as Types.ObjectId)
+                await parentDirectory.save()
+            }
         }
-    }
-    else {
-        newDirectory = await Directory.create(directory);
     }
 
     return newDirectory;
@@ -189,20 +190,20 @@ export async function deleteDirectory (directoryId: string) {
 
     const dir: IDirectory | null = await Directory.findById(directoryId).populate(['children', 'parent']).exec();
 
+    const numberOfDeletions = new NumberOfDeletions();
+
     if (dir == null)
-        return;
+        return numberOfDeletions;
 
-    if(dir.parent != null && dir.populated('parent')){
+    if(dir.parents.length != 0 && dir.populated('parent')){
 
-        const dirParent = dir.parent as unknown as IDirectory;
+        for(const p of dir.parents){
+            const parentDir = p as unknown as IDirectory;
 
-        const dirIndex: number = dirParent.children.findIndex(child => child == dir._id);
-        dirParent.children.splice(1, dirIndex);
-        await dirParent.save();
+            parentDir.children = parentDir.children.filter(child => child != dir._id);
+            await parentDir.save();
+        }
     }
-
-    let filesDeleted = 0;
-    let directoriesDeleted = 0;
 
     if (dir.populated('children')) {
 
@@ -215,23 +216,22 @@ export async function deleteDirectory (directoryId: string) {
             if (d == undefined)
                 continue;
 
-            await d.populate(['children','files']);
-
-            if (d.populated('files') && d.files.length > 0){
+            if (d.files.length > 0){
                 for (const file of d.files) {
                     await File.findByIdAndDelete(file._id);
-                    filesDeleted++;
+                    numberOfDeletions.filesDeleted++;
                 }
             }
 
-            if (d.populated('children')) {
+            await d.populate('children');
+            if (d.children.length > 0 && d.populated('children')) {
                 forDeletion.push(...d.children as unknown as Array<IDirectory>);
             }
 
             await Directory.findByIdAndDelete(d._id);
-            directoriesDeleted++;
+            numberOfDeletions.directoriesDeleted++;
         }
     }
 
-    return { directoriesDeleted, filesDeleted };
+    return numberOfDeletions;
 }

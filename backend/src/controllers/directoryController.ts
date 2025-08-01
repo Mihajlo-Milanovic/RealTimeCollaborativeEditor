@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import * as ds from "../services/directoryService";
-import {IFile} from "../interfaces/IFile";
+import {IFile} from "../data/interfaces/IFile";
 import { matchedData } from "express-validator";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
-import {IDirectory} from "../interfaces/IDirectory";
+import {IDirectory} from "../data/interfaces/IDirectory";
 
 
 export async function getUsersDirectories (req: Request, res: Response) {

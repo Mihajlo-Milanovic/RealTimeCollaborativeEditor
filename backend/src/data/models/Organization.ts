@@ -23,6 +23,10 @@ const OrganizationSchema: Schema<IOrganization> = new Schema({
         type: SchemaTypes.ObjectId,
         ref: 'User',
     }],
+    projections: [{
+        type: SchemaTypes.ObjectId,
+        ref: 'Directory',
+    }]
 }, { timestamps: true });
 
 export default model<IOrganization>('Organization', OrganizationSchema);

@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
 import {matchedData} from "express-validator";
 import * as rs from "../services/reactionService";
-import { SimpleReaction } from "../interfaces/IReaction";
+import { SimpleReaction } from "../data/interfaces/IReaction";
 
 
 export async function getAllReactionsForComment(req: Request, res: Response) {

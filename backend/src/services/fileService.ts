@@ -1,8 +1,8 @@
-import File from "../models/File"
-import Directory from "../models/Directory";
+import File from "../data/models/File"
+import Directory from "../data/models/Directory";
 import { Types } from "mongoose"
-import {IFile} from "../interfaces/IFile";
-import {IDirectory} from "../interfaces/IDirectory";
+import {IFile} from "../data/interfaces/IFile";
+import {IDirectory} from "../data/interfaces/IDirectory";
 
 export async function getFileById(fileId: string): Promise<IFile | null> {
     return File.findById(fileId);
@@ -16,8 +16,10 @@ export async function createFile (file: IFile): Promise<IFile | null> {
 
     if (dir) {
         newFile = await File.create(file);
-        dir.files.push(newFile._id as Types.ObjectId);
-        await dir.save();
+        if (newFile) {
+            dir.files.push(newFile._id as Types.ObjectId);
+            await dir.save();
+        }
     }
     return newFile;
 }

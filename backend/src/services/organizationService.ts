@@ -1,232 +1,132 @@
+import {IOrganization, OverrideType, SimpleOrganization} from "../data/interfaces/IOrganization";
+import Organization from "../data/models/Organization";
+import { Types } from "mongoose";
+import { deleteFile } from "./fileService"
+import {deleteDirectory} from "./directoryService";
+import {IDirectory, isIDirectory} from "../data/interfaces/IDirectory";
 
 
+export async function getOrganizationByName (orgName: string): Promise<Array<IOrganization> | null> {
 
-export async function getDirectoriesByOwnerId (ownerId: string): Promise<Array<IDirectory> | null> {
-
-    const owner: IUser | null = await User.findById(ownerId);
-    if (owner)
-        return Directory.find({ owner: ownerId });
-    else
-        return null;
+    return Organization.findOne({name: orgName});
 }
 
-export async function getDirectoryWithChildrenAndFiles(dirId: string): Promise<IDirectory | null> {
+export async function getOrganizationPopulated(orgId: string): Promise<IOrganization | null> {
 
-    return await Directory.findById(dirId).populate(['files', 'children']).exec();
+    return await Organization.findById(orgId).populate(['files', 'children', 'members', 'organizer']).exec();
 }
 
-export async function getUserRootDirectory(ownerId: string): Promise<IDirectory | null> {
-    return Directory.findOne({ owner: ownerId, parent: null });
+export async function createOrganization (organization: SimpleOrganization): Promise<IOrganization | null> {
+
+    return await Organization.create(organization);
 }
 
-export async function getDirectoriesStructured (ownerId: string): Promise<Array<IDirectory> | null> {
+export async function addChildrenByIds (organizationId: string, childrenIds: Array<string>): Promise<IOrganization | null> {
 
-    const owner: IUser | null = await User.findById(ownerId);
+    const org: IOrganization | null = await Organization.findById(organizationId);
 
-    if (owner){
-        const dirs: Array<IDirectory> = await Directory.find({
-            owner: ownerId,
-            parent: null
-        });
-
-        await populateChildrenIterative(dirs);
-        // await populateChildrenRecursive(dirs);
-
-        return dirs;
-    }
-    else
-        return null;
-}
-
-async function populateChildrenIterative(directories: Array<IDirectory>){
-
-    let dirs: Array<IDirectory> = directories.concat([]);
-
-    while(dirs.length > 0) {
-        let directory = dirs.pop();
-
-        if (directory == undefined)
-            continue;
-
-        await directory.populate('children');
-
-        if (directory.populated('children')) {
-            dirs = dirs.concat(directory.children as unknown as Array<IDirectory>);
-        }
-    }
-}
-
-async function populateChildrenRecursive(directories: Array<IDirectory>) {
-
-    if (directories.length < 0) {
-        return
-    }
-
-    for (const directory of directories) {
-        await directory.populate("children");
-
-        if (directory.populated("children")) {
-            await populateChildrenRecursive(directory.children as unknown as Array<IDirectory>);
-        }
-    }
-}
-
-export async function getFilesForDirectory(dirId: string): Promise<Array<IFile> | null> {
-
-    const dir: IDirectory | null = await Directory.findById(dirId).populate('files');
-
-    let result: Array<IFile> | null = null;
-    if (dir) {
-        result = [];
-        if (dir.populated('files'))
-            result = dir.files as unknown as Array<IFile>;
-    }
-    return result;
-}
-
-export async function createDirectory (directory: IDirectory): Promise<IDirectory | null> {
-
-    let newDirectory: IDirectory | null = null;
-
-    if(directory.parent) {
-        const parentDirectory: IDirectory | null = await Directory.findById(directory.parent);
-
-        if (parentDirectory != null) {
-            newDirectory = await Directory.create(directory);
-            parentDirectory.children.push(newDirectory._id as Types.ObjectId)
-            await parentDirectory.save()
-        }
-    }
-    else {
-        newDirectory = await Directory.create(directory);
-    }
-
-    return newDirectory;
-}
-
-export async function addChildrenByIds (directoryId: string, childrenIds: Array<string>): Promise<IDirectory | null> {
-
-    const dir: IDirectory | null = await Directory.findById(directoryId);
-
-    if (dir) {
+    if (org) {
         childrenIds = [...new Set(
             childrenIds.concat(
-                dir.children
-                    .map(child => child.toHexString())
+                org.children.map(child => child.toHexString())
             )
         )];
 
-        dir.children = childrenIds.map(childId =>
+        org.children = childrenIds.map(childId =>
             new Types.ObjectId(childId)
         );
-        await dir.save();
+        await org.save();
     }
-    return dir;
+    return org;
 }
 
-export async function removeFromChildrenByIds (directoryId: string, childrenIdsToRemove: Array<string>): Promise<IDirectory | null> {
+export async function removeFromChildrenByIds (organizationId: string, childrenIdsToRemove: Array<string>): Promise<IOrganization | null> {
 
-    const dir: IDirectory | null = await Directory.findById(directoryId);
+    const org: IOrganization | null = await Organization.findById(organizationId);
 
-    if (dir) {
+    if (org) {
         const toRemove = new Set(childrenIdsToRemove);
-        const childrenIds = dir.children
+        const childrenIds = org.children
             .map(child => child.toHexString())
             .filter(el => !toRemove.has(el));
 
-        dir.children = childrenIds.map(childId =>
+        org.children = childrenIds.map(childId =>
             new Types.ObjectId(childId)
         );
-        await dir.save();
+        await org.save();
     }
-    return dir;
+    return org;
 }
 
-export async function addFilesByIds (directoryId: string, filesIds: Array<string>): Promise<IDirectory | null> {
+export async function addFilesByIds (organizationId: string, filesIds: Array<string>): Promise<IOrganization | null> {
 
-    const dir: IDirectory | null = await Directory.findById(directoryId);
+    const org: IOrganization | null = await Organization.findById(organizationId);
 
-    if (dir) {
+    if (org) {
         filesIds = [...new Set(
             filesIds.concat(
-                dir.files
-                    .map(file => file.toHexString())
+                org.files.map(file => file.toHexString())
             )
         )];
 
-        dir.files = filesIds.map(fileId =>
+        org.files = filesIds.map(fileId =>
             new Types.ObjectId(fileId)
         );
-        await dir.save();
+        await org.save();
     }
-    return dir;
+    return org;
 }
 
-export async function removeFromFilesByIds (directoryId: string, filesIdsToRemove: Array<string>): Promise<IDirectory | null> {
+export async function removeFromFilesByIds (organizationId: string, filesIdsToRemove: Array<string>): Promise<IOrganization | null> {
 
-    const dir: IDirectory | null = await Directory.findById(directoryId);
+    const org: IOrganization | null = await Organization.findById(organizationId);
 
-    if (dir) {
+    if (org) {
         const toRemove = new Set(filesIdsToRemove);
-        const filesIds = dir.files
+        const filesIds = org.files
             .map(file => file.toHexString())
             .filter(el => !toRemove.has(el));
 
-        dir.files = filesIds.map(fileId =>
+        org.files = filesIds.map(fileId =>
             new Types.ObjectId(fileId)
         );
-        await dir.save();
+        await org.save();
     }
-    return dir;
+    return org;
 }
 
-export async function deleteDirectory (directoryId: string) {
+export async function deleteOrganization (organizationId: string, organizerId: string) {
 
-    const dir: IDirectory | null = await Directory.findById(directoryId).populate(['children', 'parent']).exec();
+    const org: IOrganization | null = await Organization.findById(organizationId)
+                                                        .populate(['projections', 'members'])
+                                                        .exec();
 
-    if (dir == null)
-        return;
+    const numberOfDeletions = new NumberOfDeletions();
 
-    if(dir.parent != null && dir.populated('parent')){
+    if (org == null)
+        return numberOfDeletions;
 
-        const dirParent = dir.parent as unknown as IDirectory;
+    if (org.organizer.toHexString() !== organizerId)
+        return new Error('Only organizer can delete the organization.');
 
-        const dirIndex: number = dirParent.children.findIndex(child => child == dir._id);
-        dirParent.children.splice(1, dirIndex);
-        await dirParent.save();
+
+    for(const f of org.files) {
+        await deleteFile(f.toHexString());
+        numberOfDeletions.filesDeleted++;
     }
 
-    let filesDeleted = 0;
-    let directoriesDeleted = 0;
+    for(const c of org.children) {
+        numberOfDeletions.accumulate( await deleteDirectory(c.toHexString()) );
+    }
 
-    if (dir.populated('children')) {
-
-        let forDeletion: Array<IDirectory> = [dir, ...dir.children as unknown as Array<IDirectory>];
-
-        while (forDeletion.length > 0) {
-
-            let d = forDeletion.pop();
-
-            if (d == undefined)
-                continue;
-
-            await d.populate(['children','files']);
-
-            if (d.populated('files') && d.files.length > 0){
-                for (const file of d.files) {
-                    await File.findByIdAndDelete(file._id);
-                    filesDeleted++;
-                }
+    for (const p of org.projections){
+        if(isIDirectory(p)){
+            p.parents = p.parents.filter(el => el.toHexString() !== organizationId);
+            if(p.parents.length == 0) {
+                numberOfDeletions.accumulate( await deleteDirectory(p.id) );
             }
-
-            if (d.populated('children')) {
-                forDeletion.push(...d.children as unknown as Array<IDirectory>);
-            }
-
-            await Directory.findByIdAndDelete(d._id);
-            directoriesDeleted++;
         }
     }
 
-    return { directoriesDeleted, filesDeleted };
+    return numberOfDeletions;
 }

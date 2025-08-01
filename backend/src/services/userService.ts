@@ -1,5 +1,5 @@
-import User from "../models/User";
-import {IUser} from "../interfaces/IUser";
+import User from "../data/models/User";
+import {IUser} from "../data/interfaces/IUser";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import {sendVerificationEmail} from "../mailer/mailer"

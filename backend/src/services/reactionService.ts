@@ -1,7 +1,7 @@
-import {IReaction, SimpleReaction} from "../interfaces/IReaction";
-import Reaction from "../models/Reaction";
-import Comment from "../models/Comment";
-import {IComment} from "../interfaces/IComment";
+import {IReaction, SimpleReaction} from "../data/interfaces/IReaction";
+import Reaction from "../data/models/Reaction";
+import Comment from "../data/models/Comment";
+import {IComment} from "../data/interfaces/IComment";
 
 
 export async function getAllReactionsForComment(commentId: string): Promise<Array<IReaction> | null> {
