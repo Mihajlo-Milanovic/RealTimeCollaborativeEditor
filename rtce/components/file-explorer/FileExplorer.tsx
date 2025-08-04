@@ -1,16 +1,23 @@
 "use client";
 
+import { Trash2, FilePlus, FolderPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Folder, FolderOpen, FileText } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { getRequestSingle } from "../../src/app/api/serverRequests/methods";
+import { getRequestSingle, postRequest, putRequest, deleteRequest } from "../../src/app/api/serverRequests/methods";
 import { UserView } from "../../models/user";
 
 // folder / file
+// composite
+// folder je composite, file je leaf
+// FileNode je component
+// Nije klasican composite, modifikovan je da bude prirodnije i prilagodjenije za React kompoziciju
 interface FileNode {
   id: string;
   name: string;
   type: "file" | "folder";
+
+  parent_id?: string;
 }
 
 interface FolderResponse {
@@ -22,68 +29,77 @@ interface FolderResponse {
 
 interface FileItemProps {
   node: FileNode;
+  onRefresh?: () => void;
 }
 
-function FileItem({ node }: FileItemProps) {
+
+function FileItem({ node, onRefresh }: FileItemProps) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<FileNode[] | null>(null);
 
   const isDirectory = node.type === "folder";
 
-  const handleToggle = async () => {
-    if (!open && isDirectory && !items) {
-      const res = await getRequestSingle(
-        "directory/getChildrenAndFilesForDirectory",
-        "dirId",
-        node.id
-      );
-
-      if (res.ok) {
-        const data: FolderResponse = await res.json();
-
-        const folders = (data.children || []).map((child) => ({
-          id: child._id,
-          name: child.name,
-          type: "folder" as const,
-        }));
-
-        const files = (data.files || []).map((file) => ({
-          id: file._id,
-          name: file.name,
-          type: "file" as const,
-        }));
-
-        setItems([...folders, ...files]);
-      }
+  const fetchChildren = async (dirId: string = node.id) => {
+    const res = await getRequestSingle("directory/getChildrenAndFilesForDirectory", "dirId", dirId);
+    if (res.ok) {
+      const data: FolderResponse = await res.json();
+      const folders = (data.children || []).map((child) => ({ id: child._id, name: child.name, type: "folder" as const , parent_id: dirId }));
+      const files = (data.files || []).map((file) => ({ id: file._id, name: file.name, type: "file" as const, parent_id: dirId }));
+      setItems([...folders, ...files]);
     }
+  };
 
+  const handleToggle = async () => {
+    if (!open && isDirectory && !items) await fetchChildren();
     setOpen(!open);
   };
 
-  if (node.type === "file") {
-    return (
-      <div className="flex items-center gap-2 pl-2 py-1 hover:bg-blue-200 rounded cursor-pointer">
-        <FileText size={16} />
-        {node.name}
-      </div>
-    );
-  }
+  const handleAddFile = async () => {
+    const fileName = prompt("Enter file name:");
+    if (!fileName) return;
 
-  // Folder
+    // ovo je put u bazu prepraviti!!!
+    const res = await putRequest("file/createFile", { parent: node.id, owner: UserView.getInstance().id ,name: fileName, collaborators: [] });
+    if (res.ok) await fetchChildren(); // update UI
+  };
+
+  const handleAddFolder = async () => {
+    const folderName = prompt("Enter folder name:");
+    if (!folderName) return;
+    const res = await postRequest("directory/createDirectory", { name: folderName, owner: UserView.getInstance().id, parent: node.id, children: [], files: [], collaborators: [] });
+    if (res.ok) await fetchChildren(); // update UI
+  };
+
+  const handleDelete = async () => {
+    const confirmDelete = confirm(`Are you sure you want to delete ${node.name}?`);
+    if (!confirmDelete) return;
+    const endpoint = node.type === "folder" ? "directory/deleteDirectory" : "file/deleteFile";
+    const fd_name = node.type === "folder" ? "dirId" : "fileId";
+    const res = await deleteRequest(`${endpoint}`, fd_name, node.id);
+    if (res.ok && onRefresh) {
+      onRefresh();
+    }
+  };
+
   return (
     <div className="pl-2">
-      <div
-        className="flex items-center gap-2 py-1 hover:bg-blue-400 rounded cursor-pointer"
-        onClick={handleToggle}
-      >
-        {open ? <FolderOpen size={16} /> : <Folder size={16} />}
-        {node.name}
+      <div className="flex items-center gap-2 py-1 hover:bg-blue-400 rounded cursor-pointer justify-between">
+        <div className="flex items-center gap-2" onClick={handleToggle}>
+          {isDirectory ? (open ? <FolderOpen size={16} /> : <Folder size={16} />) : <FileText size={16} />}
+          {node.name}
+        </div>
+
+        <div className="flex gap-2 pr-2">
+          {isDirectory && <FolderPlus size={16} onClick={handleAddFolder} className="hover:text-green-500 cursor-pointer" />}
+          {isDirectory && <FilePlus size={16} onClick={handleAddFile} className="hover:text-blue-500 cursor-pointer" />}
+          <Trash2 size={16} onClick={handleDelete} className="hover:text-red-500 cursor-pointer" />
+        </div>
       </div>
 
       {open && items && (
         <div className="pl-4">
           {items.map((child) => (
-            <FileItem key={child.id} node={child} />
+            <FileItem key={child.id} node={child} onRefresh={fetchChildren} />
           ))}
         </div>
       )}

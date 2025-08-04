@@ -35,6 +35,18 @@ export default function RegisterForm() {
       return;
     }
 
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]{10,}$/;
+    //(?=.*[A-Z]) – bar jedno veliko slovo
+    //(?=.*\d) – bar jedan broj
+    //(?=.*[^A-Za-z\d]) – bar jedan specijalni karakter
+    // {10,} – najmanje 10 karaktera
+    
+    if (!passwordRegex.test(password)) {
+      setError("The password must be at least 10 characters long and include one uppercase letter, one number, and one special character.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
 
       const data = {

@@ -41,3 +41,25 @@ export async function putRequest(method_route: string, data: any) {
 
     return res;
 }
+
+export async function deleteRequest(method_route: string, param?: string, param_value?: string, data?: any) {
+    method_route = method_route.trim();
+    let url = server_address + "/" + method_route;
+
+    if (param !== undefined && param_value !== undefined)
+        url += "?" + param + "=" + param_value;
+
+    const options: RequestInit = {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    };
+
+    if (data !== undefined) {
+        options.body = JSON.stringify(data);
+    }
+
+    const res = await fetch(url, options);
+    return res;
+}

@@ -18,6 +18,7 @@ export default function LoginForm() {
   const [showSendEmailLink, setShowSendEmailLink] = useState<boolean>(false);
   const [emailToVerify, setEmailToVerify] = useState<string>("");
 
+
   const router = useRouter();
 
   // ni ovo ga ne ubrzava
@@ -29,7 +30,7 @@ export default function LoginForm() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
+    
     try {
       const res = await signIn("credentials", {
         email,
