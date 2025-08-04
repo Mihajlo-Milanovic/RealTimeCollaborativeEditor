@@ -140,6 +140,82 @@ export async function removeFromFilesByIds (req: Request, res: Response) {
     }
 }
 
+export async function addMembersByIds (req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const bodyObj: {organizationId: string, members: Array<string>} = matchedData(req);
+        const org = await os.addMembersByIds(bodyObj.organizationId, bodyObj.members);
+        if (org)
+            res.status(204).end();
+        else
+            res.status(404).send("Organization not found.").end();
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
+export async function removeFromMembersByIds (req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const bodyObj: {organizationId: string, members: Array<string>} = matchedData(req);
+        const org = await os.removeFromMembersByIds(bodyObj.organizationId, bodyObj.members);
+        if (org)
+            res.status(204).end();
+        else
+            res.status(404).send("Organization not found.").end();
+    }
+    catch (err){
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
+export async function addProjectionsByIds (req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const bodyObj: {organizationId: string, projections: Array<string>} = matchedData(req);
+        const org = await os.addProjectionsByIds(bodyObj.organizationId, bodyObj.projections);
+        if (org)
+            res.status(204).end();
+        else
+            res.status(404).send("Organization not found.").end();
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
+export async function removeFromProjectionsByIds (req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const bodyObj: {organizationId: string, projections: Array<string>} = matchedData(req);
+        const org = await os.removeFromProjectionsByIds(bodyObj.organizationId, bodyObj.projections);
+        if (org)
+            res.status(204).end();
+        else
+            res.status(404).send("Organization not found.").end();
+    }
+    catch (err){
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
 
 export async function deleteOrganization (req: Request, res: Response) {
 
