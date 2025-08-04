@@ -7,8 +7,7 @@ export interface IDirectory extends Document {
     parents: Array<Types.ObjectId>;
     children: Array<Types.ObjectId>;
     files: Array<Types.ObjectId>;
-    collaborators: Array<Types.ObjectId>;
-    createdAt: Date;
+    // collaborators: Array<Types.ObjectId>;
 }
 
 export type SimpleDirectory = {
@@ -17,7 +16,7 @@ export type SimpleDirectory = {
     parents: Array<string>;
     children: Array<string>;
     files: Array<string>;
-    collaborators: Array<string>;
+    // collaborators: Array<string>;
 }
 
 export function isIDirectory(obj:any): obj is IDirectory {
@@ -26,8 +25,8 @@ export function isIDirectory(obj:any): obj is IDirectory {
         "owner" in obj && typeof obj.owner === typeof Types.ObjectId &&
         "parents" in obj && Array.isArray(obj.parent) &&
         "children" in obj && Array.isArray(obj.children) &&
-        "files" in obj && Array.isArray(obj.files) &&
-        "collaborators" in obj && Array.isArray(obj.collaborators)
+        "files" in obj && Array.isArray(obj.files)
+        // "collaborators" in obj && Array.isArray(obj.collaborators)
     ) {
         for (const parent of obj.parents) {
             if (typeof parent !== typeof Types.ObjectId)
@@ -44,10 +43,10 @@ export function isIDirectory(obj:any): obj is IDirectory {
                 return false;
         }
 
-        for (const collaborator of obj.collaborators) {
-            if (typeof collaborator !== typeof Types.ObjectId)
-                return false;
-        }
+        // for (const collaborator of obj.collaborators) {
+        //     if (typeof collaborator !== typeof Types.ObjectId)
+        //         return false;
+        // }
 
         return true;
     }
@@ -60,8 +59,8 @@ export function isSimpleDirectory(obj:any): obj is SimpleDirectory {
         "owner" in obj && typeof obj.owner === "string" &&
         "parents" in obj && Array.isArray(obj.parent) &&
         "children" in obj && Array.isArray(obj.children) &&
-        "files" in obj && Array.isArray(obj.files) &&
-        "collaborators" in obj && Array.isArray(obj.collaborators)
+        "files" in obj && Array.isArray(obj.files)
+        // "collaborators" in obj && Array.isArray(obj.collaborators)
     ) {
         for (const parent of obj.parents) {
             if (typeof parent !== "string")
@@ -78,10 +77,10 @@ export function isSimpleDirectory(obj:any): obj is SimpleDirectory {
                 return false;
         }
 
-        for (const collaborator of obj.collaborators) {
-            if (typeof collaborator !== "string")
-                return false;
-        }
+        // for (const collaborator of obj.collaborators) {
+        //     if (typeof collaborator !== "string")
+        //         return false;
+        // }
 
         return true;
     }

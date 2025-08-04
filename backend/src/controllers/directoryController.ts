@@ -3,7 +3,7 @@ import * as ds from "../services/directoryService";
 import {IFile} from "../data/interfaces/IFile";
 import { matchedData } from "express-validator";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
-import {IDirectory} from "../data/interfaces/IDirectory";
+import {IDirectory, SimpleDirectory} from "../data/interfaces/IDirectory";
 
 
 export async function getUsersDirectories (req: Request, res: Response) {
@@ -106,7 +106,7 @@ export async function createDirectory (req: Request, res: Response) {
         return;
 
     try {
-        const bodyObj = matchedData(req) as IDirectory;
+        const bodyObj = matchedData(req) as SimpleDirectory;
         const newDirectory = await ds.createDirectory(bodyObj);
         if (newDirectory)
             res.status(201).json(newDirectory).end();

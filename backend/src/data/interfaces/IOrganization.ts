@@ -18,4 +18,37 @@ export type SimpleOrganization = {
     projections: Array<string>;
 }
 
-export type OverrideType<T,U> = Pick<T, Exclude<keyof T, keyof U>> & U
+export function isSimpleOrganization(obj:any): obj is SimpleOrganization {
+    if(typeof obj === "object" && obj !== null &&
+        "name" in obj && typeof obj.name === "string" &&
+        "organizer" in obj && typeof obj.organizer === "string" &&
+        "children" in obj && Array.isArray(obj.children) &&
+        "files" in obj && Array.isArray(obj.files) &&
+        "members" in obj && Array.isArray(obj.members) &&
+        "projections" in obj && Array.isArray(obj.projections)
+    ) {
+
+        for (const child of obj.children) {
+            if (typeof child !== "string")
+                return false;
+        }
+
+        for (const file of obj.files) {
+            if (typeof file !== "string")
+                return false;
+        }
+
+        for (const member of obj.members) {
+            if (typeof member !== "string")
+                return false;
+        }
+
+        for (const projection of obj.projections) {
+            if (typeof projection !== "string")
+                return false;
+        }
+
+        return true;
+    }
+    return false;
+}

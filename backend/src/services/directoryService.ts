@@ -1,7 +1,7 @@
 import Directory from "../data/models/Directory";
 import File from "../data/models/File";
 import User from "../data/models/User";
-import {IDirectory} from "../data/interfaces/IDirectory";
+import {IDirectory, SimpleDirectory} from "../data/interfaces/IDirectory";
 import {Types} from "mongoose"
 import {IFile} from "../data/interfaces/IFile";
 import {IUser} from "../data/interfaces/IUser";
@@ -89,21 +89,18 @@ export async function getFilesForDirectory(dirId: string): Promise<Array<IFile> 
     return result;
 }
 
-export async function createDirectory (directory: IDirectory): Promise<IDirectory | null> {
+export async function createDirectory (directory: SimpleDirectory): Promise<IDirectory | null> {
 
-    let newDirectory: IDirectory | null = null;
-
-    newDirectory = await Directory.create(directory);
+    let newDirectory: IDirectory | null = await Directory.create(directory);
 
     if(directory.parents.length > 0) {
-        for(const parentId of directory.parents) {
 
-            const parentDirectory: IDirectory | null = await Directory.findById(parentId);
+        const parentDirectories: Array<IDirectory> | null = await Directory.find({ _id: {$in: directory.parents} })
+                                                                            .select('children');
 
-            if (parentDirectory != null) {
-                parentDirectory.children.push(newDirectory._id as Types.ObjectId)
-                await parentDirectory.save()
-            }
+        for (const parentDirectory of parentDirectories) {
+            parentDirectory.children.push(newDirectory._id as Types.ObjectId)
+            await parentDirectory.save()
         }
     }
 
