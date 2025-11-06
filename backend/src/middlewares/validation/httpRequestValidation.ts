@@ -19,6 +19,13 @@ export function validateEmail(){
         .isEmail().withMessage("E-mail format is incorrect.");
 }
 
+export function validateString(fieldName: string){
+    return validator.query(fieldName, `Field '${fieldName}' is required.`)
+        .trim()
+        .notEmpty()
+        .isString();
+}
+
 export function validateToken() {
   return validator.query("verificationToken", "Field 'verificationToken' is missing or invalid.")
     .trim()
@@ -53,7 +60,7 @@ function mongoIdObject(fieldName: string) {
         trim: true,
         notEmpty: true,
         errorMessage: `Field '${fieldName}' is required!`,
-        isMongoId: { errorMessage: `Invalid value for filed '${fieldName}'!` },
+        isMongoId: { errorMessage: `Invalid value for field '${fieldName}'!` },
     }
 }
 
@@ -218,7 +225,33 @@ export function validateFilesAdmission(){
     )
 }
 
+/**
+ * @return
+ * Validation chain for validating Organization from Body
+ */
+export function validateOrganization()  {
+    return validator.checkSchema(
+        {
+            name: {
+                trim: true,
+                notEmpty: true,
+                isString: true,
+                errorMessage: "Field 'name' is required!"
+            },
+            organizer: mongoIdObject('organizer'),
+            children: optionalArrayOfTrimmedMongoIdsObject(),
+            files: optionalArrayOfTrimmedMongoIdsObject(),
+            members: optionalArrayOfTrimmedMongoIdsObject(),
+            projections: optionalArrayOfTrimmedMongoIdsObject()
+        },
+        ['body']
+    );
+}
 
+
+///////////////////////////////////////////
+//////////// Custom validators ////////////
+///////////////////////////////////////////
 async function validateUsernameUniqueness(username: string){
     const user = await getUserWithUsername(username);
     if (user)

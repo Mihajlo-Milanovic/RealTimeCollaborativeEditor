@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import * as os from "../services/organizationService";
 import { matchedData } from "express-validator";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
-import {SimpleOrganization} from "../data/interfaces/IOrganization";
+import { SimpleOrganization } from "../data/interfaces/IOrganization";
 
 
 export async function getOrganizationByName (req: Request, res: Response) {
@@ -11,8 +11,8 @@ export async function getOrganizationByName (req: Request, res: Response) {
         return;
 
     try {
-        const queryParams = matchedData(req);
-        const org = await os.getOrganizationByName(queryParams.orgName);
+        const queryParams: {organizationName: string} = matchedData(req);
+        const org = await os.getOrganizationByName(queryParams.organizationName);
         if (org)
             res.status(200).json(org).end();
         else
@@ -30,7 +30,7 @@ export async function getOrganizationById (req: Request, res: Response) {
         return;
 
     try {
-        const queryParams = matchedData(req);
+        const queryParams: { organizationId: string } = matchedData(req);
         const org = await os.getOrganizationById(queryParams.organizationId);
         if (org)
             res.status(200).json(org).end();
