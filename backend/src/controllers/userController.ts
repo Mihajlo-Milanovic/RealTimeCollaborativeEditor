@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import * as us from "../services/userService";
 import { createDirectory } from "../services/directoryService";
-import {isIUser, IUser} from "../data/interfaces/IUser";
+import {isIUser, IUser, SimpleUser} from "../data/interfaces/IUser";
 import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
-import { matchedData } from "express-validator";
+import {matchedData, query} from "express-validator";
 
 export async function getUsers(req: Request, res: Response) {
 
@@ -23,9 +23,11 @@ export async function getUserById(req: Request, res: Response) {
         return;
 
     try {
-        const queryParams: {uuid: string} = matchedData(req);
+        const { uuid } = matchedData(req);
 
-        const user = await us.getUserById(queryParams.uuid);
+        console.log(uuid);
+
+        const user = await us.getUserById(uuid);
         if (user)
             res.status(200).json(user).end();
         else
@@ -43,31 +45,9 @@ export async function getUserByEmail(req: Request, res: Response) {
         return;
 
     try {
-        const queryParams: { email: string } = matchedData(req);
+        const { email } = matchedData(req);
 
-        const user = await us.getUserWithEmail(queryParams.email);
-        if (user)
-            res.status(200).json(user).end();
-        else
-            res.status(404).send("User not found.");
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
-export async function getUserByVerificationToken(req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        // const queryParams: { token: string } = matchedData(req); ovom linijom mi daje undefined za token!
-        const verificationToken = req.query.verificationToken as string;
-        //console.log("Token je: ", verificationToken);
-
-        const user = await us.getUserByVerificationToken(verificationToken);
+        const user = await us.getUserWithEmail(email);
         if (user)
             res.status(200).json(user).end();
         else
@@ -86,10 +66,11 @@ export async function createUser(req: Request, res: Response) {
     }
 
     try {
-        const bodyObj: IUser = matchedData(req);
+        const newUser: SimpleUser = {...matchedData(req)};
 
-        const result = await us.createNewUser(bodyObj);
+        const result = await us.createNewUser(newUser);
 
+        //TODO: proveriti ovo
         if (isIUser(result))
             res.status(201).json(result).end();
         else {
@@ -103,6 +84,42 @@ export async function createUser(req: Request, res: Response) {
     }
 }
 
+export async function deleteUserWithId(req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const { uuid } = matchedData(req);
+        await us.deleteUserWithId(uuid);
+        res.status(200).send("User deleted successfully.").end();
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
+export async function getUserByVerificationToken(req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const { verificationToken } = matchedData(req);
+
+        const user = await us.getUserByVerificationToken(verificationToken);
+        if (user)
+            res.status(200).json(user).end();
+        else
+            res.status(404).send("User not found.");
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
 export async function verifyUser(req: Request, res: Response) {
 
     if (checkForValidationErrors(req, res)) {
@@ -110,8 +127,7 @@ export async function verifyUser(req: Request, res: Response) {
     }
 
     try {
-        //const queryParams: { verificationToken: string } = matchedData(req); ovom linijom mi daje undefined za token!
-        const verificationToken = req.query.verificationToken as string;
+        const { verificationToken } = matchedData(req);
 
         const user = await us.verifyUser(verificationToken);
 
@@ -126,18 +142,3 @@ export async function verifyUser(req: Request, res: Response) {
     }
 }
 
-export async function deleteUserWithId(req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const queryParams: {uuid: string} = matchedData(req);
-        await us.deleteUserWithId(queryParams.uuid);
-        res.status(200).send("User deleted successfully.").end();
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}

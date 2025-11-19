@@ -5,6 +5,7 @@ import {IDirectory, SimpleDirectory} from "../data/interfaces/IDirectory";
 import {Types} from "mongoose"
 import {IFile} from "../data/interfaces/IFile";
 import {IUser} from "../data/interfaces/IUser";
+import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
 
 export async function getDirectoriesByOwnerId (ownerId: string): Promise<Array<IDirectory> | null> {
 

@@ -4,45 +4,43 @@ import * as validation from "../middlewares/validation/httpRequestValidation";
 
 export const userRouter = Router();
 
-userRouter.all('/',
-    (req: Request, res: Response) => {
+// userRouter.all('/',
+//     (req: Request, res: Response) => {
+//
+//     const routes: Array<string> = userRouter.stack.map(({route}) =>
+//         `[${[...new Set(route?.stack?.map(entry => entry.method))]}] ${route?.path}`
+//     );
+//     res.json(routes).end();
+// });
 
-    const routes: Array<string> = userRouter.stack.map(({route}) =>
-        `[${[...new Set(route?.stack?.map(entry => entry.method))]}] ${route?.path}`
-    );
-    res.json(routes).end();
-});
+userRouter.get('/', uc.getUsers);
 
-
-
-userRouter.get('/getUsers', uc.getUsers);
-
-userRouter.get('/getUser',
+userRouter.get('/:uuid',
     validation.validateId('uuid'),
     uc.getUserById
 );
 
-userRouter.get('/getUserByEmail',
+userRouter.get('/email/:email',
     validation.validateEmail(),
     uc.getUserByEmail
 );
 
-userRouter.get('/getUserByVerificationToken',
+userRouter.get('/verificationToken/:verificationToken',
     validation.validateToken(),
     uc.getUserByVerificationToken
 );
 
-userRouter.get('/verifyUser',
+userRouter.get('/verify/:verificationToken',
     validation.validateToken(),
     uc.verifyUser
 );
 
-userRouter.post('/createUser',
+userRouter.post('/create',
     validation.validateUser(),
     uc.createUser
 );
 
 
-userRouter.delete('/deleteUser',
+userRouter.delete('/delete/:uuid',
     validation.validateId('uuid'),
     uc.deleteUserWithId)

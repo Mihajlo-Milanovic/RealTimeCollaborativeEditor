@@ -1,4 +1,4 @@
-class NumberOfDeletions
+export class NumberOfDeletions
 {
     directoriesDeleted = 0;
     filesDeleted = 0;

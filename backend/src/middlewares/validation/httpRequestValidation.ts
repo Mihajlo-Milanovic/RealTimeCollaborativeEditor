@@ -14,7 +14,7 @@ export function validateIdExistsInBody(idName: string){
 }
 
 export function validateEmail(){
-    return validator.query("email", "Field 'email' is required.")
+    return validator.param("email", "Field 'email' is required.")
         .trim()
         .isEmail().withMessage("E-mail format is incorrect.");
 }
@@ -27,7 +27,7 @@ export function validateString(fieldName: string){
 }
 
 export function validateToken() {
-  return validator.query("verificationToken", "Field 'verificationToken' is missing or invalid.")
+  return validator.param("verificationToken", "Field 'verificationToken' is missing or invalid.")
     .trim()
     .isLength({ min: 64, max: 64 })
     .isHexadecimal()
@@ -42,7 +42,7 @@ export function validateToken() {
  * Validation chain for validating ID from Query
  */
 export function validateId(fieldName: string) {
-    return validator.query(fieldName, `Invalid ${fieldName}!`)
+    return validator.param(fieldName, `Invalid ${fieldName}!`)
         .trim()
         .notEmpty().bail().withMessage(`Field '${fieldName}' is missing!`)
         .isMongoId();
@@ -110,7 +110,7 @@ export function validateUser()  {
         {
             username: {
                 trim: true,
-                notEmpty: { errorMessage: "Field 'name' is required!" },
+                notEmpty: { errorMessage: "Field 'username' is required!" },
                 unique:{
                     custom: validateUsernameUniqueness,
                     errorMessage: "Specified username is already taken."

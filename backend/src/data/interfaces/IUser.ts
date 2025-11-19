@@ -8,6 +8,14 @@ export interface IUser extends Document {
     verificationToken?: string;
 }
 
+export type SimpleUser = {
+    username: string;
+    email: string;
+    password: string;
+    verified: boolean;
+    verificationToken?: string;
+}
+
 export function isIUser(obj: any): obj is IUser {
     return typeof obj === "object" && obj !== null &&
         "username" in obj && typeof obj.username === "string" &&

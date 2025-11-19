@@ -1,5 +1,5 @@
 import User from "../data/models/User";
-import {IUser} from "../data/interfaces/IUser";
+import {IUser, SimpleUser} from "../data/interfaces/IUser";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import {sendVerificationEmail} from "../mailer/mailer"
@@ -25,15 +25,18 @@ export async function getUserByVerificationToken(verificationToken: string): Pro
     return User.findOne({verificationToken: verificationToken});
 }
 
-export async function createNewUser(user: IUser): Promise<IUser | Error> {
+export async function createNewUser(user: SimpleUser): Promise<IUser | Error> {
 
     let usr = await getUserWithEmail(user.email);
-    if (usr)
-        return new Error("User with this email already exists!");
 
-    usr = await getUserWithUsername(user.username);
-    if (usr)
-        return new Error("User with this username already exists!");
+    // //ovo bi trebalo u validaciju mozda???
+    // if (usr)
+    //     return new Error("User with this email already exists!");
+    //
+    // usr = await getUserWithUsername(user.username);
+    // if (usr)
+    //     return new Error("User with this username already exists!");
+
 
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const verificationToken = crypto.randomBytes(32).toString("hex");

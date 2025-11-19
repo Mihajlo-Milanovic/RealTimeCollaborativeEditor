@@ -23,11 +23,11 @@ app.use(express.json());
 app.use(logger);
 app.use(errorHandler);
 
-app.use("/user", userRouter);
-app.use("/directory", directoryRouter);
-app.use("/file", fileRouter);
-app.use("/comment", commentRouter);
-app.use("/reaction", reactionRouter);
+app.use("/users", userRouter);
+app.use("/directories", directoryRouter);
+app.use("/files", fileRouter);
+app.use("/comments", commentRouter);
+app.use("/reactions", reactionRouter);
 
 app.get('/',
     (req: express.Request, res: express.Response) => {
