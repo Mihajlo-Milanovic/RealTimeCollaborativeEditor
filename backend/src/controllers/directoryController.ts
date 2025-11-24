@@ -12,8 +12,8 @@ export async function getUsersDirectories (req: Request, res: Response) {
         return;
 
     try {
-        const queryParams = matchedData(req);
-        const dirs = await ds.getDirectoriesByOwnerId(queryParams.uuid);
+        const { uuid } = matchedData(req);
+        const dirs = await ds.getDirectoriesByOwnerId(uuid);
         if (dirs)
             res.status(200).json(dirs).end();
         else
@@ -31,8 +31,8 @@ export async function getUsersDirectoriesStructured (req: Request, res: Response
         return;
 
     try {
-        const queryParams = matchedData(req);
-        const dirs = await ds.getDirectoriesStructured(queryParams.uuid);
+        const { uuid } = matchedData(req);
+        const dirs = await ds.getDirectoriesStructured(uuid);
         if (dirs)
             res.status(200).json(dirs).end();
         else
@@ -50,8 +50,8 @@ export async function getDirectoryWithChildrenAndFiles(req: Request, res: Respon
         return;
 
     try {
-        const queryParams = matchedData(req);
-        const dir: IDirectory | null = await ds.getDirectoryWithChildrenAndFiles(queryParams.dirId);
+        const { dirId } = matchedData(req);
+        const dir: IDirectory | null = await ds.getDirectoryWithChildrenAndFiles(dirId);
         if (dir)
             res.status(200).json(dir).end();
         else
@@ -63,16 +63,16 @@ export async function getDirectoryWithChildrenAndFiles(req: Request, res: Respon
     }  
 }
 
-export async function getUserRootDirectory(req: Request, res: Response) {
+export async function getUserRootDirectories(req: Request, res: Response) {
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const queryParams = matchedData(req);
-        const dir = await ds.getUserRootDirectory(queryParams.uuid);
+        const { uuid } = matchedData(req);
+        const dirs = await ds.getUserRootDirectories(uuid);
 
-        if (dir)
-            res.status(200).json(dir).end();
+        if (dirs)
+            res.status(200).json(dirs).end();
         else
             res.status(404).send("Root directory not found.").end();
     } catch (err) {
@@ -87,8 +87,8 @@ export async function getFilesInDirectory(req: Request, res: Response) {
         return;
 
     try {
-        const queryParams = matchedData(req);
-        const files: Array<IFile> | null = await ds.getFilesForDirectory(queryParams.dirId);
+        const { dirId } = matchedData(req);
+        const files: Array<IFile> | null = await ds.getFilesForDirectory(dirId);
         if (files)
             res.status(200).json(files).end();
         else
@@ -106,8 +106,8 @@ export async function createDirectory (req: Request, res: Response) {
         return;
 
     try {
-        const bodyObj = matchedData(req) as SimpleDirectory;
-        const newDirectory = await ds.createDirectory(bodyObj);
+        const dir: SimpleDirectory = {...matchedData(req) };
+        const newDirectory = await ds.createDirectory(dir);
         if (newDirectory)
             res.status(201).json(newDirectory).end();
         else
@@ -125,8 +125,8 @@ export async function addChildrenByIds (req: Request, res: Response) {
         return;
 
     try {
-        const bodyObj: {directory: string, children: Array<string>} = matchedData(req);
-        const dir = await ds.addChildrenByIds(bodyObj.directory, bodyObj.children);
+        const { dirId, children } = matchedData(req);
+        const dir = await ds.addChildrenByIds(dirId, children);
         if (dir)
             res.status(204).end();
         else
@@ -144,8 +144,8 @@ export async function removeFromChildrenByIds (req: Request, res: Response) {
         return;
 
     try {
-        const bodyObj: {directory: string, children: Array<string>} = matchedData(req);
-        const dir = await ds.removeFromChildrenByIds(bodyObj.directory, bodyObj.children);
+        const { dirId, children } = matchedData(req);
+        const dir = await ds.removeFromChildrenByIds(dirId, children);
         if (dir)
             res.status(204).end();
         else
@@ -163,8 +163,8 @@ export async function addFilesByIds (req: Request, res: Response) {
         return;
 
     try {
-        const bodyObj: {directory: string, files: Array<string>} = matchedData(req);
-        const dir = await ds.addFilesByIds(bodyObj.directory, bodyObj.files);
+        const { dirId, files } = matchedData(req);
+        const dir = await ds.addFilesByIds(dirId, files);
         if (dir)
             res.status(204).end();
         else
@@ -182,8 +182,8 @@ export async function removeFromFilesByIds (req: Request, res: Response) {
         return;
 
     try {
-        const bodyObj: {directory: string, files: Array<string>} = matchedData(req);
-        const dir = await ds.removeFromFilesByIds(bodyObj.directory, bodyObj.files);
+        const { dirId, files } = matchedData(req);
+        const dir = await ds.removeFromFilesByIds(dirId, files);
         if (dir)
             res.status(204).end();
         else
@@ -201,8 +201,8 @@ export async function deleteDirectory (req: Request, res: Response) {
         return;
 
     try {
-        const queryParams: { dirId: string } = matchedData(req);
-        const result = await ds.deleteDirectory(queryParams.dirId);
+        const { dirId } = matchedData(req);
+        const result = await ds.deleteDirectory(dirId);
         res.status(200).json(result).end();
     }
     catch (err) {

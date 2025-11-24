@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
 import * as us from "../services/userService";
-import { createDirectory } from "../services/directoryService";
-import {isIUser, IUser, SimpleUser} from "../data/interfaces/IUser";
+import {isIUser, SimpleUser} from "../data/interfaces/IUser";
 import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
-import {matchedData, query} from "express-validator";
+import {matchedData} from "express-validator";
 
 export async function getUsers(req: Request, res: Response) {
 

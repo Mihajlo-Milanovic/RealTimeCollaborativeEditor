@@ -1,7 +1,7 @@
 import * as validator from 'express-validator';
 import { getUserWithUsername, getUserWithEmail } from "../../services/userService";
-import {IReaction} from "../../data/interfaces/IReaction";
-import { Types } from "mongoose";
+import Directory from "../../data/models/Directory";
+import {Meta} from "express-validator";
 
 /**
  * Use in pair with <code>validate{Object}</code> to check if the 'id' is included
@@ -84,14 +84,14 @@ function optionalArrayOfTrimmedMongoIdsObject(){
 export function validateDirectory()  {
     return validator.checkSchema(
         {
+            owner: mongoIdObject('owner'),
+            parents: optionalArrayOfTrimmedMongoIdsObject(),
             name: {
                 trim: true,
                 notEmpty: { errorMessage: "Field 'name' is required!" },
-            },
-            owner: mongoIdObject('owner'),
-            parent: {
-                optional: true,
-                ...mongoIdObject('parent'),
+                uniqueNameInParents: {
+                    custom: validateDirectoryNameUniqueness,
+                }
             },
             children: optionalArrayOfTrimmedMongoIdsObject(),
             files: optionalArrayOfTrimmedMongoIdsObject(),
@@ -204,10 +204,9 @@ export function validateReaction()  {
 export function validateChildrenAdmission(){
     return validator.checkSchema(
         {
-            directory: mongoIdObject('directory'),
+            dirId: mongoIdObject('dirId'),
             children: optionalArrayOfTrimmedMongoIdsObject()
-        },
-        ['body']
+        }
     )
 }
 
@@ -218,10 +217,9 @@ export function validateChildrenAdmission(){
 export function validateFilesAdmission(){
     return validator.checkSchema(
         {
-            directory: mongoIdObject('directory'),
+            dirId: mongoIdObject('dirId'),
             files: optionalArrayOfTrimmedMongoIdsObject()
-        },
-        ['body']
+        }
     )
 }
 
@@ -262,4 +260,37 @@ async function validateEmailUniqueness(email: string){
     const user = await getUserWithEmail(email);
     if (user)
         throw new Error("E-mail is already taken!");
+}
+
+async function validateDirectoryNameUniqueness(value: string, meta: Meta){
+        const p: Array<string> = meta.req.body.parents;
+
+        if(p.length == 0)
+            return true;
+
+        const dirs = await Directory.find(
+            {
+                name: value,
+                parents: { $in: p }
+            }
+        ).select('parents');
+
+        console.log(dirs);
+
+        if (dirs.length > 0) {
+
+            const s = dirs.flatMap(x => x.parents)
+                .filter(x => p.includes(x.toString()));
+
+            const problematic = (await Directory.find(
+                {
+                    _id: { $in: s }
+                }
+            ).select('name')).map(x => x.name);
+
+            throw new Error(`Directory with that name already exists! Parents: ${problematic}`);
+
+        }
+
+        return true;
 }

@@ -13,6 +13,16 @@ export const userRouter = Router();
 //     res.json(routes).end();
 // });
 
+userRouter.post('/create',
+    validation.validateUser(),
+    uc.createUser
+);
+
+userRouter.delete('/delete/:uuid',
+    validation.validateId('uuid'),
+    uc.deleteUserWithId
+);
+
 userRouter.get('/', uc.getUsers);
 
 userRouter.get('/:uuid',
@@ -35,12 +45,3 @@ userRouter.get('/verify/:verificationToken',
     uc.verifyUser
 );
 
-userRouter.post('/create',
-    validation.validateUser(),
-    uc.createUser
-);
-
-
-userRouter.delete('/delete/:uuid',
-    validation.validateId('uuid'),
-    uc.deleteUserWithId)

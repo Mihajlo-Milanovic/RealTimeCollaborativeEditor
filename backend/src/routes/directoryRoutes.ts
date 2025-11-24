@@ -1,69 +1,70 @@
-import {Request, Response, Router} from "express";
+import { Router } from "express";
 import * as dc from "../controllers/directoryController";
 import * as validation from "../middlewares/validation/httpRequestValidation";
 
 export const directoryRouter = Router();
 
-directoryRouter.all('/',
-    (req: Request, res: Response) => {
+// directoryRouter.all('/',
+//     (req: Request, res: Response) => {
+//
+//         const routes: Array<string> = directoryRouter.stack.map(({route}) =>
+//             `[${[...new Set(route?.stack?.map(entry => entry.method))]}] ${route?.path}`
+//         );
+//         res.json(routes).end();
+//     });
 
-        const routes: Array<string> = directoryRouter.stack.map(({route}) =>
-            `[${[...new Set(route?.stack?.map(entry => entry.method))]}] ${route?.path}`
-        );
-        res.json(routes).end();
-    });
 
-directoryRouter.get('/getUsersDirectories/',
-    validation.validateId('uuid'),
-    dc.getUsersDirectories
-);
-
-directoryRouter.get('/getUsersDirectoriesStructured/',
-    validation.validateId('uuid'),
-    dc.getUsersDirectoriesStructured
-);
-
-directoryRouter.get('/getChildrenAndFilesForDirectory',
-    validation.validateId('dirId'),
-    dc.getDirectoryWithChildrenAndFiles
-);
-
-directoryRouter.get('/getUserRootDirectory',
-    validation.validateId('uuid'),
-    dc.getUserRootDirectory
-);
-
-directoryRouter.get('/getFilesInDirectory',
-    validation.validateId('dirId'),
-    dc.getFilesInDirectory
-);
-
-directoryRouter.post('/createDirectory',
+directoryRouter.post('/create',
     validation.validateDirectory(),
     dc.createDirectory
 );
 
-directoryRouter.put('/addChildren',
+directoryRouter.delete('/:dirId/delete',
+    validation.validateId('dirId'),
+    dc.deleteDirectory
+);
+
+directoryRouter.get('/:uuid/unstructured',
+    validation.validateId('uuid'),
+    dc.getUsersDirectories
+);
+
+directoryRouter.get('/:uuid/structured/',
+    validation.validateId('uuid'),
+    dc.getUsersDirectoriesStructured
+);
+
+directoryRouter.get('/:dirId/children&files',
+    validation.validateId('dirId'),
+    dc.getDirectoryWithChildrenAndFiles
+);
+
+directoryRouter.get('/:dirId/files',
+    validation.validateId('dirId'),
+    dc.getFilesInDirectory
+);
+
+directoryRouter.get('/:uuid/root',
+    validation.validateId('uuid'),
+    dc.getUserRootDirectories
+);
+
+directoryRouter.put('/:dirId/addChildren',
     validation.validateChildrenAdmission(),
     dc.addChildrenByIds
 );
 
-directoryRouter.put('/removeChildren',
+directoryRouter.put('/:dirId/removeChildren',
     validation.validateChildrenAdmission(),
     dc.removeFromChildrenByIds
 );
 
-directoryRouter.put('/addFiles',
+directoryRouter.put('/:dirId/addFiles',
     validation.validateFilesAdmission(),
     dc.addFilesByIds
 );
 
-directoryRouter.put('/removeFiles',
+directoryRouter.put('/:dirId/removeFiles',
     validation.validateFilesAdmission(),
     dc.removeFromFilesByIds
-);
-
-directoryRouter.delete('/deleteDirectory',
-    validation.validateId('dirId'),
-    dc.deleteDirectory
 );
