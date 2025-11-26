@@ -6,6 +6,42 @@ import { checkForValidationErrors } from "../middlewares/validation/checkForVali
 import {IDirectory, SimpleDirectory} from "../data/interfaces/IDirectory";
 
 
+export async function createDirectory (req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const dir: SimpleDirectory = {...matchedData(req) };
+        const newDirectory = await ds.createDirectory(dir);
+        if (newDirectory)
+            res.status(201).json(newDirectory).end();
+        else
+            res.status(500).send("Internal server error occurred.").end();
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
+export async function deleteDirectory (req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const { dirId } = matchedData(req);
+        const result = await ds.deleteDirectory(dirId);
+        //TODO: Mozda treba da se izmeni
+        res.status(200).json(result).end();
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
 export async function getUsersDirectories (req: Request, res: Response) {
 
     if (checkForValidationErrors(req, res))
@@ -100,25 +136,6 @@ export async function getFilesInDirectory(req: Request, res: Response) {
     }
 }
 
-export async function createDirectory (req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const dir: SimpleDirectory = {...matchedData(req) };
-        const newDirectory = await ds.createDirectory(dir);
-        if (newDirectory)
-            res.status(201).json(newDirectory).end();
-        else
-            res.status(500).send("Internal server error occurred.").end();
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
 export async function addChildrenByIds (req: Request, res: Response) {
 
     if (checkForValidationErrors(req, res))
@@ -195,18 +212,3 @@ export async function removeFromFilesByIds (req: Request, res: Response) {
     }
 }
 
-export async function deleteDirectory (req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const { dirId } = matchedData(req);
-        const result = await ds.deleteDirectory(dirId);
-        res.status(200).json(result).end();
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}

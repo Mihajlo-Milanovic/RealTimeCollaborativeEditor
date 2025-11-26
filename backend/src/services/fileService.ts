@@ -1,42 +1,34 @@
 import File from "../data/models/File"
 import Directory from "../data/models/Directory";
 import { Types } from "mongoose"
-import {IFile} from "../data/interfaces/IFile";
+import {IFile, SimpleFile} from "../data/interfaces/IFile";
 import {IDirectory} from "../data/interfaces/IDirectory";
 
-export async function getFileById(fileId: string): Promise<IFile | null> {
-    return File.findById(fileId);
-}
 
-export async function createFile (file: IFile): Promise<IFile | null> {
+export async function createFile (file: SimpleFile): Promise<IFile | null> {
 
     const dir: IDirectory | null = await Directory.findById(file.parent);
 
-    let newFile: IFile | null = null;
-
     if (dir) {
-        newFile = await File.create(file);
+        let newFile: IFile | null = await File.create(file);
         if (newFile) {
             dir.files.push(newFile._id as Types.ObjectId);
             await dir.save();
         }
+        return newFile;
     }
-    return newFile;
+    return null;
 }
 
 export async function deleteFile(fileId: string): Promise<boolean> {
-    try {
+
         const file: IFile | null = await File.findById(fileId);
-        if (!file) {
-            console.error("File not found.");
+        if (!file)
             return false;
-        }
 
         const parentDir: IDirectory | null = await Directory.findById(file.parent);
-        if (!parentDir) {
-            console.error("Parent directory not found.");
+        if (!parentDir)
             return false;
-        }
 
         parentDir.files = parentDir.files.filter(fId => !fId.equals(file.id));
         await parentDir.save();
@@ -44,8 +36,8 @@ export async function deleteFile(fileId: string): Promise<boolean> {
         await File.findByIdAndDelete(file.id);
 
         return true;
-    } catch (err) {
-        console.error("File deletion error:", err);
-        return false;
-    }
+}
+
+export async function getFileById(fileId: string): Promise<IFile | null> {
+    return File.findById(fileId);
 }

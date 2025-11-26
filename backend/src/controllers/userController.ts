@@ -4,6 +4,46 @@ import {isIUser, SimpleUser} from "../data/interfaces/IUser";
 import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
 import {matchedData} from "express-validator";
 
+export async function createUser(req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res)) {
+        return;
+    }
+
+    try {
+        const user: SimpleUser = {...matchedData(req)};
+
+        const newUser = await us.createNewUser(user);
+
+        //TODO: proveriti ovo
+        if (isIUser(newUser))
+            res.status(201).json(newUser).end();
+        else
+            res.status(500).send("Internal server error occurred.").end();
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
+export async function deleteUserWithId(req: Request, res: Response) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const { uuid } = matchedData(req);
+        await us.deleteUserWithId(uuid);
+        res.status(200).send("User deleted successfully.").end();
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred.").end();
+    }
+}
+
 export async function getUsers(req: Request, res: Response) {
 
     try {
@@ -23,8 +63,6 @@ export async function getUserById(req: Request, res: Response) {
 
     try {
         const { uuid } = matchedData(req);
-
-        console.log(uuid);
 
         const user = await us.getUserById(uuid);
         if (user)
@@ -51,47 +89,6 @@ export async function getUserByEmail(req: Request, res: Response) {
             res.status(200).json(user).end();
         else
             res.status(404).send("User not found.");
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
-export async function createUser(req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res)) {
-        return;
-    }
-
-    try {
-        const newUser: SimpleUser = {...matchedData(req)};
-
-        const result = await us.createNewUser(newUser);
-
-        //TODO: proveriti ovo
-        if (isIUser(result))
-            res.status(201).json(result).end();
-        else {
-            console.log(result.message);
-            res.status(403).json({message: result.message});
-        }
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
-export async function deleteUserWithId(req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const { uuid } = matchedData(req);
-        await us.deleteUserWithId(uuid);
-        res.status(200).send("User deleted successfully.").end();
     }
     catch (err) {
         console.error(err);

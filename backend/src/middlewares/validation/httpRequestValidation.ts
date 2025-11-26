@@ -1,7 +1,10 @@
 import * as validator from 'express-validator';
 import { getUserWithUsername, getUserWithEmail } from "../../services/userService";
 import Directory from "../../data/models/Directory";
+import File from "../../data/models/File";
 import {Meta} from "express-validator";
+import {IFile} from "../../data/interfaces/IFile";
+import {IDirectory} from "../../data/interfaces/IDirectory";
 
 /**
  * Use in pair with <code>validate{Object}</code> to check if the 'id' is included
@@ -246,6 +249,24 @@ export function validateOrganization()  {
     );
 }
 
+export function validateFile(){
+    return validator.checkSchema(
+        {
+            owner: mongoIdObject('owner'),
+            parent: mongoIdObject('parent'),
+            name: {
+                trim: true,
+                notEmpty: { errorMessage: "Field 'name' is required!" },
+                uniqueness: {
+                    custom: validateFileNameUniqueness
+                }
+            },
+            collaborators: optionalArrayOfTrimmedMongoIdsObject(),
+        },
+        ['body']
+    );
+}
+
 
 ///////////////////////////////////////////
 //////////// Custom validators ////////////
@@ -268,7 +289,7 @@ async function validateDirectoryNameUniqueness(value: string, meta: Meta){
         if(p.length == 0)
             return true;
 
-        const dirs = await Directory.find(
+        const dirs: Array<IDirectory> | null = await Directory.find(
             {
                 name: value,
                 parents: { $in: p }
@@ -293,4 +314,21 @@ async function validateDirectoryNameUniqueness(value: string, meta: Meta){
         }
 
         return true;
+}
+
+async function validateFileNameUniqueness(value: string, meta: Meta){
+    const p: string = meta.req.body.parent;
+
+    const file: IFile | null = await File.findOne(
+        {
+            name: value,
+            parent: p
+        }
+    );
+
+    if (file) {
+        throw new Error(`File with that name already exists!`);
+    }
+
+    return true;
 }
