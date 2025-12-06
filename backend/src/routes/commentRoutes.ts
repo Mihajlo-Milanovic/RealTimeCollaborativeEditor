@@ -13,28 +13,22 @@ commentRouter.all('/',
         res.json(routes).end();
     });
 
-commentRouter.get('/getCommentById',
-    validation.validateId('commentId'),
-    cc.getCommentById
-);
-
-commentRouter.get('/getCommentsForFile',
-    validation.validateId("fileId"),
-    cc.getCommentsForFile
-);
-
-commentRouter.post('/createComment',
+commentRouter.post('/create',
     validation.validateComment(),
     cc.createComment
 );
 
-commentRouter.put('/updateComment',
-    validation.validateIdExistsInBody('commentId'),
-    validation.validateCommentUpdate(),
-    cc.updateComment
-);
-
-commentRouter.delete('/deleteComment',
+commentRouter.delete('/:commentId/delete',
     validation.validateId('commentId'),
     cc.deleteComment
+);
+
+commentRouter.get('/:commentId',
+    validation.validateId('commentId'),
+    cc.getCommentById
+);
+
+commentRouter.put('/:commentId/update',
+    validation.validateCommentUpdate(),
+    cc.updateComment
 );

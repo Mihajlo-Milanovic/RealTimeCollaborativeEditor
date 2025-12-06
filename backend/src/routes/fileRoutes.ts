@@ -1,6 +1,7 @@
 import {Request, Response, Router} from "express";
 import * as validation from "../middlewares/validation/httpRequestValidation";
 import * as fc from "../controllers/fileController";
+import * as cc from "../controllers/commentController";
 
 export const fileRouter = Router();
 
@@ -13,7 +14,7 @@ export const fileRouter = Router();
 //         res.json(routes).end();
 //     });
 
-fileRouter.put('/create',
+fileRouter.post('/create',
     validation.validateFile(),
     fc.createFile
 );
@@ -26,4 +27,9 @@ fileRouter.delete('/:fileId/delete',
 fileRouter.get('/:fileId',
     validation.validateId('fileId'),
     fc.getFile
+);
+
+fileRouter.get('/:fileId/comments',
+    validation.validateId("fileId"),
+    cc.getCommentsForFile
 );

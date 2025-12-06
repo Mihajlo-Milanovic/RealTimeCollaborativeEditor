@@ -177,7 +177,6 @@ export function validateCommentUpdate()  {
                 errorMessage: `Field 'content' is required!`,
             },
         },
-        ['body']
     );
 }
 
