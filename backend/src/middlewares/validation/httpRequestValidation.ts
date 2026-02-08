@@ -1,7 +1,7 @@
 import * as validator from 'express-validator';
 import { getUserWithUsername, getUserWithEmail } from "../../services/userService";
-import Directory from "../../data/models/Directory";
-import File from "../../data/models/File";
+import Directory from "../../data/dao/Directory";
+import File from "../../data/dao/File";
 import {Meta} from "express-validator";
 import {IFile} from "../../data/interfaces/IFile";
 import {IDirectory} from "../../data/interfaces/IDirectory";

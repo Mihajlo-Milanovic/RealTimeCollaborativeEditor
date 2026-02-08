@@ -1,5 +1,5 @@
-import File from "../data/models/File"
-import Directory from "../data/models/Directory";
+import File from "../data/dao/File"
+import Directory from "../data/dao/Directory";
 import { Types } from "mongoose"
 import {IFile, SimpleFile} from "../data/interfaces/IFile";
 import {IDirectory} from "../data/interfaces/IDirectory";

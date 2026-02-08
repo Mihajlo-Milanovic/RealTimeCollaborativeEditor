@@ -1,6 +1,6 @@
-import Directory from "../data/models/Directory";
-import File from "../data/models/File";
-import User from "../data/models/User";
+import Directory from "../data/dao/Directory";
+import File from "../data/dao/File";
+import User from "../data/dao/User";
 import {IDirectory, SimpleDirectory} from "../data/interfaces/IDirectory";
 import mongoose, {Types} from "mongoose"
 import {IFile} from "../data/interfaces/IFile";

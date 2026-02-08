@@ -1,4 +1,4 @@
-import User from "../data/models/User";
+import User from "../data/dao/User";
 import {IUser, SimpleUser} from "../data/interfaces/IUser";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";

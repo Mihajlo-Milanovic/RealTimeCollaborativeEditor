@@ -1,11 +1,12 @@
 import {IOrganization, SimpleOrganization} from "../data/interfaces/IOrganization";
-import Organization from "../data/models/Organization";
+import Organization from "../data/dao/Organization";
 import { Types } from "mongoose";
 import { deleteFile } from "./fileService"
 import {createDirectory, deleteDirectory} from "./directoryService";
 import {IDirectory, isIDirectory} from "../data/interfaces/IDirectory";
-import Directory from "../data/models/Directory";
+import Directory from "../data/dao/Directory";
 import {IUser} from "../data/interfaces/IUser";
+import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
 
 
 export async function getOrganizationByName (orgName: string): Promise<Array<IOrganization> | null> {
@@ -250,9 +251,9 @@ export async function removeFromProjectionsByIds (organizationId: string, projec
 
 export async function deleteOrganization (organizationId: string, applicantId: string) {
 
-    const org: IOrganization | null = await Organization.findById(organizationId)
-                                                        .populate(['projections', 'members'])
-                                                        .exec();
+    const org = await Organization.findById(organizationId)
+                                    .populate(['projections', 'members'])
+                        .exec() as IOrganization & { projections: Array<IDirectory>,  members: Array<IUser> } | null;
 
     const numberOfDeletions = new NumberOfDeletions();
 
@@ -273,12 +274,12 @@ export async function deleteOrganization (organizationId: string, applicantId: s
     }
 
     for (const p of org.projections){
-        if(isIDirectory(p)){
+        // if(isIDirectory(p)){
             p.parents = p.parents.filter(el => el.toHexString() !== organizationId);
             if(p.parents.length == 0) {
                 numberOfDeletions.accumulate( await deleteDirectory(p.id) );
             }
-        }
+        // }
     }
 
     return numberOfDeletions;

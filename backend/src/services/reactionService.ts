@@ -1,6 +1,6 @@
 import {IReaction, SimpleReaction} from "../data/interfaces/IReaction";
-import Reaction from "../data/models/Reaction";
-import Comment from "../data/models/Comment";
+import Reaction from "../data/dao/Reaction";
+import Comment from "../data/dao/Comment";
 import {IComment} from "../data/interfaces/IComment";
 
 

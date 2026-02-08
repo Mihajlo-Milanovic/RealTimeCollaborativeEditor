@@ -19,6 +19,7 @@ const OrganizationSchema: Schema<IOrganization> = new Schema({
         type: SchemaTypes.ObjectId,
         ref: 'File',
     }],
+    //TODO: change to dictionary
     members: [{
         type: SchemaTypes.ObjectId,
         ref: 'User',
