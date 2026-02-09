@@ -1,10 +1,13 @@
 import { Document, Types } from "mongoose";
 
 export interface IFile extends Document {
+    _id: Types.ObjectId;
+    id: string;
     name: string;
     owner: Types.ObjectId;
     parent: Types.ObjectId;
     collaborators: Array<Types.ObjectId>;
+    comments: Array<Types.ObjectId>;
 }
 
 export type SimpleFile = {
@@ -12,6 +15,7 @@ export type SimpleFile = {
     owner: string;
     parent: string;
     collaborators: Array<string>;
+    // comments: Array<Types.ObjectId>;
 }
 
 export function isSimpleFile(obj:any): obj is SimpleFile {

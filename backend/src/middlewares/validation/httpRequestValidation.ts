@@ -1,7 +1,7 @@
 import * as validator from 'express-validator';
 import { getUserWithUsername, getUserWithEmail } from "../../services/userService";
-import Directory from "../../data/dao/Directory";
-import File from "../../data/dao/File";
+import Directory from "../../data/dao/DirectorySchema";
+import File from "../../data/dao/FileSchema";
 import {Meta} from "express-validator";
 import {IFile} from "../../data/interfaces/IFile";
 import {IDirectory} from "../../data/interfaces/IDirectory";
@@ -44,10 +44,24 @@ export function validateToken() {
  * @return
  * Validation chain for validating ID from Query
  */
-export function validateId(fieldName: string) {
-    return validator.param(fieldName, `Invalid ${fieldName}!`)
+export function validateIdFromQuery(fieldName: string) {
+    return validator.query(fieldName, `Invalid ${fieldName}!`)
         .trim()
         .notEmpty().bail().withMessage(`Field '${fieldName}' is missing!`)
+        .isMongoId();
+}
+
+/**@param fieldNames
+ * Name used for field/s that holds the ID
+ *
+ * @return
+ * Validation chain for validating ID from Path
+ *
+ */
+export function validateIdFromPath(fieldNames: string | Array<string>) {
+    return validator.param(fieldNames, `Invalid ${fieldNames}!`)
+        .trim()
+        .notEmpty().bail()//.withMessage(`Field '${fieldNames}' is missing!`)
         .isMongoId();
 }
 
@@ -170,7 +184,7 @@ export function validateComment()  {
 export function validateCommentUpdate()  {
     return validator.checkSchema(
         {
-            commentId: mongoIdObject('commentId'),
+            commentId: mongoIdObject('id'),
             content: {
                 trim: true,
                 notEmpty: true,
@@ -188,7 +202,7 @@ export function validateReaction()  {
     return validator.checkSchema(
         {
             comment: mongoIdObject('commentId'),
-            reactor: mongoIdObject('reactor'),
+            reactor: mongoIdObject('reactorId'),
             reactionType: {
                 trim: true,
                 notEmpty: true,

@@ -1,23 +1,30 @@
 import { Document, Types } from "mongoose";
 import {IReaction} from "./IReaction";
+import {IUser} from "./IUser";
+import {IFile} from "./IFile";
 
 export interface IComment extends Document {
+    _id: Types.ObjectId;
+    id: Types.ObjectId;
     commenter: Types.ObjectId;
     file: Types.ObjectId;
+    content: string;
+    edited: boolean;
+    reactions: Array<Types.ObjectId>;
+}
+
+export interface ICommentPopulated extends Document {
+    _id: Types.ObjectId;
+    id: string;
+    commenter: IUser;
+    file: IFile;
     content: string;
     edited: boolean;
     reactions: Array<IReaction>;
 }
 
-export type SimpleComment = {
-    commenter: string;
-    file: string;
+export interface INewComment {
+    commenterId: string;
+    fileId: string;
     content: string;
-}
-
-export function isSimpleComment(obj:any): obj is SimpleComment {
-    return typeof obj === "object" && obj !== null &&
-        "commenter" in obj && typeof obj.commenter === "string" &&
-        "file" in obj && typeof obj.file === "string" &&
-        "content" in obj && typeof obj.content === "string";
 }

@@ -1,73 +1,118 @@
-import {Request, Response} from "express";
+import {Request, Response, NextFunction} from "express";
 import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
 import {matchedData} from "express-validator";
 import * as rs from "../services/reactionService";
-import { SimpleReaction } from "../data/interfaces/IReaction";
+import {INewReaction} from "../data/interfaces/IReaction";
 
 
-export async function getAllReactionsForComment(req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try{
-        const queryParams: {commentId: string} = matchedData(req);
-        const reactions = await rs.getAllReactionsForComment(queryParams.commentId);
-        if (reactions)
-            res.status(200).send(reactions).end();
-        else
-            res.status(404).send("Comment not found.").end();
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
-export async function createOrUpdateReaction(req: Request, res: Response) {
+export async function createOrUpdateReaction(req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const bodyObj = matchedData(req) as SimpleReaction;
+        const bodyObj = matchedData(req) as INewReaction;
 
-        let reaction = await rs.getReactionByCommentAndUser(bodyObj.reactor, bodyObj.comment);
+        const result = await rs.createOrUpdateReaction(bodyObj);
 
-        if (reaction) {
-            reaction = await rs.updateReaction(reaction, bodyObj.reactionType);
-            if (reaction)
-                res.status(200).json(reaction).end();
-            else
-                res.status(404).send("Reaction not found.").end();
-        }
-        else {
-            reaction = await rs.createNewReaction(bodyObj);
-            if (reaction)
-                res.status(201).json(reaction).end();
-        }
+        if (result.updated && result.reaction != null)
+            res.status(200).json({
+                success: true,
+                message: "Reaction updated successfully.",
+                data: result,
+            });
+        else if (!result.updated && result.reaction != null)
+            res.status(201).json({
+                success: true,
+                message: "Reaction created successfully.",
+                data: result,
+            });
+        else
+            res.status(400).json({
+                success: false,
+                message: "Couldn't create or update reaction.",
+            });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
+        next(err);
     }
 }
 
-export async function deleteReaction(req: Request, res: Response) {
+export async function getReactionById(req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const queryParams: {reactionId: string} = matchedData(req);
-        const reaction = await rs.deleteReaction(queryParams.reactionId);
-        if(reaction)
-            res.status(200).send("Reaction deleted successfully.").end();
+        const data: { reactionId: string } = matchedData(req);
+
+        const result = await rs.getReactionById(data.reactionId);
+
+        if (result != null)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
         else
-            res.status(404).send("Reaction not found.").end();
+            res.status(404).json({
+                success: false,
+                message: "Reaction not found.",
+            });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
+        next(err);
+    }
+}
+
+export async function getReactionByCommentAndUser(req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const data: { userId: string, commentId: string } = matchedData(req);
+
+        const result = await rs.getReactionByCommentAndUser(data.userId, data.commentId);
+
+        if (result != null)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+        else
+            res.status(404).json({
+                success: false,
+                message: "Reaction not found.",
+            });
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
+export async function deleteReaction(req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const data: { reactionId: string } = matchedData(req);
+
+        const result = await rs.deleteReaction(data.reactionId);
+
+        if (result != null)
+            res.status(200).json({
+                success: true,
+                message: "Reaction deleted successfully.",
+                data: result,
+            });
+        else
+            res.status(404).json({
+                success: false,
+                message: "Reaction not found.",
+            });
+    }
+    catch (err) {
+        next(err);
     }
 }

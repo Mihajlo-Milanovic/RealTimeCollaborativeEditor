@@ -20,16 +20,16 @@ fileRouter.post('/create',
 );
 
 fileRouter.delete('/:fileId/delete',
-    validation.validateId('fileId'),
+    validation.validateIdFromQuery('fileId'),
     fc.deleteFile
 );
 
 fileRouter.get('/:fileId',
-    validation.validateId('fileId'),
+    validation.validateIdFromQuery('fileId'),
     fc.getFile
 );
 
 fileRouter.get('/:fileId/comments',
-    validation.validateId("fileId"),
-    cc.getCommentsForFile
+    validation.validateIdFromQuery("fileId"),
+    fc.getCommentsForFile
 );

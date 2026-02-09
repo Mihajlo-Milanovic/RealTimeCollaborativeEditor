@@ -1,9 +1,8 @@
 import {IFile, SimpleFile} from "../data/interfaces/IFile";
 import * as fs from "../services/fileService";
 import {checkForValidationErrors} from "../middlewares/validation/checkForValidationErrors";
-import {isIUser, SimpleUser} from "../data/interfaces/IUser";
 import {matchedData} from "express-validator";
-import * as us from "../services/userService";
+import {Request, Response, NextFunction} from "express";
 
 
 export const createFile = async (req: any, res: any) => {
@@ -64,3 +63,20 @@ export const getFile = async (req: any, res: any) => {
     }
 };
 
+export async function getCommentsForFile(req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const queryParams: { fileId: string } = matchedData(req);
+        const comments = await fs.getCommentsForFile(queryParams.fileId);
+        if(comments != null)
+            res.status(200).json(comments).end();
+        else
+            res.status(404).send("File not found.").end();
+    }
+    catch (err){
+        next(err)
+    }
+}

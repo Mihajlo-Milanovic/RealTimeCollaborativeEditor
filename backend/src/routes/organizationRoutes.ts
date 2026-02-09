@@ -19,7 +19,7 @@ organizationRouter.get('/getOrganizationByName/',
 );
 
 organizationRouter.get('/getOrganizationById/',
-    validation.validateId('organizationId'),
+    validation.validateIdFromQuery('organizationId'),
     oc.getOrganizationById
 );
 
@@ -71,7 +71,7 @@ organizationRouter.get('/removeFromProjectionsByIds/',
 
 
 organizationRouter.delete('/deleteOrganization',
-    validation.validateId('organizationId'),
-    validation.validateId('applicantId'),
+    validation.validateIdFromQuery('organizationId'),
+    validation.validateIdFromQuery('applicantId'),
     oc.deleteOrganization
 );

@@ -21,7 +21,6 @@ app.use(cors({
 
 app.use(express.json());
 app.use(logger);
-app.use(errorHandler);
 
 app.use('/users', userRouter);
 app.use('/directories', directoryRouter);
@@ -31,13 +30,16 @@ app.use('/reactions', reactionRouter);
 
 app.get('/',
     (req: express.Request, res: express.Response) => {
-        res.send('Collaborative Editor Backend is running...').end();
+        res.send('Collaborative Editor Backend is running...');
     }
 );
+
+app.use(errorHandler);
 
 (async () => {
     await connectDB();
     app.listen(port, () => {
         console.log(`Server running on http://localhost:${port}`);
     });
-})()
+})();
+

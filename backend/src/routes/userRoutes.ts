@@ -13,35 +13,35 @@ export const userRouter = Router();
 //     res.json(routes).end();
 // });
 
-userRouter.post('/create',
-    validation.validateUser(),
-    uc.createUser
-);
-
-userRouter.delete('/delete/:uuid',
-    validation.validateId('uuid'),
-    uc.deleteUserWithId
-);
-
-userRouter.get('/', uc.getUsers);
-
-userRouter.get('/:uuid',
-    validation.validateId('uuid'),
-    uc.getUserById
-);
-
-userRouter.get('/email/:email',
-    validation.validateEmail(),
-    uc.getUserByEmail
-);
-
-userRouter.get('/verificationToken/:verificationToken',
-    validation.validateToken(),
-    uc.getUserByVerificationToken
-);
-
-userRouter.get('/verify/:verificationToken',
-    validation.validateToken(),
-    uc.verifyUser
-);
+// userRouter.post('/create',
+//     validation.validateUser(),
+//     uc.createUser
+// );
+//
+// userRouter.delete('/delete/:uuid',
+//     validation.validateIdFromQuery('uuid'),
+//     uc.deleteUserWithId
+// );
+//
+// userRouter.get('/', uc.getUsers);
+//
+// userRouter.get('/:uuid',
+//     validation.validateIdFromQuery('uuid'),
+//     uc.getUserById
+// );
+//
+// userRouter.get('/email/:email',
+//     validation.validateEmail(),
+//     uc.getUserByEmail
+// );
+//
+// userRouter.get('/verificationToken/:verificationToken',
+//     validation.validateToken(),
+//     uc.getUserByVerificationToken
+// );
+//
+// userRouter.get('/verify/:verificationToken',
+//     validation.validateToken(),
+//     uc.verifyUser
+// );
 

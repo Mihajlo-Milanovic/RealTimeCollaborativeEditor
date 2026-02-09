@@ -1,21 +1,12 @@
-import User from "../data/dao/User";
-import {IUser, SimpleUser} from "../data/interfaces/IUser";
+import User from "../data/dao/UserSchema";
+import {IUser, INewUser} from "../data/interfaces/IUser";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import {sendVerificationEmail} from "../mailer/mailer"
 
-export async function createNewUser(user: SimpleUser): Promise<IUser | Error> {
+export async function createNewUser(user: INewUser): Promise<IUser | Error> {
 
     let usr = await getUserWithEmail(user.email);
-
-    // //ovo bi trebalo u validaciju mozda???
-    // if (usr)
-    //     return new Error("User with this email already exists!");
-    //
-    // usr = await getUserWithUsername(user.username);
-    // if (usr)
-    //     return new Error("User with this username already exists!");
-
 
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const verificationToken = crypto.randomBytes(32).toString("hex");

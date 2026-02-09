@@ -1,10 +1,10 @@
 import {IOrganization, SimpleOrganization} from "../data/interfaces/IOrganization";
-import Organization from "../data/dao/Organization";
+import Organization from "../data/dao/OrganizationSchema";
 import { Types } from "mongoose";
 import { deleteFile } from "./fileService"
 import {createDirectory, deleteDirectory} from "./directoryService";
 import {IDirectory, isIDirectory} from "../data/interfaces/IDirectory";
-import Directory from "../data/dao/Directory";
+import Directory from "../data/dao/DirectorySchema";
 import {IUser} from "../data/interfaces/IUser";
 import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
 

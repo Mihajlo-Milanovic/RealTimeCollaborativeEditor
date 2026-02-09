@@ -1,6 +1,6 @@
-import User from './data/dao/User';
-import File from './data/dao/File';
-import Directory from './data/dao/Directory';
+import User from './data/dao/UserSchema';
+import File from './data/dao/FileSchema';
+import Directory from './data/dao/DirectorySchema';
 import {Document, Model, Types} from "mongoose";
 import {connectDB, disconnectDB} from './config/db';
 import {IDirectory} from "./data/interfaces/IDirectory";

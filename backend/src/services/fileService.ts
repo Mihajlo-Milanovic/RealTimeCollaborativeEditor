@@ -1,8 +1,9 @@
-import File from "../data/dao/File"
-import Directory from "../data/dao/Directory";
+import File from "../data/dao/FileSchema"
+import Directory from "../data/dao/DirectorySchema";
 import { Types } from "mongoose"
 import {IFile, SimpleFile} from "../data/interfaces/IFile";
 import {IDirectory} from "../data/interfaces/IDirectory";
+import {IComment} from "../data/interfaces/IComment";
 
 
 export async function createFile (file: SimpleFile): Promise<IFile | null> {
@@ -40,4 +41,13 @@ export async function deleteFile(fileId: string): Promise<boolean> {
 
 export async function getFileById(fileId: string): Promise<IFile | null> {
     return File.findById(fileId);
+}
+
+export async function getCommentsForFile(fileId: string): Promise<Array<IComment> | null> {
+
+    // const file: IFile | null = await File.findById(fileId);
+    // if (file)
+    //     return Comment.find({ file: fileId });
+    // else
+        return null;
 }

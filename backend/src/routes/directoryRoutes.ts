@@ -20,32 +20,32 @@ directoryRouter.post('/create',
 );
 
 directoryRouter.delete('/:dirId/delete',
-    validation.validateId('dirId'),
+    validation.validateIdFromQuery('dirId'),
     dc.deleteDirectory
 );
 
 directoryRouter.get('/:uuid/unstructured',
-    validation.validateId('uuid'),
+    validation.validateIdFromQuery('uuid'),
     dc.getUsersDirectories
 );
 
 directoryRouter.get('/:uuid/structured/',
-    validation.validateId('uuid'),
+    validation.validateIdFromQuery('uuid'),
     dc.getUsersDirectoriesStructured
 );
 
 directoryRouter.get('/:dirId/children&files',
-    validation.validateId('dirId'),
+    validation.validateIdFromQuery('dirId'),
     dc.getDirectoryWithChildrenAndFiles
 );
 
 directoryRouter.get('/:dirId/files',
-    validation.validateId('dirId'),
+    validation.validateIdFromQuery('dirId'),
     dc.getFilesInDirectory
 );
 
 directoryRouter.get('/:uuid/root',
-    validation.validateId('uuid'),
+    validation.validateIdFromQuery('uuid'),
     dc.getUserRootDirectories
 );
 
