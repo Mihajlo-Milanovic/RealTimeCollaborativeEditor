@@ -11,18 +11,13 @@ const OrganizationSchema: Schema<IOrganization> = new Schema({
         ref: 'User',
         required: true
     },
+    members: {
+        type: Map,
+        of: String
+    },
     children: [{
         type: SchemaTypes.ObjectId,
         ref: 'Directory',
-    }],
-    files: [{
-        type: SchemaTypes.ObjectId,
-        ref: 'File',
-    }],
-    //TODO: change to dictionary
-    members: [{
-        type: SchemaTypes.ObjectId,
-        ref: 'User',
     }],
     projections: [{
         type: SchemaTypes.ObjectId,

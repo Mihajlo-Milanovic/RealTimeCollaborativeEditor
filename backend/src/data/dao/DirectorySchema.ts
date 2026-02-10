@@ -23,10 +23,6 @@ const DirectorySchema: Schema<IDirectory> = new Schema({
         type: SchemaTypes.ObjectId,
         ref: 'File',
     }],
-    // collaborators: [{
-    //     type: SchemaTypes.ObjectId,
-    //     ref: 'User',
-    // }]
 }, { timestamps: true });
 
 export default model<IDirectory>('Directory', DirectorySchema);

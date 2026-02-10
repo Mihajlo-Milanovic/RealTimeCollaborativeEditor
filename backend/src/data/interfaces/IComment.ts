@@ -5,7 +5,7 @@ import {IFile} from "./IFile";
 
 export interface IComment extends Document {
     _id: Types.ObjectId;
-    id: Types.ObjectId;
+    id: string;
     commenter: Types.ObjectId;
     file: Types.ObjectId;
     content: string;
@@ -28,3 +28,4 @@ export interface INewComment {
     fileId: string;
     content: string;
 }
+

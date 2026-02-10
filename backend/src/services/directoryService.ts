@@ -14,7 +14,8 @@ export async function createDirectory (directory: SimpleDirectory): Promise<IDir
     if(directory.parents.length > 0) {
 
         const parentDirectories: Array<IDirectory> | null = await Directory.find({ _id: {$in: directory.parents} })
-            .select('children');
+            .select('children')
+            .exec();
 
         for (const parentDirectory of parentDirectories) {
             parentDirectory.children.push(newDirectory._id as Types.ObjectId)

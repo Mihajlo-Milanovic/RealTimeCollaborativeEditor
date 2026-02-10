@@ -16,10 +16,6 @@ const FileSchema: Schema<IFile> = new Schema({
         ref: 'Directory',
         required: true
     },
-    collaborators: [{
-        type: SchemaTypes.ObjectId,
-        ref: 'User',
-    }],
 }, { timestamps: true });
 
 export default model<IFile>('File', FileSchema);
