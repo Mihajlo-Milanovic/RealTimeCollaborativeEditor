@@ -36,8 +36,8 @@ export async function deleteDirectory (req: Request, res: Response, next: NextFu
         return;
 
     try {
-        const { dirId } = matchedData(req);
-        const result = await ds.deleteDirectory(dirId);
+        const { id } = matchedData(req);
+        const result = await ds.deleteDirectory(id);
         //TODO: Mozda treba da se izmeni
         res.status(200).json({
                 success: true,
@@ -55,9 +55,9 @@ export async function getUsersDirectories (req: Request, res: Response, next: Ne
         return;
 
     try {
-        const { uuid } = matchedData(req);
-        const result = await ds.getDirectoriesByOwnerId(uuid);
-        if (result)
+        const { userId } = matchedData(req);
+        const result = await ds.getDirectoriesByOwnerId(userId);
+        if (result != null)
             res.status(200).json({
                 success: true,
                 data: result,  
@@ -79,8 +79,8 @@ export async function getUsersDirectoriesStructured (req: Request, res: Response
         return;
 
     try {
-        const { uuid } = matchedData(req);
-        const result = await ds.getDirectoriesStructured(uuid);
+        const { userId } = matchedData(req);
+        const result = await ds.getDirectoriesStructured(userId);
         if (result)
             res.status(200).json({
                 success: true,
@@ -103,8 +103,8 @@ export async function getDirectoryWithChildrenAndFiles(req: Request, res: Respon
         return;
 
     try {
-        const { dirId } = matchedData(req);
-        const result: IDirectory | null = await ds.getDirectoryWithChildrenAndFiles(dirId);
+        const { id } = matchedData(req);
+        const result: IDirectory | null = await ds.getDirectoryWithChildrenAndFiles(id);
         if (result)
             res.status(200).json({
                 success: true,
@@ -126,8 +126,8 @@ export async function getUserRootDirectories(req: Request, res: Response, next: 
         return;
 
     try {
-        const { uuid } = matchedData(req);
-        const result = await ds.getUserRootDirectories(uuid);
+        const { userId } = matchedData(req);
+        const result = await ds.getUserRootDirectories(userId);
 
         if (result)
             res.status(200).json({
@@ -151,8 +151,8 @@ export async function getFilesInDirectory(req: Request, res: Response, next: Nex
         return;
 
     try {
-        const { dirId } = matchedData(req);
-        const result: Array<IFile> | null = await ds.getFilesForDirectory(dirId);
+        const { id } = matchedData(req);
+        const result: Array<IFile> | null = await ds.getFilesForDirectory(id);
         if (result)
             res.status(200).json({
                 success: true,
@@ -175,8 +175,8 @@ export async function addChildrenByIds (req: Request, res: Response, next: NextF
         return;
 
     try {
-        const { dirId, children } = matchedData(req);
-        const result = await ds.addChildrenByIds(dirId, children);
+        const { id, children } = matchedData(req);
+        const result = await ds.addChildrenByIds(id, children);
         if (result)
             res.status(204).end();
         else
@@ -196,8 +196,8 @@ export async function removeFromChildrenByIds (req: Request, res: Response, next
         return;
 
     try {
-        const { dirId, children } = matchedData(req);
-        const result = await ds.removeFromChildrenByIds(dirId, children);
+        const { id, children } = matchedData(req);
+        const result = await ds.removeFromChildrenByIds(id, children);
         if (result)
             res.status(204).end();
         else
@@ -217,8 +217,8 @@ export async function addFilesByIds (req: Request, res: Response, next: NextFunc
         return;
 
     try {
-        const { dirId, files } = matchedData(req);
-        const result = await ds.addFilesByIds(dirId, files);
+        const { id, files } = matchedData(req);
+        const result = await ds.addFilesByIds(id, files);
         if (result)
             res.status(204).end();
         else
@@ -238,8 +238,8 @@ export async function removeFromFilesByIds (req: Request, res: Response, next: N
         return;
 
     try {
-        const { dirId, files } = matchedData(req);
-        const result = await ds.removeFromFilesByIds(dirId, files);
+        const { id, files } = matchedData(req);
+        const result = await ds.removeFromFilesByIds(id, files);
         if (result)
             res.status(204).end();
         else
