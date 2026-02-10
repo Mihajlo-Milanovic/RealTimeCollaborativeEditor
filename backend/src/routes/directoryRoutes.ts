@@ -15,47 +15,47 @@ directoryRouter.delete('/:id/delete',
     dc.deleteDirectory
 );
 
-directoryRouter.get('/:uuid/unstructured',
-    validation.validateIdFromQuery('uuid'),
+directoryRouter.get('/:userId/unstructured',
+    validation.validateIdFromPath('userId'),
     dc.getUsersDirectories
 );
 
-directoryRouter.get('/:uuid/structured/',
-    validation.validateIdFromQuery('uuid'),
+directoryRouter.get('/:userId/structured/',
+    validation.validateIdFromQuery('userId'),
     dc.getUsersDirectoriesStructured
 );
 
-directoryRouter.get('/:dirId/children&files',
-    validation.validateIdFromQuery('dirId'),
+directoryRouter.get('/:id/children&files',
+    validation.validateIdFromQuery('id'),
     dc.getDirectoryWithChildrenAndFiles
 );
 
-directoryRouter.get('/:dirId/files',
-    validation.validateIdFromQuery('dirId'),
+directoryRouter.get('/:id/files',
+    validation.validateIdFromQuery('id'),
     dc.getFilesInDirectory
 );
 
-directoryRouter.get('/:uuid/root',
-    validation.validateIdFromQuery('uuid'),
+directoryRouter.get('/:userId/root',
+    validation.validateIdFromQuery('userId'),
     dc.getUserRootDirectories
 );
 
-directoryRouter.put('/:dirId/addChildren',
+directoryRouter.put('/:id/addChildren',
     validation.validateChildrenAdmission(),
     dc.addChildrenByIds
 );
 
-directoryRouter.put('/:dirId/removeChildren',
+directoryRouter.put('/:id/removeChildren',
     validation.validateChildrenAdmission(),
     dc.removeFromChildrenByIds
 );
 
-directoryRouter.put('/:dirId/addFiles',
+directoryRouter.put('/:id/addFiles',
     validation.validateFilesAdmission(),
     dc.addFilesByIds
 );
 
-directoryRouter.put('/:dirId/removeFiles',
+directoryRouter.put('/:id/removeFiles',
     validation.validateFilesAdmission(),
     dc.removeFromFilesByIds
 );

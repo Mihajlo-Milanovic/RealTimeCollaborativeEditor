@@ -15,15 +15,15 @@ export async function createComment (req: Request, res: Response, next: NextFunc
 
         const result = await cs.createComment(bodyObj);
 
-        if (result instanceof Error)
-            res.status(400).json({
-                success: false,
-                message: result.message,
-            });
-        else
-            res.status(201).json({
+        if  (!(result instanceof Error))
+                res.status(201).json({
                 success: true,
                 data: result,
+            });
+        else
+            res.status(404).json({
+                success: false,
+                message: result.message,
             });
     }
     catch(err) {
