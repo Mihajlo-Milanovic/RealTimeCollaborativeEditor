@@ -1,5 +1,5 @@
 import { Document, Types } from "mongoose";
-import {SimpleFile} from "./IFile";
+import {IFile, SimpleFile} from "./IFile";
 
 export interface IDirectory extends Document {
     name: string;
@@ -10,11 +10,16 @@ export interface IDirectory extends Document {
     // collaborators: Array<Types.ObjectId>;
 }
 
-export type SimpleDirectory = {
+export interface IDirectoryPopulated extends Document {
+    name: string;
+    owner: Types.ObjectId;
+    parents: Array<IDirectory>;
+    children: Array<IDirectory>;
+    files: Array<IFile>;
+}
+
+export interface INewDirectory {
     name: string;
     owner: string;
     parents: Array<string>;
-    children: Array<string>;
-    files: Array<string>;
-    // collaborators: Array<string>;
 }

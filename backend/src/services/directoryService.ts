@@ -1,13 +1,13 @@
 import Directory from "../data/dao/DirectorySchema";
 import File from "../data/dao/FileSchema";
 import User from "../data/dao/UserSchema";
-import {IDirectory, SimpleDirectory} from "../data/interfaces/IDirectory";
+import {IDirectory, INewDirectory} from "../data/interfaces/IDirectory";
 import mongoose, {Types} from "mongoose"
 import {IFile} from "../data/interfaces/IFile";
 import {IUser} from "../data/interfaces/IUser";
 import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
 
-export async function createDirectory (directory: SimpleDirectory): Promise<IDirectory | null> {
+export async function createDirectory (directory: INewDirectory): Promise<IDirectory | null> {
 
     let newDirectory: IDirectory | null = await Directory.create(directory);
 
@@ -80,7 +80,7 @@ export async function getDirectoriesByOwnerId (ownerId: string): Promise<Array<I
 
     const owner: IUser | null = await User.findById(ownerId);
     if (owner)
-        return Directory.find({ owner: ownerId });
+        return await Directory.find({ owner: ownerId });
     else
         return null;
 }
@@ -91,7 +91,7 @@ export async function getDirectoryWithChildrenAndFiles(dirId: string): Promise<I
 }
 
 export async function getUserRootDirectories(ownerId: string): Promise<Array<IDirectory> | null> {
-    return Directory.find({ owner: ownerId, parents: [] });
+    return await Directory.find({ owner: ownerId, parents: [] });
 }
 
 export async function getDirectoriesStructured (ownerId: string): Promise<Array<IDirectory> | null> {
