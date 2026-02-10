@@ -254,8 +254,7 @@ export function validateOrganization()  {
             },
             organizer: mongoIdObject('organizer'),
             children: optionalArrayOfTrimmedMongoIdsObject(),
-            files: optionalArrayOfTrimmedMongoIdsObject(),
-            members: optionalArrayOfTrimmedMongoIdsObject(),
+            //members: optionalArrayOfTrimmedMongoIdsObject(),
             projections: optionalArrayOfTrimmedMongoIdsObject()
         },
         ['body']
