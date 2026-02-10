@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", // Or a newer ECMAScript version like "ESNext"
+    "module": "CommonJS", // Or "ESNext" if using ES Modules and a compatible Node.js version
+
+    "outDir": "./dist",
+    "rootDir": "./src",
+
+    "strict": true, // Enable all strict type-checking options
+    "esModuleInterop": true, // Enables a compatibility layer for CommonJS modules
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file
+    "resolveJsonModule": true // Allow importing .json files
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
