@@ -4,9 +4,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import {sendVerificationEmail} from "../mailer/mailer"
 
-export async function createNewUser(user: INewUser): Promise<IUser | Error> {
-
-    let usr = await getUserWithEmail(user.email);
+export async function createNewUser(user: INewUser): Promise<IUser | Error>{
 
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const verificationToken = crypto.randomBytes(32).toString("hex");
@@ -25,35 +23,32 @@ export async function createNewUser(user: INewUser): Promise<IUser | Error> {
 }
 
 export async function deleteUserWithId(uuid: string) {
-    await User.findByIdAndDelete(uuid).exec();
+    return await User.findByIdAndDelete(uuid).exec();
 }
 
 export async function getAllUsers(): Promise<Array<IUser>> {
-    return User.find();
+    return  User.find();
 }
 
 export async function getUserById(uuid: string): Promise<IUser | null> {
-    return User.findById(uuid);
+    return await User.findById(uuid);
 }
 
 export async function getUserWithUsername(username: string): Promise<IUser | null> {
-    return User.findOne({username: username});
+    return await User.findOne({username: username});
 }
 
 export async function getUserWithEmail(email: string): Promise<IUser | null> {
-    return User.findOne({email: email});
+    return await User.findOne({email: email});
 }
 
 export async function getUserByVerificationToken(verificationToken: string): Promise<IUser | null> {
-    return User.findOne({verificationToken: verificationToken});
+    return await User.findOne({verificationToken: verificationToken});
 }
 
 export async function verifyUser(verificationToken: string): Promise<IUser | null> {
 
     const user: IUser | null = await User.findOne({ verificationToken: verificationToken });
-
-    console.log(verificationToken);
-    console.log(user);
 
     if (user){
         user.verified = true;
