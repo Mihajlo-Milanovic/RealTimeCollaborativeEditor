@@ -1,0 +1,1 @@
+export type UserPrivilages = "admin" | "editor" | "viewer";
