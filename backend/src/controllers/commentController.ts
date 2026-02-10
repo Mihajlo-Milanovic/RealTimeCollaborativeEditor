@@ -16,7 +16,7 @@ export async function createComment (req: Request, res: Response, next: NextFunc
         const result = await cs.createComment(bodyObj);
 
         if (result instanceof Error)
-            res.status(404).json({
+            res.status(400).json({
                 success: false,
                 message: result.message,
             });
