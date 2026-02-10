@@ -16,7 +16,7 @@ directoryRouter.delete('/:id/delete',
 );
 
 directoryRouter.get('/:userId/unstructured',
-    validation.validateIdFromQuery('userId'),
+    validation.validateIdFromPath('userId'),
     dc.getUsersDirectories
 );
 
