@@ -20,23 +20,23 @@ directoryRouter.get('/:userId/unstructured',
     dc.getUsersDirectories
 );
 
-directoryRouter.get('/:userId/structured/',
-    validation.validateIdFromQuery('userId'),
+directoryRouter.get('/:userId/structured',
+    validation.validateIdFromPath('userId'),
     dc.getUsersDirectoriesStructured
 );
 
 directoryRouter.get('/:id/children&files',
-    validation.validateIdFromQuery('id'),
+    validation.validateIdFromPath('id'),
     dc.getDirectoryWithChildrenAndFiles
 );
 
 directoryRouter.get('/:id/files',
-    validation.validateIdFromQuery('id'),
+    validation.validateIdFromPath('id'),
     dc.getFilesInDirectory
 );
 
 directoryRouter.get('/:userId/root',
-    validation.validateIdFromQuery('userId'),
+    validation.validateIdFromPath('userId'),
     dc.getUserRootDirectories
 );
 
