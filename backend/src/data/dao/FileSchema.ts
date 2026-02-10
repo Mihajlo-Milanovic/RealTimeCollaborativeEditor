@@ -16,6 +16,17 @@ const FileSchema: Schema<IFile> = new Schema({
         ref: 'Directory',
         required: true
     },
+    // FULL Y.js snapshot (binary)
+    yDocState: SchemaTypes.Buffer,
+    comments: [{
+        type: SchemaTypes.ObjectId,
+        ref: 'Comment',
+    }],
+    version: {
+        type: SchemaTypes.Number,
+        default: 1
+    },
+
 }, { timestamps: true });
 
 export default model<IFile>('File', FileSchema);
