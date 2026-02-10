@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { mongoURI } from "./config";
+import { MONGO_URI } from "./config";
 
 let isConnected = false;
 
@@ -10,7 +10,7 @@ export const connectDB = async () => {
     }
 
     try {
-        await mongoose.connect(mongoURI);
+        await mongoose.connect(MONGO_URI);
         console.log('MongoDB connected');
     } catch (err) {
         console.error('Mongo connection error:', err);

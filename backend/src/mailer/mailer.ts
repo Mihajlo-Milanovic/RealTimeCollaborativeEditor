@@ -1,20 +1,20 @@
 import nodemailer from "nodemailer";
-import {emailAppPass, emailUser, nextAuthUrl} from "../config/config";
+import {EMAIL_APP_PASS, EMAIL_USER, NEXT_AUTH_URL} from "../config/config";
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const verificationUrl = `${nextAuthUrl}/verify?token=${token}`;
+  const verificationUrl = `${NEXT_AUTH_URL}/verify?token=${token}`;
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: emailUser,
-      pass: emailAppPass,
+      user: EMAIL_USER,
+      pass: EMAIL_APP_PASS,
     },
   });
 
   try {
     const info = await transporter.sendMail({
-      from: `"RTC App" <${emailUser}>`,
+      from: `"RTC App" <${EMAIL_USER}>`,
       to: email,
       subject: "Verify your email",
       html: `
