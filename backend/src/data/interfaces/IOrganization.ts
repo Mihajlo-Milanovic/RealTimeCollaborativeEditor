@@ -5,7 +5,7 @@ export interface IOrganization extends Document {
     organizer: Types.ObjectId;
     children: Array<Types.ObjectId>;
     files: Array<Types.ObjectId>;
-    members: Array<Types.ObjectId>;
+    members: Map<string, string>;
     projections: Array<Types.ObjectId>;
 }
 

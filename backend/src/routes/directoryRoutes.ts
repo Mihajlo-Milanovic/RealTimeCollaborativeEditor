@@ -4,23 +4,14 @@ import * as validation from "../middlewares/validation/httpRequestValidation";
 
 export const directoryRouter = Router();
 
-// directoryRouter.all('/',
-//     (req: Request, res: Response) => {
-//
-//         const routes: Array<string> = directoryRouter.stack.map(({route}) =>
-//             `[${[...new Set(route?.stack?.map(entry => entry.method))]}] ${route?.path}`
-//         );
-//         res.json(routes).end();
-//     });
-
 
 directoryRouter.post('/create',
     validation.validateDirectory(),
     dc.createDirectory
 );
 
-directoryRouter.delete('/:dirId/delete',
-    validation.validateIdFromQuery('dirId'),
+directoryRouter.delete('/:id/delete',
+    validation.validateIdFromPath('id'),
     dc.deleteDirectory
 );
 

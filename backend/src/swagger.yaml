@@ -574,7 +574,7 @@ components:
     Comment:
       type: object
       properties:
-        _id:
+        id:
           type: string
         fileId:
           type: string
