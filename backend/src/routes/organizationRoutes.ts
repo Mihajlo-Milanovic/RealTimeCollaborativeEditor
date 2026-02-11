@@ -1,68 +1,76 @@
 import {Request, Response, Router} from "express";
 import * as oc from "../controllers/organizationController";
 import * as validation from "../middlewares/validation/httpRequestValidation";
+import {
+    validateChildrenAdmission,
+    validateIdFromPath, validateMembersIds,
+    validateOrganization,
+    validateString
+} from "../middlewares/validation/httpRequestValidation";
 
 export const organizationRouter = Router();
 
-organizationRouter.all('/',
-    (req: Request, res: Response) => {
-
-        const routes: Array<string> = organizationRouter.stack.map(({route}) =>
-            `[${[...new Set(route?.stack?.map(entry => entry.method))]}] ${route?.path}`
-        );
-        res.json(routes).end();
-    });
-
-organizationRouter.get('/getOrganizationByName/',
-    validation.validateString('organizationName'),
+organizationRouter.get('/name/:name',
+    validateString('name'),
     oc.getOrganizationByName
 );
 
-organizationRouter.get('/getOrganizationById/',
-    validation.validateIdFromQuery('organizationId'),
+organizationRouter.get('/:id',
+    validateIdFromPath('id'),
     oc.getOrganizationById
 );
 
-organizationRouter.get('/createOrganization/',
-    validation.validateOrganization(),
+organizationRouter.post('/create',
+    validateOrganization(),
     oc.createOrganization
 );
 
-organizationRouter.get('/addChildrenByIds/',
+organizationRouter.put('/:id/addChildren',
+    validateIdFromPath('id'),
+    validateChildrenAdmission(),
     oc.addChildrenByIds
 );
 
-organizationRouter.get('/removeFromChildrenByIds/',
+organizationRouter.put('/:id/removeChildren/',
+    validateIdFromPath('id'),
+    validateChildrenAdmission(),
     oc.removeFromChildrenByIds
 );
 
-organizationRouter.get('/addFilesByIds/',
-    oc.addFilesByIds
-);
+// organizationRouter.put('/addFilesByIds/',
+//     oc.addFilesByIds
+// );
+//
+// organizationRouter.put('/removeFromFilesByIds/',
+//     oc.removeFromFilesByIds
+// );
 
-organizationRouter.get('/removeFromFilesByIds/',
-    oc.removeFromFilesByIds
-);
-
-organizationRouter.get('/addMembersByIds/',
+organizationRouter.put('/:id/addMembers',
+    validateIdFromPath('id'),
+    validateMembersIds(),
     oc.addMembersByIds
 );
 
-organizationRouter.get('/removeFromMembersByIds/',
+organizationRouter.put('/:id/removeMembers/',
+    validateIdFromPath('id'),
+    validateMembersIds(),
     oc.removeFromMembersByIds
 );
 
-organizationRouter.get('/addProjectionsByIds/',
+organizationRouter.put('/:id/addProjections/',
+    validateIdFromPath("id"),
+    validateChildrenAdmission(),
     oc.addProjectionsByIds
 );
 
-organizationRouter.get('/removeFromProjectionsByIds/',
+organizationRouter.put('/:id/removeProjections/',
+    validateIdFromPath("id"),
+    validateChildrenAdmission(),
     oc.removeFromProjectionsByIds
 );
 
-
-organizationRouter.delete('/deleteOrganization',
-    validation.validateIdFromQuery('organizationId'),
-    validation.validateIdFromQuery('applicantId'),
+organizationRouter.delete('/:id/delete/userId/:userId',
+    validation.validateIdFromPath("id"),
+    validation.validateIdFromPath("userId"),
     oc.deleteOrganization
 );

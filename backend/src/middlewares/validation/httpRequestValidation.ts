@@ -23,7 +23,7 @@ export function validateEmail(){
 }
 
 export function validateString(fieldName: string){
-    return validator.query(fieldName, `Field '${fieldName}' is required.`)
+    return validator.param(fieldName, `Field '${fieldName}' is required.`)
         .trim()
         .notEmpty()
         .isString();
@@ -215,27 +215,40 @@ export function validateReaction()  {
 
 /**
  *@return
- * Validation chain for validating children to be added to directory
+ * Validation chain for validating children to be added to the directory
  */
 export function validateChildrenAdmission(){
     return validator.checkSchema(
         {
-            dirId: mongoIdObject('dirId'),
             children: optionalArrayOfTrimmedMongoIdsObject()
-        }
+        },
+        ["body"]
     )
 }
 
 /**
  *@return
- * Validation chain for validating files to be added to directory
+ * Validation chain for validating files to be added to the directory
  */
 export function validateFilesAdmission(){
     return validator.checkSchema(
         {
-            dirId: mongoIdObject('dirId'),
             files: optionalArrayOfTrimmedMongoIdsObject()
-        }
+        },
+        ["body"]
+    )
+}
+
+/**
+ *@return
+ * Validation chain for validating members to be added to the organization
+ */
+export function validateMembersIds(){
+    return validator.checkSchema(
+        {
+            members: optionalArrayOfTrimmedMongoIdsObject()
+        },
+        ["body"]
     )
 }
 

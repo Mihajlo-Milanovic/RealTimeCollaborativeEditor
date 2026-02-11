@@ -3,6 +3,7 @@ import * as os from "../services/organizationService";
 import { matchedData } from "express-validator";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
 import { INewOrganization } from "../data/interfaces/IOrganization";
+import {OrganizationView} from "../data/types/OrganizationView";
 
 
 export async function getOrganizationByName (req: Request, res: Response, next: NextFunction) {
@@ -11,9 +12,9 @@ export async function getOrganizationByName (req: Request, res: Response, next: 
         return;
 
     try {
-        const data: {organizationName: string} = matchedData(req);
-        const result = await os.getOrganizationByName(data.organizationName);
-       if (result)
+        const data: {name: string} = matchedData(req);
+        const result: OrganizationView | null = await os.getOrganizationByName(data.name);
+        if (result)
             res.status(200).json({
                 success: true,
                 data: result,
@@ -35,8 +36,8 @@ export async function getOrganizationById(req: Request, res: Response, next: Nex
         return;
 
     try {
-        const data: { organizationId: string } = matchedData(req);
-        const result = await os.getOrganizationById(data.organizationId);
+        const data: { id: string } = matchedData(req);
+        const result: OrganizationView | null = await os.getOrganizationById(data.id);
         if (result)
             res.status(200).json({
                 success: true,
@@ -61,16 +62,16 @@ export async function createOrganization(req: Request, res: Response, next: Next
 
     try {
         const bodyObj = matchedData(req) as INewOrganization;
-        const result = await os.createOrganization(bodyObj);
-       if (result instanceof Error)
+        const result: OrganizationView | null = await os.createOrganization(bodyObj);
+       if (result != null)
+           res.status(201).json({
+               success: true,
+               data: result,
+           });
+       else
             res.status(400).json({
                 success: false,
-                message: result.message,
-            });
-        else
-            res.status(201).json({
-                success: true,
-                data: result,
+                message: "Couldn't create organization.",
             });
     }
     catch (err) {
@@ -85,8 +86,8 @@ export async function addChildrenByIds (req: Request, res: Response, next: NextF
         return;
 
     try {
-        const data: {organizationId: string, children: Array<string>} = matchedData(req);
-        const result = await os.addChildrenByIds(data.organizationId, data.children);
+        const data: {id: string, children: Array<string>} = matchedData(req);
+        const result: OrganizationView | null = await os.addChildrenByIds(data.id, data.children);
         if (result)
             res.status(200).json({
                 success: true,
@@ -110,18 +111,18 @@ export async function removeFromChildrenByIds (req: Request, res: Response, next
         return;
 
     try {
-        const data: {organizationId: string, children: Array<string>} = matchedData(req);
-        const result = await os.removeFromChildrenByIds(data.organizationId, data.children);
+        const data: {id: string, children: Array<string>} = matchedData(req);
+        const result: OrganizationView | null = await os.removeFromChildrenByIds(data.id, data.children);
        if (result)
-            res.status(200).json({
+           res.status(200).json({
                 success: true,
                 data: result,
-            });
-        else
-            res.status(404).json({
+           });
+       else
+           res.status(404).json({
                 success: false,
                 message: "Cant remove children.",
-            });
+           });
     }
    catch (err) {
         next(err);
@@ -129,10 +130,10 @@ export async function removeFromChildrenByIds (req: Request, res: Response, next
 }
 
 // export async function addFilesByIds (req: Request, res: Response, next: NextFunction) {
-
+//
 //     if (checkForValidationErrors(req, res))
 //         return;
-
+//
 //     try {
 //         const data: {organizationId: string, files: Array<string>} = matchedData(req);
 //         const result = await os.addFilesByIds(data.organizationId, data.files);
@@ -151,12 +152,12 @@ export async function removeFromChildrenByIds (req: Request, res: Response, next
 //         next(err);
 //     }
 // }
-
+//
 // export async function removeFromFilesByIds (req: Request, res: Response) {
-
+//
 //     if (checkForValidationErrors(req, res))
 //         return;
-
+//
 //     try {
 //         const bodyObj: {organizationId: string, files: Array<string>} = matchedData(req);
 //         const org = await os.removeFromFilesByIds(bodyObj.organizationId, bodyObj.files);
@@ -177,8 +178,8 @@ export async function addMembersByIds (req: Request, res: Response, next: NextFu
         return;
 
     try {
-        const data: {organizationId: string, membersIdsAndPrivilages: Map<string,string>} = matchedData(req);
-        const result = await os.addMembersByIds(data.organizationId, data.membersIdsAndPrivilages);
+        const data: {id: string, members: Map<string,string>} = matchedData(req);
+        const result: OrganizationView | null = await os.addMembersByIds(data.id, data.members);
         if (result)
             res.status(200).json({
                 success: true,
@@ -201,8 +202,8 @@ export async function removeFromMembersByIds (req: Request, res: Response, next:
         return;
 
     try {
-        const data: {organizationId: string, members: Array<string>} = matchedData(req);
-        const result = await os.removeFromMembersByIds(data.organizationId, data.members);
+        const data: {id: string, members: Array<string>} = matchedData(req);
+        const result: OrganizationView | null = await os.removeFromMembersByIds(data.id, data.members);
         if (result)
             res.status(200).json({
                 success: true,
@@ -225,8 +226,8 @@ export async function addProjectionsByIds (req: Request, res: Response, next: Ne
         return;
 
     try {
-        const data: {organizationId: string, projections: Array<string>} = matchedData(req);
-        const result = await os.addProjectionsByIds(data.organizationId, data.projections);
+        const data: {id: string, children: Array<string>} = matchedData(req);
+        const result: OrganizationView | null = await os.addProjectionsByIds(data.id, data.children);
        if (result)
             res.status(200).json({
                 success: true,
@@ -249,8 +250,8 @@ export async function removeFromProjectionsByIds (req: Request, res: Response, n
         return;
 
     try {
-        const data: {organizationId: string, projections: Array<string>} = matchedData(req);
-        const result = await os.removeFromProjectionsByIds(data.organizationId, data.projections);
+        const data: {id: string, children: Array<string>} = matchedData(req);
+        const result: OrganizationView | null = await os.removeFromProjectionsByIds(data.id, data.children);
         if (result)
             res.status(200).json({
                 success: true,
@@ -274,8 +275,8 @@ export async function deleteOrganization (req: Request, res: Response, next: Nex
         return;
 
     try {
-        const data: { organizationId: string, applicantId: string} = matchedData(req);
-        const result = await os.deleteOrganization(data.organizationId, data.applicantId);
+        const data: { id: string, userId: string} = matchedData(req);
+        const result = await os.deleteOrganization(data.id, data.userId);
         if (result)
             res.status(200).json({
                 success: true,

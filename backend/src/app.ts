@@ -8,6 +8,7 @@ import {directoryRouter} from './routes/directoryRoutes';
 import {fileRouter} from './routes/fileRoutes';
 import {commentRouter} from './routes/commentRoutes';
 import {reactionRouter} from './routes/reactionRoutes';
+import {organizationRouter} from './routes/organizationRoutes';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
@@ -33,6 +34,7 @@ app.use('/directories', directoryRouter);
 app.use('/files', fileRouter);
 app.use('/comments', commentRouter);
 app.use('/reactions', reactionRouter);
+app.use('/organizations', organizationRouter);
 
 app.get('/',
     (req: express.Request, res: express.Response) => {
