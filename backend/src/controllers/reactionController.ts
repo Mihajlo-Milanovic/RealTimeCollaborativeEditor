@@ -3,6 +3,7 @@ import {checkForValidationErrors} from "../middlewares/validation/checkForValida
 import {matchedData} from "express-validator";
 import * as rs from "../services/reactionService";
 import {INewReaction} from "../data/interfaces/IReaction";
+import {ReactionView} from "../data/types/ReactionView";
 
 
 export async function createOrUpdateReaction(req: Request, res: Response, next: NextFunction) {
@@ -11,9 +12,9 @@ export async function createOrUpdateReaction(req: Request, res: Response, next: 
         return;
 
     try {
-        const bodyObj = matchedData(req) as INewReaction;
+        const data = matchedData(req) as INewReaction;
 
-        const result = await rs.createOrUpdateReaction(bodyObj);
+        const result: {updated: boolean, reaction: ReactionView | null} = await rs.createOrUpdateReaction(data);
 
         if (result.updated && result.reaction != null)
             res.status(200).json({
@@ -46,7 +47,7 @@ export async function getReactionById(req: Request, res: Response, next: NextFun
     try {
         const data: { reactionId: string } = matchedData(req);
 
-        const result = await rs.getReactionById(data.reactionId);
+        const result: ReactionView | null  = await rs.getReactionById(data.reactionId);
 
         if (result != null)
             res.status(200).json({
@@ -72,7 +73,7 @@ export async function getReactionByCommentAndUser(req: Request, res: Response, n
     try {
         const data: { userId: string, commentId: string } = matchedData(req);
 
-        const result = await rs.getReactionByCommentAndUser(data.userId, data.commentId);
+        const result: ReactionView | null = await rs.getReactionByCommentAndUser(data.userId, data.commentId);
 
         if (result != null)
             res.status(200).json({
@@ -98,7 +99,7 @@ export async function deleteReaction(req: Request, res: Response, next: NextFunc
     try {
         const data: { reactionId: string } = matchedData(req);
 
-        const result = await rs.deleteReaction(data.reactionId);
+        const result: ReactionView | null = await rs.deleteReaction(data.reactionId);
 
         if (result != null)
             res.status(200).json({
