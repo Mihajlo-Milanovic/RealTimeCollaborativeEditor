@@ -1,19 +1,18 @@
 import File from "../data/dao/FileSchema"
 import Directory from "../data/dao/DirectorySchema";
-import { Types } from "mongoose"
-import {IFile, SimpleFile} from "../data/interfaces/IFile";
+import {IFile, IFilePopulated, INewFile} from "../data/interfaces/IFile";
 import {IDirectory} from "../data/interfaces/IDirectory";
 import {IComment} from "../data/interfaces/IComment";
 
 
-export async function createFile (file: SimpleFile): Promise<IFile | null> {
+export async function createFile (file: INewFile): Promise<IFile | null> {
 
-    const dir: IDirectory | null = await Directory.findById(file.parent);
+    const dir: IDirectory | null = await Directory.findById(file.parent).exec();
 
-    if (dir) {
+    if (dir != null) {
         let newFile: IFile | null = await File.create(file);
-        if (newFile) {
-            dir.files.push(newFile._id as Types.ObjectId);
+        if (newFile != null) {
+            dir.files.push(newFile._id);
             await dir.save();
         }
         return newFile;
@@ -21,33 +20,32 @@ export async function createFile (file: SimpleFile): Promise<IFile | null> {
     return null;
 }
 
-export async function deleteFile(fileId: string): Promise<boolean> {
+export async function deleteFile(fileId: string): Promise<IFile | null> {
 
-        const file: IFile | null = await File.findById(fileId);
-        if (!file)
-            return false;
+    const file: IFile | null = await File.findById(fileId).exec();
+    if (file == null)
+        return null;
 
-        const parentDir: IDirectory | null = await Directory.findById(file.parent);
-        if (!parentDir)
-            return false;
-
+    const parentDir: IDirectory | null = await Directory.findById(file.parent).exec();
+    if (parentDir != null) {
         parentDir.files = parentDir.files.filter(fId => !fId.equals(file.id));
         await parentDir.save();
+    }
 
-        await File.findByIdAndDelete(file.id);
-
-        return true;
+    return await File.findByIdAndDelete(file.id).exec();
 }
 
 export async function getFileById(fileId: string): Promise<IFile | null> {
-    return File.findById(fileId);
+    return await File.findById(fileId)
+        .populate(["owner", "comments"])
+        .exec();
 }
 
 export async function getCommentsForFile(fileId: string): Promise<Array<IComment> | null> {
 
-    // const file: IFile | null = await File.findById(fileId);
-    // if (file)
-    //     return Comment.find({ file: fileId });
-    // else
+    const file = await File.findById(fileId).populate("comments").exec() as IFilePopulated | null;
+    if (file != null)
+        return file.comments;
+    else
         return null;
 }
