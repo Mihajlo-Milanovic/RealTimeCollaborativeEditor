@@ -28,44 +28,35 @@ organizationRouter.get('/createOrganization/',
     oc.createOrganization
 );
 
-//TODO: Add missing validations
 organizationRouter.get('/addChildrenByIds/',
-
     oc.addChildrenByIds
 );
 
 organizationRouter.get('/removeFromChildrenByIds/',
-
     oc.removeFromChildrenByIds
 );
 
 organizationRouter.get('/addFilesByIds/',
-
     oc.addFilesByIds
 );
 
 organizationRouter.get('/removeFromFilesByIds/',
-
     oc.removeFromFilesByIds
 );
 
 organizationRouter.get('/addMembersByIds/',
-
     oc.addMembersByIds
 );
 
 organizationRouter.get('/removeFromMembersByIds/',
-
     oc.removeFromMembersByIds
 );
 
 organizationRouter.get('/addProjectionsByIds/',
-
     oc.addProjectionsByIds
 );
 
 organizationRouter.get('/removeFromProjectionsByIds/',
-
     oc.removeFromProjectionsByIds
 );
 

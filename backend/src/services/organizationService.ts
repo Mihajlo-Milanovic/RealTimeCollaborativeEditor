@@ -1,9 +1,9 @@
-import {IOrganization, SimpleOrganization} from "../data/interfaces/IOrganization";
+import {IOrganization, INewOrganization} from "../data/interfaces/IOrganization";
 import Organization from "../data/dao/OrganizationSchema";
 import { Types } from "mongoose";
 import { deleteFile } from "./fileService"
 import {createDirectory, deleteDirectory} from "./directoryService";
-import {IDirectory, isIDirectory} from "../data/interfaces/IDirectory";
+import {IDirectory} from "../data/interfaces/IDirectory";
 import Directory from "../data/dao/DirectorySchema";
 import {IUser} from "../data/interfaces/IUser";
 import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
@@ -17,13 +17,13 @@ export async function getOrganizationByName (orgName: string): Promise<Array<IOr
 export async function getOrganizationById(orgId: string): Promise<IOrganization | null> {
 
     return await Organization.findById(orgId).exec();
-    //.populate(['files', 'children', 'members', 'organizer'])
 }
 
 
-export async function createOrganization (organization: SimpleOrganization): Promise<IOrganization | null> {
+export async function createOrganization (organization: INewOrganization): Promise<IOrganization | null> {
 
-    return await Organization.create(organization);
+    return await Organization.create(organization)
+    ;
 }
 
 
@@ -31,7 +31,7 @@ export async function addChildrenByIds (organizationId: string, childrenIds: Arr
 
     const org: IOrganization | null = await Organization.findById(organizationId);
 
-    if (org) {
+    if (org != null) {
         childrenIds = [...new Set(
             childrenIds.concat(
                 org.children.map(child => child.toHexString())
@@ -64,98 +64,74 @@ export async function removeFromChildrenByIds (organizationId: string, childrenI
     return org;
 }
 
-export async function addFilesByIds (organizationId: string, filesIds: Array<string>): Promise<IOrganization | null> {
+// export async function addFilesByIds (organizationId: string, filesIds: Array<string>): Promise<IOrganization | null> {
+
+//     const org: IOrganization | null = await Organization.findById(organizationId);
+
+//     if (org) {
+//         filesIds = [...new Set(
+//             filesIds.concat(
+//                 org.files.map(file => file.toHexString())
+//             )
+//         )];
+
+//         org.files = filesIds.map(fileId =>
+//             new Types.ObjectId(fileId)
+//         );
+//         await org.save();
+//     }
+//     return org;
+
+// }
+
+
+export async function addMembersByIds (organizationId: string, membersIdsAndPrivilages: Map<string,string>): Promise<IOrganization | null> {
 
     const org: IOrganization | null = await Organization.findById(organizationId);
 
-    if (org) {
-        filesIds = [...new Set(
-            filesIds.concat(
-                org.files.map(file => file.toHexString())
-            )
-        )];
-
-        org.files = filesIds.map(fileId =>
-            new Types.ObjectId(fileId)
-        );
-        await org.save();
+    if (org != null) {        
+        membersIdsAndPrivilages.forEach((value,key) => org.members.set(key,value));
+        await org.save()
     }
+
     return org;
 }
 
-export async function removeFromFilesByIds (organizationId: string, filesIdsToRemove: Array<string>): Promise<IOrganization | null> {
+export async function removeFromMembersByIds(organizationId: string,membersIdsToRemove: Array<string>): Promise<IOrganization | null> {
 
     const org: IOrganization | null = await Organization.findById(organizationId);
 
-    if (org) {
-        const toRemove = new Set(filesIdsToRemove);
-        const filesIds = org.files
-            .map(file => file.toHexString())
-            .filter(el => !toRemove.has(el));
+    if (org != null) {
 
-        org.files = filesIds.map(fileId =>
-            new Types.ObjectId(fileId)
-        );
+        membersIdsToRemove.forEach(memberId => {
+            org.members.delete(memberId);
+        });
+
         await org.save();
     }
+
     return org;
 }
 
-export async function addMembersByIds (organizationId: string, membersIds: Array<string>): Promise<IOrganization | null> {
-
-    const org: IOrganization | null = await Organization.findById(organizationId);
-
-    if (org) {
-        membersIds = [...new Set(
-            membersIds.concat(
-                org.members.map(member => member.toHexString())
-            )
-        )];
-
-        org.members = membersIds.map(memberId =>
-            new Types.ObjectId(memberId)
-        );
-        await org.save();
-    }
-    return org;
-}
-
-export async function removeFromMembersByIds (organizationId: string, membersIdsToRemove: Array<string>): Promise<IOrganization | null> {
-
-    const org: IOrganization | null = await Organization.findById(organizationId);
-
-    if (org) {
-        const toRemove = new Set(membersIdsToRemove);
-        const membersIds = org.members
-            .map(member => member.toHexString())
-            .filter(el => !toRemove.has(el));
-
-        org.files = membersIds.map(memberId =>
-            new Types.ObjectId(memberId)
-        );
-        await org.save();
-    }
-    return org;
-}
 
 export async function addProjectionsByIds (organizationId: string, projectionsIds: Array<string>): Promise<IOrganization | null> {
 
-    const org: IOrganization | null = await Organization.findById(organizationId).populate('projections').select('projections').exec()
+    const org: IOrganization | null = await Organization.findById(organizationId).select('projections').populate('projections').exec()
 
-    if (org) {
+    if (org != null) {
 
         const projectionsDict = new Map<string, IDirectory>();
 
         org.projections.forEach(projection => {
-            if (isIDirectory(projection)) {
-                projectionsDict.set(projection.name, projection)
-            }
+            const proj = projection as unknown as IDirectory;
+            projectionsDict.set(proj.name, proj);
         });
 
         const projections: Array<IDirectory> = await Directory.find({ _id: { $in: projectionsIds } })
+                                                                .select('owner')
                                                                 .populate('owner')
-                                                                .select('owner');
-
+                                                                .exec();
+        
         for (const projection of projections) {
 
             const owner = projection.owner as unknown as IUser;
@@ -175,10 +151,11 @@ export async function addProjectionsByIds (organizationId: string, projectionsId
                const newNamespace = await createDirectory({
                    name: owner.username,
                    owner: owner.id,
-                   children: [projection.id],
-                   files:[],
+                   
                    parents: [org.id],
                });
+
+               addChildrenByIds(newNamespace?.id,[projection.id]);
 
                if (newNamespace) {
                    projection.parents.push(newNamespace._id as Types.ObjectId);
@@ -200,17 +177,17 @@ export async function removeFromProjectionsByIds (organizationId: string, projec
                                                         .populate('projections')
                                                         .select('projections');
 
-    if (org) {
+    if (org != null) {
 
         if (org.projections.length == 0)
             return org;
 
         const mapOfProjections = new Map<string, IDirectory>();
         for (const projection of org.projections){
-            if (isIDirectory(projection)) {
-                mapOfProjections.set(projection.name, projection)
+                const proj = projection as unknown as IDirectory;
+                mapOfProjections.set(proj.name, proj)
             }
-        }
+      
         const toRemove = new Set(projectionsIdsToRemove);
         const projectionsToRemove: Array<IDirectory> | null = await Directory.find({ _id: { $in: toRemove }})
                                                                             .populate(['owner', 'parents'])
@@ -221,18 +198,17 @@ export async function removeFromProjectionsByIds (organizationId: string, projec
 
         const mapOfProjectionsToRemove = new Map< string, Array<IDirectory> >();
         for (const projection of projectionsToRemove) {
-            if (isIDirectory(projection)) {
-                const name = (projection.owner as unknown as IUser).username;
+             const proj = projection as unknown as IDirectory;
+                const name = (proj.owner as unknown as IUser).username;
                 if (mapOfProjectionsToRemove.has(name))
-                    mapOfProjectionsToRemove.get(name)?.push(projection);
+                    mapOfProjectionsToRemove.get(name)?.push(proj);
                 else
-                    mapOfProjectionsToRemove.set(name, [projection]);
+                    mapOfProjectionsToRemove.set(name, [proj]);
             }
-        }
 
         for ( const name_projection of mapOfProjections.entries()){
             const childrenToRemove = mapOfProjectionsToRemove.get(name_projection[0]);
-            if (childrenToRemove){
+            if (childrenToRemove != null) {
                 const forRemoval = new Set(...childrenToRemove.map(dir => dir.id));
                 name_projection[1].children.map(childObjId => childObjId.toHexString())
                                             .filter(childId => !forRemoval.has(childId));
@@ -246,8 +222,7 @@ export async function removeFromProjectionsByIds (organizationId: string, projec
         await org.save();
     }
     return org;
-}
-
+    }
 
 export async function deleteOrganization (organizationId: string, applicantId: string) {
 
@@ -263,23 +238,15 @@ export async function deleteOrganization (organizationId: string, applicantId: s
     if (org.organizer.toHexString() !== applicantId)
         return new Error('Only organizer can delete the organization.');
 
-
-    for(const f of org.files) {
-        await deleteFile(f.toHexString());
-        numberOfDeletions.filesDeleted++;
-    }
-
     for(const c of org.children) {
         numberOfDeletions.accumulate( await deleteDirectory(c.toHexString()) );
     }
 
     for (const p of org.projections){
-        // if(isIDirectory(p)){
             p.parents = p.parents.filter(el => el.toHexString() !== organizationId);
-            if(p.parents.length == 0) {
-                numberOfDeletions.accumulate( await deleteDirectory(p.id) );
-            }
-        // }
+            // if(p.parents.length == 0) {
+            //     numberOfDeletions.accumulate( await deleteDirectory(p.id) );
+            // }
     }
 
     return numberOfDeletions;
