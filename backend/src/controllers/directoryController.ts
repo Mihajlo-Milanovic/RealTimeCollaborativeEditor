@@ -4,6 +4,8 @@ import {IFile} from "../data/interfaces/IFile";
 import { matchedData } from "express-validator";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
 import {IDirectory, INewDirectory} from "../data/interfaces/IDirectory";
+import {DirectoryView} from "../data/types/DirectoryView";
+import {FileView} from "../data/types/FileView";
 
 
 export async function createDirectory (req: Request, res: Response, next: NextFunction) {
@@ -13,7 +15,7 @@ export async function createDirectory (req: Request, res: Response, next: NextFu
 
     try {
         const dir: INewDirectory = {...matchedData(req) };
-        const result = await ds.createDirectory(dir);
+        const result: DirectoryView | null = await ds.createDirectory(dir);
         if (result)
             res.status(201).json({
                 success: true,
@@ -56,7 +58,7 @@ export async function getUsersDirectories (req: Request, res: Response, next: Ne
 
     try {
         const { userId } = matchedData(req);
-        const result = await ds.getDirectoriesByOwnerId(userId);
+        const result: Array<DirectoryView> | null = await ds.getDirectoriesByOwnerId(userId);
         if (result != null)
             res.status(200).json({
                 success: true,
@@ -80,7 +82,7 @@ export async function getUsersDirectoriesStructured (req: Request, res: Response
 
     try {
         const { userId } = matchedData(req);
-        const result = await ds.getDirectoriesStructured(userId);
+        const result: Array<DirectoryView> | null = await ds.getDirectoriesStructured(userId);
         if (result)
             res.status(200).json({
                 success: true,
@@ -104,7 +106,7 @@ export async function getDirectoryWithChildrenAndFiles(req: Request, res: Respon
 
     try {
         const { id } = matchedData(req);
-        const result: IDirectory | null = await ds.getDirectoryWithChildrenAndFiles(id);
+        const result: DirectoryView | null = await ds.getDirectoryWithChildrenAndFiles(id);
         if (result)
             res.status(200).json({
                 success: true,
@@ -122,12 +124,13 @@ export async function getDirectoryWithChildrenAndFiles(req: Request, res: Respon
 }
 
 export async function getUserRootDirectories(req: Request, res: Response, next: NextFunction) {
+
     if (checkForValidationErrors(req, res))
         return;
 
     try {
         const { userId } = matchedData(req);
-        const result = await ds.getUserRootDirectories(userId);
+        const result: Array<DirectoryView> | null = await ds.getUserRootDirectories(userId);
 
         if (result)
             res.status(200).json({
@@ -152,7 +155,7 @@ export async function getFilesInDirectory(req: Request, res: Response, next: Nex
 
     try {
         const { id } = matchedData(req);
-        const result: Array<IFile> | null = await ds.getFilesForDirectory(id);
+        const result: Array<FileView> | null = await ds.getFilesForDirectory(id);
         if (result)
             res.status(200).json({
                 success: true,
@@ -176,7 +179,7 @@ export async function addChildrenByIds (req: Request, res: Response, next: NextF
 
     try {
         const { id, children } = matchedData(req);
-        const result = await ds.addChildrenByIds(id, children);
+        const result: DirectoryView | null = await ds.addChildrenByIds(id, children);
         if (result)
             res.status(204).end();
         else
@@ -197,7 +200,7 @@ export async function removeFromChildrenByIds (req: Request, res: Response, next
 
     try {
         const { id, children } = matchedData(req);
-        const result = await ds.removeFromChildrenByIds(id, children);
+        const result: DirectoryView | null = await ds.removeFromChildrenByIds(id, children);
         if (result)
             res.status(204).end();
         else
@@ -218,7 +221,7 @@ export async function addFilesByIds (req: Request, res: Response, next: NextFunc
 
     try {
         const { id, files } = matchedData(req);
-        const result = await ds.addFilesByIds(id, files);
+        const result: DirectoryView | null = await ds.addFilesByIds(id, files);
         if (result)
             res.status(204).end();
         else
@@ -239,7 +242,7 @@ export async function removeFromFilesByIds (req: Request, res: Response, next: N
 
     try {
         const { id, files } = matchedData(req);
-        const result = await ds.removeFromFilesByIds(id, files);
+        const result: DirectoryView | null = await ds.removeFromFilesByIds(id, files);
         if (result)
             res.status(204).end();
         else

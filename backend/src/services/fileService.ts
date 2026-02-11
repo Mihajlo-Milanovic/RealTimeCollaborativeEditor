@@ -49,3 +49,25 @@ export async function getCommentsForFile(fileId: string): Promise<Array<IComment
     else
         return null;
 }
+
+export async function getStateForFileWithId(fileId: string): Promise<Buffer | null> {
+
+    const file = await File.findById(fileId).exec() as IFile | null;
+
+    if(file != null)
+        return file.yDocState
+    else
+        return null;
+}
+
+export async function setStateForFileWithId(fileId: string, documentState: Buffer): Promise<boolean> {
+
+    const file = await File.findById(fileId).exec() as IFile | null;
+    if(file != null) {
+        file.yDocState = documentState;
+        await file.save();
+        return true;
+    }
+    else
+        return false;
+}

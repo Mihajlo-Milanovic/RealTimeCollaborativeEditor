@@ -1,4 +1,4 @@
-import {Router} from "express";
+import {Router, raw} from "express";
 import * as fc from "../controllers/fileController";
 import {validateFile, validateIdFromPath} from "../middlewares/validation/httpRequestValidation";
 
@@ -20,10 +20,19 @@ fileRouter.delete('/:id/delete',
     fc.deleteFile
 );
 
-// fileRouter.post('/:id/update',
-//     validation.validateFileUpdate(),
-//     fc.updateFileWithId
-// );
+fileRouter.get('/:id/state',
+    validateIdFromPath('id'),
+    fc.getFileState
+);
+
+fileRouter.post('/:id/state',
+    raw({
+        type: 'application/octet-stream',
+        limit: '10mb'
+    }),
+    validateIdFromPath('id'),
+    fc.updateFileState
+);
 
 fileRouter.get('/:id/comments',
     validateIdFromPath("id"),

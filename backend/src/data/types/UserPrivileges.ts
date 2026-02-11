@@ -1,1 +1,3 @@
-export type UserPrivilages = "admin" | "editor" | "viewer";
+
+
+export type UserPrivileges = "admin" | "editor" | "viewer";

@@ -3,6 +3,7 @@ import * as us from "../services/userService";
 import { INewUser } from "../data/interfaces/IUser";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
 import { matchedData } from "express-validator";
+import {UserView} from "../data/types/UserView";
 
 export async function createUser(req: Request, res: Response, next: NextFunction) {
 
@@ -10,9 +11,9 @@ export async function createUser(req: Request, res: Response, next: NextFunction
         return;
 
     try {
-        const bodyObj = matchedData(req) as INewUser;
+        const data = matchedData(req) as INewUser;
 
-        const result = await us.createNewUser(bodyObj);
+        const result: UserView | Error = await us.createNewUser(data);
 
         if (result instanceof Error)
             res.status(400).json({
@@ -39,7 +40,7 @@ export async function deleteUserWithId(req: Request, res: Response, next: NextFu
     try {
         const data: { id: string } = matchedData(req);
 
-        const result = await us.deleteUserWithId(data.id);
+        const result: UserView | null = await us.deleteUserWithId(data.id);
 
         if (result)
             res.status(200).json({
@@ -61,7 +62,7 @@ export async function deleteUserWithId(req: Request, res: Response, next: NextFu
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const users = await us.getAllUsers();
+        const users: Array<UserView> = await us.getAllUsers();
 
         res.status(200).json({
             success: true,
@@ -81,7 +82,7 @@ export async function getUserById(req: Request, res: Response, next: NextFunctio
     try {
         const data: { id: string } = matchedData(req);
 
-        const result = await us.getUserById(data.id);
+        const result: UserView | null = await us.getUserById(data.id);
 
         if (result)
             res.status(200).json({
@@ -108,7 +109,7 @@ export async function getUserByEmail(req: Request, res: Response, next: NextFunc
     try {
         const data: { email: string } = matchedData(req);
 
-        const result = await us.getUserWithEmail(data.email);
+        const result: UserView | null = await us.getUserWithEmail(data.email);
 
         if (result)
             res.status(200).json({
@@ -135,7 +136,7 @@ export async function getUserByVerificationToken(req: Request, res: Response, ne
     try {
         const data: { verificationToken: string } = matchedData(req);
 
-        const result = await us.getUserByVerificationToken(data.verificationToken);
+        const result: UserView | null = await us.getUserByVerificationToken(data.verificationToken);
 
         if (result)
             res.status(200).json({
@@ -162,7 +163,7 @@ export async function verifyUser(req: Request, res: Response, next: NextFunction
     try {
         const data: { verificationToken: string } = matchedData(req);
 
-        const result = await us.verifyUser(data.verificationToken);
+        const result: UserView | null = await us.verifyUser(data.verificationToken);
 
         if (result)
             res.status(200).json({
