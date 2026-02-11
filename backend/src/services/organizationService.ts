@@ -9,9 +9,9 @@ import {IUser} from "../data/interfaces/IUser";
 import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
 
 
-export async function getOrganizationByName (orgName: string): Promise<Array<IOrganization> | null> {
+export async function getOrganizationByName (orgName: string): Promise<IOrganization | null> {
 
-    return Organization.findOne({name: orgName});
+    return await Organization.findOne({name: orgName}).exec();
 }
 
 export async function getOrganizationById(orgId: string): Promise<IOrganization | null> {
@@ -22,8 +22,7 @@ export async function getOrganizationById(orgId: string): Promise<IOrganization 
 
 export async function createOrganization (organization: INewOrganization): Promise<IOrganization | null> {
 
-    return await Organization.create(organization)
-    ;
+    return await Organization.create(organization);
 }
 
 
@@ -155,9 +154,9 @@ export async function addProjectionsByIds (organizationId: string, projectionsId
                    parents: [org.id],
                });
 
-               addChildrenByIds(newNamespace?.id,[projection.id]);
+               if (newNamespace != null) {
 
-               if (newNamespace) {
+                   await addChildrenByIds(newNamespace.id, [projection.id]);
                    projection.parents.push(newNamespace._id as Types.ObjectId);
                    org.projections.push(newNamespace._id as Types.ObjectId);
                }
