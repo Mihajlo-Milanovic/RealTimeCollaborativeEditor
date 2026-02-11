@@ -2,6 +2,8 @@ import { Document, Types } from "mongoose";
 import {IFile} from "./IFile";
 
 export interface IDirectory extends Document {
+    _id: Types.ObjectId;
+    id: string;
     name: string;
     owner: Types.ObjectId;
     parents: Array<Types.ObjectId>;
@@ -11,6 +13,8 @@ export interface IDirectory extends Document {
 }
 
 export interface IDirectoryPopulated extends Document {
+    _id: Types.ObjectId;
+    id: string;
     name: string;
     owner: Types.ObjectId;
     parents: Array<IDirectory>;

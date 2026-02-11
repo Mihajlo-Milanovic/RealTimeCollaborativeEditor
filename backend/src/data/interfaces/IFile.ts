@@ -30,5 +30,3 @@ export interface INewFile {
     owner: string;
     parent: string;
 }
-
-export type FileView = Omit<IFile, "_id" | "parent" | "yDocState">
