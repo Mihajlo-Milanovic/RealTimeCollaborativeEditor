@@ -1,235 +1,293 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from "express";
 import * as os from "../services/organizationService";
 import { matchedData } from "express-validator";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
-import { SimpleOrganization } from "../data/interfaces/IOrganization";
+import { INewOrganization } from "../data/interfaces/IOrganization";
 
 
-export async function getOrganizationByName (req: Request, res: Response) {
+export async function getOrganizationByName (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const queryParams: {organizationName: string} = matchedData(req);
-        const org = await os.getOrganizationByName(queryParams.organizationName);
-        if (org)
-            res.status(200).json(org).end();
+        const data: {organizationName: string} = matchedData(req);
+        const result = await os.getOrganizationByName(data.organizationName);
+       if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
         else
-            res.status(404).send("Organization not found.").end();
+            res.status(404).json({
+                success: false,
+                message: "Organization not found.",
+            });
+    }
+      catch (err) {
+        next(err);
+    }
+}
+
+export async function getOrganizationById(req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const data: { organizationId: string } = matchedData(req);
+        const result = await os.getOrganizationById(data.organizationId);
+        if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+        else
+            res.status(404).json({
+                success: false,
+                message: "Organization not found.",
+            });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
+        next(err);
     }
 }
 
-export async function getOrganizationById (req: Request, res: Response) {
+
+export async function createOrganization(req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const queryParams: { organizationId: string } = matchedData(req);
-        const org = await os.getOrganizationById(queryParams.organizationId);
-        if (org)
-            res.status(200).json(org).end();
+        const bodyObj = matchedData(req) as INewOrganization;
+        const result = await os.createOrganization(bodyObj);
+       if (result instanceof Error)
+            res.status(400).json({
+                success: false,
+                message: result.message,
+            });
         else
-            res.status(404).send("Organization not found.").end();
+            res.status(201).json({
+                success: true,
+                data: result,
+            });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
+        next(err);
     }
 }
 
 
-export async function createOrganization(req: Request, res: Response) {
+export async function addChildrenByIds (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const bodyObj = matchedData(req) as SimpleOrganization;
-        const org = await os.createOrganization(bodyObj);
-        if (org)
-            res.status(200).json(org).end();
+        const data: {organizationId: string, children: Array<string>} = matchedData(req);
+        const result = await os.addChildrenByIds(data.organizationId, data.children);
+        if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
         else
-            res.status(404).send("Organization could not be made.").end();
+            res.status(400).json({
+                success: false,
+                message: "Cant add children.",
+            });
+    }
+   catch (err) {
+        next(err);
+    }
+}
+
+
+export async function removeFromChildrenByIds (req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const data: {organizationId: string, children: Array<string>} = matchedData(req);
+        const result = await os.removeFromChildrenByIds(data.organizationId, data.children);
+       if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+        else
+            res.status(404).json({
+                success: false,
+                message: "Cant remove children.",
+            });
+    }
+   catch (err) {
+        next(err);
+    }
+}
+
+// export async function addFilesByIds (req: Request, res: Response, next: NextFunction) {
+
+//     if (checkForValidationErrors(req, res))
+//         return;
+
+//     try {
+//         const data: {organizationId: string, files: Array<string>} = matchedData(req);
+//         const result = await os.addFilesByIds(data.organizationId, data.files);
+//        if (result)
+//             res.status(200).json({
+//                 success: true,
+//                 data: result,
+//             });
+//         else
+//             res.status(404).json({
+//                 success: false,
+//                 message: "Cant find organization.",
+//             });
+//     }
+//    catch (err) {
+//         next(err);
+//     }
+// }
+
+// export async function removeFromFilesByIds (req: Request, res: Response) {
+
+//     if (checkForValidationErrors(req, res))
+//         return;
+
+//     try {
+//         const bodyObj: {organizationId: string, files: Array<string>} = matchedData(req);
+//         const org = await os.removeFromFilesByIds(bodyObj.organizationId, bodyObj.files);
+//         if (org)
+//             res.status(204).end();
+//         else
+//             res.status(404).send("Organization not found.").end();
+//     }
+//     catch (err){
+//         console.error(err);
+//         res.status(500).send("Internal server error occurred.").end();
+//     }
+// }
+
+export async function addMembersByIds (req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const data: {organizationId: string, membersIdsAndPrivilages: Map<string,string>} = matchedData(req);
+        const result = await os.addMembersByIds(data.organizationId, data.membersIdsAndPrivilages);
+        if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+        else
+            res.status(400).json({
+                success: false,
+                message: "Can't add members.",
+            });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
+        next(err);
     }
 }
 
-
-export async function addChildrenByIds (req: Request, res: Response) {
+export async function removeFromMembersByIds (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const bodyObj: {organizationId: string, children: Array<string>} = matchedData(req);
-        const org = await os.addChildrenByIds(bodyObj.organizationId, bodyObj.children);
-        if (org)
-            res.status(204).end();
+        const data: {organizationId: string, members: Array<string>} = matchedData(req);
+        const result = await os.removeFromMembersByIds(data.organizationId, data.members);
+        if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
         else
-            res.status(404).send("Organization not found.").end();
-    }
-    catch (err){
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
-export async function removeFromChildrenByIds (req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const bodyObj: {organizationId: string, children: Array<string>} = matchedData(req);
-        const org = await os.removeFromChildrenByIds(bodyObj.organizationId, bodyObj.children);
-        if (org)
-            res.status(204).end();
-        else
-            res.status(404).send("Organization not found.").end();
-    }
-    catch (err){
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
-export async function addFilesByIds (req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const bodyObj: {organizationId: string, files: Array<string>} = matchedData(req);
-        const org = await os.addFilesByIds(bodyObj.organizationId, bodyObj.files);
-        if (org)
-            res.status(204).end();
-        else
-            res.status(404).send("Organization not found.").end();
+            res.status(404).json({
+                success: false,
+                message: "User not found.",
+            });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
+        next(err);
     }
 }
 
-export async function removeFromFilesByIds (req: Request, res: Response) {
+export async function addProjectionsByIds (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const bodyObj: {organizationId: string, files: Array<string>} = matchedData(req);
-        const org = await os.removeFromFilesByIds(bodyObj.organizationId, bodyObj.files);
-        if (org)
-            res.status(204).end();
+        const data: {organizationId: string, projections: Array<string>} = matchedData(req);
+        const result = await os.addProjectionsByIds(data.organizationId, data.projections);
+       if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
         else
-            res.status(404).send("Organization not found.").end();
-    }
-    catch (err){
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
-export async function addMembersByIds (req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const bodyObj: {organizationId: string, members: Array<string>} = matchedData(req);
-        const org = await os.addMembersByIds(bodyObj.organizationId, bodyObj.members);
-        if (org)
-            res.status(204).end();
-        else
-            res.status(404).send("Organization not found.").end();
+            res.status(404).json({
+                success: false,
+                message: "Can't add projections.",
+            });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
+        next(err);
     }
 }
 
-export async function removeFromMembersByIds (req: Request, res: Response) {
+export async function removeFromProjectionsByIds (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const bodyObj: {organizationId: string, members: Array<string>} = matchedData(req);
-        const org = await os.removeFromMembersByIds(bodyObj.organizationId, bodyObj.members);
-        if (org)
-            res.status(204).end();
+        const data: {organizationId: string, projections: Array<string>} = matchedData(req);
+        const result = await os.removeFromProjectionsByIds(data.organizationId, data.projections);
+        if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
         else
-            res.status(404).send("Organization not found.").end();
-    }
-    catch (err){
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
-export async function addProjectionsByIds (req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const bodyObj: {organizationId: string, projections: Array<string>} = matchedData(req);
-        const org = await os.addProjectionsByIds(bodyObj.organizationId, bodyObj.projections);
-        if (org)
-            res.status(204).end();
-        else
-            res.status(404).send("Organization not found.").end();
+            res.status(404).json({
+                success: false,
+                message: "Can't remove projections.",
+            });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
+        next(err);
     }
 }
 
-export async function removeFromProjectionsByIds (req: Request, res: Response) {
+
+export async function deleteOrganization (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const bodyObj: {organizationId: string, projections: Array<string>} = matchedData(req);
-        const org = await os.removeFromProjectionsByIds(bodyObj.organizationId, bodyObj.projections);
-        if (org)
-            res.status(204).end();
+        const data: { organizationId: string, applicantId: string} = matchedData(req);
+        const result = await os.deleteOrganization(data.organizationId, data.applicantId);
+        if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
         else
-            res.status(404).send("Organization not found.").end();
-    }
-    catch (err){
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
-    }
-}
-
-
-export async function deleteOrganization (req: Request, res: Response) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const queryParams: { organizationId: string, applicantId: string} = matchedData(req);
-        const result = await os.deleteOrganization(queryParams.organizationId,
-                                                                            queryParams.applicantId);
-        res.status(200).json(result).end();
+            res.status(404).json({
+                success: false,
+                message: "Can't delete organization.",
+            });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error occurred.").end();
+        next(err);
     }
 }
