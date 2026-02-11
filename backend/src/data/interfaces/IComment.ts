@@ -28,4 +28,3 @@ export interface INewComment {
     fileId: string;
     content: string;
 }
-
