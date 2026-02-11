@@ -253,9 +253,9 @@ export function validateOrganization()  {
                 errorMessage: "Field 'name' is required!"
             },
             organizer: mongoIdObject('organizer'),
-            children: optionalArrayOfTrimmedMongoIdsObject(),
-            //members: optionalArrayOfTrimmedMongoIdsObject(),
-            projections: optionalArrayOfTrimmedMongoIdsObject()
+            // children: optionalArrayOfTrimmedMongoIdsObject(),
+            // members: optionalArrayOfTrimmedMongoIdsObject(),
+            // projections: optionalArrayOfTrimmedMongoIdsObject()
         },
         ['body']
     );
@@ -273,7 +273,7 @@ export function validateFile(){
                     custom: validateFileNameUniqueness
                 }
             },
-            collaborators: optionalArrayOfTrimmedMongoIdsObject(),
+            //collaborators: optionalArrayOfTrimmedMongoIdsObject(),
         },
         ['body']
     );

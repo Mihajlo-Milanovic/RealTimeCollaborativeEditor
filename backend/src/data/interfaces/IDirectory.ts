@@ -1,5 +1,5 @@
 import { Document, Types } from "mongoose";
-import {IFile, SimpleFile} from "./IFile";
+import {IFile} from "./IFile";
 
 export interface IDirectory extends Document {
     name: string;

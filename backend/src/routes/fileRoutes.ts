@@ -1,27 +1,31 @@
-import {Request, Response, Router} from "express";
-import * as validation from "../middlewares/validation/httpRequestValidation";
+import {Router} from "express";
 import * as fc from "../controllers/fileController";
-import * as cc from "../controllers/commentController";
+import {validateFile, validateIdFromPath} from "../middlewares/validation/httpRequestValidation";
 
 export const fileRouter = Router();
 
 
 fileRouter.post('/create',
-    validation.validateFile(),
+    validateFile(),
     fc.createFile
 );
 
-fileRouter.delete('/:fileId/delete',
-    validation.validateIdFromQuery('fileId'),
-    fc.deleteFile
-);
-
-fileRouter.get('/:fileId',
-    validation.validateIdFromQuery('fileId'),
+fileRouter.get('/:id',
+    validateIdFromPath('id'),
     fc.getFile
 );
 
-fileRouter.get('/:fileId/comments',
-    validation.validateIdFromQuery("fileId"),
+fileRouter.delete('/:id/delete',
+    validateIdFromPath('id'),
+    fc.deleteFile
+);
+
+// fileRouter.post('/:id/update',
+//     validation.validateFileUpdate(),
+//     fc.updateFileWithId
+// );
+
+fileRouter.get('/:id/comments',
+    validateIdFromPath("id"),
     fc.getCommentsForFile
 );
