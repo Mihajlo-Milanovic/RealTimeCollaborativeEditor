@@ -3,9 +3,11 @@ import Directory from "../data/dao/DirectorySchema";
 import {IFile, IFilePopulated, INewFile} from "../data/interfaces/IFile";
 import {IDirectory} from "../data/interfaces/IDirectory";
 import {IComment} from "../data/interfaces/IComment";
+import {toFileView} from "../data/types/FileView";
+import {toCommentView} from "../data/types/CommentView";
 
 
-export async function createFile (file: INewFile): Promise<IFile | null> {
+export async function createFile (file: INewFile) {
 
     const dir: IDirectory | null = await Directory.findById(file.parent).exec();
 
@@ -15,12 +17,12 @@ export async function createFile (file: INewFile): Promise<IFile | null> {
             dir.files.push(newFile._id);
             await dir.save();
         }
-        return newFile;
+        return toFileView(newFile);
     }
     return null;
 }
 
-export async function deleteFile(fileId: string): Promise<IFile | null> {
+export async function deleteFile(fileId: string) {
 
     const file: IFile | null = await File.findById(fileId).exec();
     if (file == null)
@@ -32,35 +34,52 @@ export async function deleteFile(fileId: string): Promise<IFile | null> {
         await parentDir.save();
     }
 
-    return await File.findByIdAndDelete(file.id).exec();
-}
-
-export async function getFileById(fileId: string): Promise<IFile | null> {
-    return await File.findById(fileId)
+    const result = await File.findByIdAndDelete(file.id)
         .populate(["owner", "comments"])
         .exec();
-}
 
-export async function getCommentsForFile(fileId: string): Promise<Array<IComment> | null> {
-
-    const file = await File.findById(fileId).populate("comments").exec() as IFilePopulated | null;
-    if (file != null)
-        return file.comments;
-    else
+    if (result == null)
         return null;
+
+    return toFileView(result);
 }
 
-export async function getStateForFileWithId(fileId: string): Promise<Buffer | null> {
+export async function getFileById(fileId: string) {
 
-    const file = await File.findById(fileId).exec() as IFile | null;
+    const file = await File.findById(fileId)
+        .populate(["owner", "comments"])
+        .exec();
 
-    if(file != null)
+    if (file == null)
+        return null;
+
+    return toFileView(file);
+}
+
+export async function getCommentsForFile(fileId: string) {
+
+    const file = await File.findById(fileId)
+        .select('comments')
+        .populate("comments")
+        .exec();
+
+    if (file == null)
+        return null;
+    else
+        return file.comments.map(c => toCommentView(c as unknown as IComment));
+}
+
+export async function getStateForFileWithId(fileId: string) {
+
+    const file = await File.findById(fileId).select("yDocState").exec() as IFile | null;
+
+    if(file == null)
+        return null;
+    else
         return file.yDocState
-    else
-        return null;
 }
 
-export async function setStateForFileWithId(fileId: string, documentState: Buffer): Promise<boolean> {
+export async function setStateForFileWithId(fileId: string, documentState: Buffer) {
 
     const file = await File.findById(fileId).exec() as IFile | null;
     if(file != null) {
