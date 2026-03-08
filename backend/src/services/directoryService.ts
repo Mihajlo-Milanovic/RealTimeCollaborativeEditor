@@ -6,8 +6,9 @@ import mongoose, {Types} from "mongoose"
 import {IFile} from "../data/interfaces/IFile";
 import {IUser} from "../data/interfaces/IUser";
 import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
+import {DirectoryView, toDirectoryView} from "../data/types/DirectoryView";
 
-export async function createDirectory (directory: INewDirectory): Promise<IDirectory | null> {
+export async function createDirectory (directory: INewDirectory): Promise<DirectoryView | null> {
 
     let newDirectory: IDirectory | null = await Directory.create(directory);
 
@@ -23,7 +24,7 @@ export async function createDirectory (directory: INewDirectory): Promise<IDirec
         }
     }
 
-    return newDirectory;
+    return toDirectoryView(newDirectory);
 }
 
 export async function deleteDirectory (directoryId: string) {
@@ -80,7 +81,7 @@ export async function getDirectoriesByOwnerId (ownerId: string): Promise<Array<I
 
     const owner: IUser | null = await User.findById(ownerId);
     if (owner)
-        return await Directory.find({ owner: ownerId });
+        return await Directory.find({ owner: ownerId }).exec();
     else
         return null;
 }
@@ -91,7 +92,7 @@ export async function getDirectoryWithChildrenAndFiles(dirId: string): Promise<I
 }
 
 export async function getUserRootDirectories(ownerId: string): Promise<Array<IDirectory> | null> {
-    return await Directory.find({ owner: ownerId, parents: [] });
+    return await Directory.find({ owner: ownerId, parents: [] }).exec();
 }
 
 export async function getDirectoriesStructured (ownerId: string): Promise<Array<IDirectory> | null> {

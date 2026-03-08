@@ -21,19 +21,21 @@
     "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
+    "tsx": "^4.21.0",
     "yamljs": "^0.3.0"
   },
   "name": "backend",
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
-    "dev": "nodemon",
+
+    "dev": "tsx watch src/app.ts",
     "build": "tsc",
+    "start": "node ./dist/app.js",
+
     "test-db": "npx ts-node src/dbTests.ts",
-    "start:dev": "nodemon",
     "docker-build:dev": "docker build -t img-rtce-backend-dev -f dev.Dockerfile .",
     "docker-run:dev": "docker run --rm -it -p 5000:5000 --name rtce-backend-dev -v .:/app -v container_node_modules:/app/node_modules img-rtce-backend-dev",
-    "start": "node ./dist/app.js",
     "docker-build": "docker build -t img-rtce-backend -f prod.Dockerfile .",
     "docker-run": "docker run --rm -it -p 5000:5000 --name rtce-backend img-rtce-backend"
   },
