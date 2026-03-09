@@ -2,23 +2,20 @@
 
 import * as React from "react"
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
+import { useSession } from "next-auth/react"
 
 // --- Tiptap Core Extensions ---
-import { StarterKit } from "@tiptap/starter-kit"
-import { Image } from "@tiptap/extension-image"
-import { TaskItem } from "@tiptap/extension-task-item"
-import { TaskList } from "@tiptap/extension-task-list"
-import { TextAlign } from "@tiptap/extension-text-align"
-import { Typography } from "@tiptap/extension-typography"
-import { Highlight } from "@tiptap/extension-highlight"
-import { Subscript } from "@tiptap/extension-subscript"
-import { Superscript } from "@tiptap/extension-superscript"
-import { Underline } from "@tiptap/extension-underline"
-
-// --- Custom Extensions ---
-import { Link } from "@/components/tiptap-extension/link-extension"
-import { Selection } from "@/components/tiptap-extension/selection-extension"
-import { TrailingNode } from "@/components/tiptap-extension/trailing-node-extension"
+import StarterKit from "@tiptap/starter-kit"
+import Image from "@tiptap/extension-image"
+import TaskItem from "@tiptap/extension-task-item"
+import TaskList from "@tiptap/extension-task-list"
+import TextAlign from "@tiptap/extension-text-align"
+import Typography from "@tiptap/extension-typography"
+import Highlight from "@tiptap/extension-highlight"
+import Subscript from "@tiptap/extension-subscript"
+import Superscript from "@tiptap/extension-superscript"
+import Underline from "@tiptap/extension-underline"
+import Link from "@tiptap/extension-link"
 
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button"
@@ -29,16 +26,15 @@ import {
   ToolbarSeparator,
 } from "@/components/tiptap-ui-primitive/toolbar"
 
-// --- Tiptap Node ---
-import { ImageUploadNode } from "@/components/tiptap-node/image-upload-node/image-upload-node-extension"
+// --- Styles ---
 import "@/components/tiptap-node/code-block-node/code-block-node.scss"
 import "@/components/tiptap-node/list-node/list-node.scss"
 import "@/components/tiptap-node/image-node/image-node.scss"
 import "@/components/tiptap-node/paragraph-node/paragraph-node.scss"
+import "@/components/tiptap-templates/simple/simple-editor.scss"
 
 // --- Tiptap UI ---
 import { HeadingDropdownMenu } from "@/components/tiptap-ui/heading-dropdown-menu"
-import { ImageUploadButton } from "@/components/tiptap-ui/image-upload-button"
 import { ListDropdownMenu } from "@/components/tiptap-ui/list-dropdown-menu"
 import { BlockquoteButton } from "@/components/tiptap-ui/blockquote-button"
 import { CodeBlockButton } from "@/components/tiptap-ui/code-block-button"
@@ -66,19 +62,24 @@ import { useMobile } from "@/hooks/use-mobile"
 import { useWindowSize } from "@/hooks/use-window-size"
 import { useCursorVisibility } from "@/hooks/use-cursor-visibility"
 
-// --- Components ---
-import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle"
-
-// --- Lib ---
-import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
-
-// --- Styles ---
-import "@/components/tiptap-templates/simple/simple-editor.scss"
-
-// --- Yjs (load + autosave only) ---
+// --- Yjs ---
 import * as Y from "yjs"
 import Collaboration from "@tiptap/extension-collaboration"
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor"
+import { WebsocketProvider } from "y-websocket"
 import { getBinary, postBinary } from "../../../app/api/serverRequests/methods"
+
+const WS_URL = process.env.NEXT_PUBLIC_YJS_WS_URL || "ws://localhost:1234"
+
+const COLORS = ["#f97316", "#3b82f6", "#22c55e", "#eab308", "#a855f7", "#ef4444"]
+
+function pickColor(seed: string) {
+  let hash = 0
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash << 5) - hash + seed.charCodeAt(i)
+  }
+  return COLORS[Math.abs(hash) % COLORS.length]
+}
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -139,19 +140,7 @@ const MainToolbarContent = ({
         <TextAlignButton align="justify" />
       </ToolbarGroup>
 
-      <ToolbarSeparator />
-
-      <ToolbarGroup>
-        <ImageUploadButton text="Add" />
-      </ToolbarGroup>
-
       <Spacer />
-
-      {isMobile && <ToolbarSeparator />}
-
-      {/*<ToolbarGroup>*/}
-      {/*  <ThemeToggle />*/}
-      {/*</ToolbarGroup>*/}
     </>
   )
 }
@@ -186,81 +175,113 @@ const MobileToolbarContent = ({
 )
 
 export function SimpleEditor({ fileId }: { fileId: string | null }) {
-  const isMobile = useMobile()
-  const windowSize = useWindowSize()
-  const [mobileView, setMobileView] = React.useState<
-    "main" | "highlighter" | "link"
-  >("main")
-  const toolbarRef = React.useRef<HTMLDivElement>(null)
-
-  // 1) Y.Doc per file (resetuje se kad se promeni fileId)
-  const ydoc = React.useMemo(() => new Y.Doc(), [fileId])
-
-  // 2) dirty flag (autosave samo kad ima promena)
+  const [ydoc, setYdoc] = React.useState<Y.Doc | null>(null)
+  const [provider, setProvider] = React.useState<WebsocketProvider | null>(null)
   const dirtyRef = React.useRef(false)
 
-  // 3) LOAD + AUTOSAVE (20s) za trenutno selektovani fajl
   React.useEffect(() => {
-    if (!fileId) return
+    if (!fileId) {
+      setYdoc(null)
+      setProvider(null)
+      return
+    }
+
+    const doc = new Y.Doc()
+    let ws: WebsocketProvider | null = null
+    let cancelled = false
 
     const onUpdate = () => {
       dirtyRef.current = true
     }
-    ydoc.on("update", onUpdate)
 
-    let cancelled = false
-
-    ;(async () => {
+    const boot = async () => {
       try {
         const res = await getBinary(`files/${fileId}/state`)
-        if (!res.ok) return
-
-        const buf = await res.arrayBuffer()
-        if (cancelled) return
-
-        if (buf.byteLength > 0) {
-          Y.applyUpdate(ydoc, new Uint8Array(buf))
-          dirtyRef.current = false //  sync sa bazom
+        if (res.ok) {
+          const buf = await res.arrayBuffer()
+          if (!cancelled && buf.byteLength > 0) {
+            Y.applyUpdate(doc, new Uint8Array(buf))
+          }
         }
       } catch (e) {
         console.error("Load state failed:", e)
       }
-    })()
+
+      if (cancelled) return
+
+      ws = new WebsocketProvider(WS_URL, `file:${fileId}`, doc, { connect: true })
+      doc.on("update", onUpdate)
+
+      setYdoc(doc)
+      setProvider(ws)
+    }
+
+    boot()
 
     const interval = setInterval(async () => {
       try {
         if (!dirtyRef.current) return
-        const update = Y.encodeStateAsUpdate(ydoc)
+        const update = Y.encodeStateAsUpdate(doc)
         const saveRes = await postBinary(`files/${fileId}/state`, update)
         if (saveRes.ok) dirtyRef.current = false
       } catch (e) {
         console.error("Save state failed:", e)
       }
-    }, 2_000)
+    }, 2000)
 
     return () => {
       cancelled = true
       clearInterval(interval)
-      ydoc.off("update", onUpdate)
-      ydoc.destroy()
+      doc.off("update", onUpdate)
+      ws?.destroy()
+      doc.destroy()
       dirtyRef.current = false
+      setProvider(null)
+      setYdoc(null)
     }
-  }, [fileId, ydoc])
+  }, [fileId])
 
-  // 4) Tiptap editor – bez statičnog content.json (content dolazi iz Yjs stanja)
+  if (!fileId) {
+    return <div className="p-4 text-sm text-gray-400">Izaberi fajl sa leve strane…</div>
+  }
+
+  if (!ydoc || !provider) {
+    return <div className="p-4 text-sm text-gray-400">Učitavanje dokumenta…</div>
+  }
+
+  return <EditorInner fileId={fileId} ydoc={ydoc} provider={provider} />
+}
+
+function EditorInner({
+  ydoc,
+  provider,
+}: {
+  fileId: string
+  ydoc: Y.Doc
+  provider: WebsocketProvider
+}) {
+  const { data: session } = useSession()
+  const isMobile = useMobile()
+  const windowSize = useWindowSize()
+  const [mobileView, setMobileView] = React.useState<"main" | "highlighter" | "link">("main")
+  const toolbarRef = React.useRef<HTMLDivElement>(null)
+
   const editor = useEditor({
     immediatelyRender: false,
-    editable: !!fileId,
+    editable: true,
     editorProps: {
       attributes: {
         autocomplete: "off",
         autocorrect: "off",
         autocapitalize: "off",
         "aria-label": "Main content area, start typing to enter text.",
+        class: "simple-editor-content prose prose-invert max-w-none min-h-[400px] p-4 outline-none",
       },
     },
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        history: false,
+      }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Underline,
       TaskList,
@@ -270,21 +291,23 @@ export function SimpleEditor({ fileId }: { fileId: string | null }) {
       Typography,
       Superscript,
       Subscript,
-
-      Selection,
-      ImageUploadNode.configure({
-        accept: "image/*",
-        maxSize: MAX_FILE_SIZE,
-        limit: 3,
-        upload: handleImageUpload,
-        onError: (error) => console.error("Upload failed:", error),
+      Link.configure({
+        openOnClick: false,
       }),
-      TrailingNode,
-      Link.configure({ openOnClick: false }),
-
-      // Yjs doc kao izvor istine (load + autosave u useEffect gore)
       Collaboration.configure({
         document: ydoc,
+      }),
+      CollaborationCursor.configure({
+        provider,
+        user: {
+          name:
+            (session?.user as any)?.username ||
+            session?.user?.email ||
+            "Anonymous",
+          color: pickColor(
+            String((session?.user as any)?.id ?? session?.user?.email ?? "anonymous")
+          ),
+        },
       }),
     ],
   })
@@ -300,12 +323,8 @@ export function SimpleEditor({ fileId }: { fileId: string | null }) {
     }
   }, [isMobile, mobileView])
 
-  if (!fileId) {
-    return (
-      <div className="p-4 text-sm text-gray-400">
-        Izaberi fajl sa leve strane…
-      </div>
-    )
+  if (!editor) {
+    return <div className="p-4 text-sm text-gray-400">Učitavanje editora…</div>
   }
 
   return (
@@ -335,11 +354,7 @@ export function SimpleEditor({ fileId }: { fileId: string | null }) {
       </Toolbar>
 
       <div className="content-wrapper">
-        <EditorContent
-          editor={editor}
-          role="presentation"
-          className="simple-editor-content"
-        />
+        <EditorContent editor={editor} role="presentation" className="simple-editor-content" />
       </div>
     </EditorContext.Provider>
   )

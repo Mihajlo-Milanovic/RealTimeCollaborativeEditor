@@ -7,6 +7,7 @@ import {IDirectory} from "../data/interfaces/IDirectory";
 import Directory from "../data/dao/DirectorySchema";
 import {IUser} from "../data/interfaces/IUser";
 import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
+import User from "../data/dao/UserSchema"
 
 
 export async function getOrganizationByName (orgName: string): Promise<IOrganization | null> {
@@ -63,25 +64,25 @@ export async function removeFromChildrenByIds (organizationId: string, childrenI
     return org;
 }
 
-// export async function addFilesByIds (organizationId: string, filesIds: Array<string>): Promise<IOrganization | null> {
+export async function addFilesByIds (organizationId: string, filesIds: Array<string>): Promise<IOrganization | null> {
 
-//     const org: IOrganization | null = await Organization.findById(organizationId);
+    const org: IOrganization | null = await Organization.findById(organizationId);
 
-//     if (org) {
-//         filesIds = [...new Set(
-//             filesIds.concat(
-//                 org.files.map(file => file.toHexString())
-//             )
-//         )];
+    if (org) {
+        filesIds = [...new Set(
+            filesIds.concat(
+                org.children.map(file => file.toHexString())
+            )
+        )];
 
-//         org.files = filesIds.map(fileId =>
-//             new Types.ObjectId(fileId)
-//         );
-//         await org.save();
-//     }
-//     return org;
+        org.children = filesIds.map(fileId =>
+            new Types.ObjectId(fileId)
+        );
+        await org.save();
+    }
+    return org;
 
-// }
+}
 
 
 export async function addMembersByIds (organizationId: string, membersIdsAndPrivilages: Map<string,string>): Promise<IOrganization | null> {
@@ -249,4 +250,54 @@ export async function deleteOrganization (organizationId: string, applicantId: s
     }
 
     return numberOfDeletions;
+}
+
+
+export async function getOrganizationsForUser(userId: string): Promise<IOrganization[]> {
+  return await Organization.find({
+    $or: [
+      { organizer: new Types.ObjectId(userId) },
+      { [`members.${userId}`]: { $exists: true } },
+    ],
+  }).exec()
+}
+
+export async function addMemberByUsername(
+  organizationId: string,
+  username: string,
+  applicantId: string
+): Promise<IOrganization | null> {
+  const org = await Organization.findById(organizationId)
+  if (!org) return null
+
+  if (org.organizer.toHexString() !== applicantId) {
+    throw new Error("Only organizer can add members.")
+  }
+
+  const user = await User.findOne({ username }).exec()
+  if (!user) return null
+
+  if (user._id.toHexString() === org.organizer.toHexString()) {
+    return org
+  }
+
+  org.members.set(user._id.toHexString(), "member")
+  await org.save()
+  return org
+}
+
+export async function leaveOrganization(
+  organizationId: string,
+  userId: string
+): Promise<IOrganization | null> {
+  const org = await Organization.findById(organizationId)
+  if (!org) return null
+
+  if (org.organizer.toHexString() === userId) {
+    throw new Error("Organizer cannot leave the organization. Delete it or transfer ownership.")
+  }
+
+  org.members.delete(userId)
+  await org.save()
+  return org
 }

@@ -7,6 +7,8 @@
     "express-validator": "^7.2.1",
     "mongoose": "^8.23.0",
     "nodemailer": "^7.0.5",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0",
     "yjs": "^13.6.29"
   },
   "devDependencies": {
@@ -17,25 +19,20 @@
     "@types/nodemailer": "^6.4.17",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/yamljs": "^0.2.34",
-    "nodemon": "^3.1.10",
-    "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "yamljs": "^0.3.0"
+    "tsx": "^4.21.0",
+    "typescript": "^5.8.3"
   },
-  "name": "backend",
+  "name": "collab-filse-system-backend",
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
-    "dev": "nodemon",
+    "docker-build": "docker build -t cfs-backend .",
+    "docker-run": "docker run --rm --name cfs-backend --env-file .env.prod -p 5000:5000 cfs-backend",
+
+    "dev": "tsx watch src/app.ts",
     "build": "tsc",
-    "test-db": "npx ts-node src/dbTests.ts",
-    "start:dev": "nodemon",
-    "docker-build:dev": "docker build -t img-rtce-backend-dev -f dev.Dockerfile .",
-    "docker-run:dev": "docker run --rm -it -p 5000:5000 --name rtce-backend-dev -v .:/app -v container_node_modules:/app/node_modules img-rtce-backend-dev",
-    "start": "node ./dist/app.js",
-    "docker-build": "docker build -t img-rtce-backend -f prod.Dockerfile .",
-    "docker-run": "docker run --rm -it -p 5000:5000 --name rtce-backend img-rtce-backend"
+    "start": "node ./dist/app.js"
   },
   "keywords": [],
   "author": "",

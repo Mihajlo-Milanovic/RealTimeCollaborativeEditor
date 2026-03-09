@@ -3,6 +3,12 @@ import Directory from "../data/dao/DirectorySchema";
 import {IFile, IFilePopulated, INewFile} from "../data/interfaces/IFile";
 import {IDirectory} from "../data/interfaces/IDirectory";
 import {IComment} from "../data/interfaces/IComment";
+import {CommentView} from "../data/types/CommentView";
+import {getAllReactionsForComment} from "./commentService";
+import {toUserView} from "../data/types/UserView";
+import {toReactionVew} from "../data/types/ReactionView";
+import {IReaction} from "../data/interfaces/IReaction";
+import {IUser} from "../data/interfaces/IUser";
 
 
 export async function createFile (file: INewFile): Promise<IFile | null> {
@@ -41,11 +47,31 @@ export async function getFileById(fileId: string): Promise<IFile | null> {
         .exec();
 }
 
-export async function getCommentsForFile(fileId: string): Promise<Array<IComment> | null> {
+export async function getCommentsForFile(fileId: string): Promise<Array<CommentView> | null> {
 
-    const file = await File.findById(fileId).populate("comments").exec() as IFilePopulated | null;
-    if (file != null)
-        return file.comments;
+    const file = await File.findById(fileId)
+    .populate({
+        path: "comments",
+        populate: { path: "commenter reactions" },
+    })
+    .exec() as IFilePopulated | null;
+
+    if (file != null){
+
+        const views: CommentView[] = [];
+
+        for (const comment of file.comments) {
+                views.push( {
+                    id: comment.id,
+                    edited: comment.edited,
+                    content: comment.content,
+                    commenter: toUserView(comment.commenter as unknown as IUser),
+                    reactions: comment.reactions.map(r => toReactionVew(r as unknown as IReaction))
+                }  as CommentView
+            );
+        }
+        return views;
+    }
     else
         return null;
 }

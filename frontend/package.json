@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "yjs": "cross-env HOST=localhost PORT=1234 y-websocket",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -13,14 +14,17 @@
   "dependencies": {
     "@floating-ui/react": "^0.27.13",
     "@tiptap/extension-collaboration": "^2.25.0",
-    "@tiptap/extension-collaboration-cursor": "^2.25.0",
+    "@tiptap/extension-collaboration-cursor": "^2.27.2",
+    "@tiptap/extension-document": "^2.27.2",
     "@tiptap/extension-highlight": "^2.23.0",
     "@tiptap/extension-image": "^2.23.0",
     "@tiptap/extension-link": "^2.23.0",
+    "@tiptap/extension-paragraph": "^2.27.2",
     "@tiptap/extension-subscript": "^2.23.0",
     "@tiptap/extension-superscript": "^2.23.0",
     "@tiptap/extension-task-item": "^2.23.0",
     "@tiptap/extension-task-list": "^2.23.0",
+    "@tiptap/extension-text": "^2.27.2",
     "@tiptap/extension-text-align": "^2.23.0",
     "@tiptap/extension-typography": "^2.23.0",
     "@tiptap/extension-underline": "^2.23.0",
@@ -36,8 +40,10 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "ws": "^8.19.0",
     "y-webrtc": "^10.3.0",
-    "yjs": "^13.6.27"
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.29"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -47,6 +53,9 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/ws": "^8.18.1",
+    "@y/websocket-server": "^0.1.5",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "prettier": "^3.6.2",

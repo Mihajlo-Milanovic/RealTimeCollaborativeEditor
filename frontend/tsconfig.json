@@ -29,12 +29,14 @@
     }
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    ".next-3000/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
     ".next/types/**/*.ts",
+    "next-env.d.ts",
     "src/app/providers.tsx",
-    ".next/dev/types/**/*.ts"
+    ".next-3001/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

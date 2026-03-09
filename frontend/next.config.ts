@@ -1,10 +1,13 @@
 import type { NextConfig } from "next";
 
-const nextConfig : NextConfig = {
-    output: 'standalone',
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
+const appInstance = process.env.APP_INSTANCE || "3000";
+
+const nextConfig: NextConfig = {
+  output: "standalone",
+  distDir: `.next-${appInstance}`,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

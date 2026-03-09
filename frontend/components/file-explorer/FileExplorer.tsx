@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { getRequestSingle } from "@/app/api/serverRequests/methods";
 import { UserView } from "../../models/user";
 import { FileTreeItem, FileNode } from "./FileTreeItem";
+import OrganizationExplorer from "./OrganizationExplorer"
 
 export default function FileExplorer({ onSelectFile }: { onSelectFile?: (id: string) => void }) {
   const [root, setRoot] = useState<FileNode | null>(null);
@@ -38,9 +39,11 @@ export default function FileExplorer({ onSelectFile }: { onSelectFile?: (id: str
 
   return (
     <div className="w-full h-full text-[13px] overflow-y-auto p-3 custom-scrollbar">
-      <div className="mb-2 px-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Workspace</div>
+      <div className="mb-2 px-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+        Workspace
+      </div>
       <FileTreeItem node={root} onSelectFile={onSelectFile} />
-
+      <OrganizationExplorer onSelectFile={onSelectFile} />
     </div>
   );
 }

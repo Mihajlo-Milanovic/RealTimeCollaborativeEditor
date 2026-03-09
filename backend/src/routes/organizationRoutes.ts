@@ -74,3 +74,25 @@ organizationRouter.delete('/:id/delete/userId/:userId',
     validation.validateIdFromPath("userId"),
     oc.deleteOrganization
 );
+
+
+organizationRouter.get(
+  "/user/:userId",
+  validation.validateIdFromPath("userId"),
+  oc.getOrganizationsForUser
+)
+
+organizationRouter.put(
+  "/:id/addMemberByUsername",
+  validation.validateIdFromPath("id"),
+  validation.validateString("username"),
+  validation.validateIdFromPath("applicantId"),
+  oc.addMemberByUsername
+)
+
+organizationRouter.delete(
+  "/:id/leave/userId/:userId",
+  validation.validateIdFromPath("id"),
+  validation.validateIdFromPath("userId"),
+  oc.leaveOrganization
+)
