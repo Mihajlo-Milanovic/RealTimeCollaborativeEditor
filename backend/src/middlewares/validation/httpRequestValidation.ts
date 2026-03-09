@@ -184,7 +184,7 @@ export function validateComment()  {
 export function validateCommentUpdate()  {
     return validator.checkSchema(
         {
-            commentId: mongoIdObject('id'),
+            id: mongoIdObject('id'),
             content: {
                 trim: true,
                 notEmpty: true,
@@ -201,8 +201,8 @@ export function validateCommentUpdate()  {
 export function validateReaction()  {
     return validator.checkSchema(
         {
-            comment: mongoIdObject('commentId'),
-            reactor: mongoIdObject('reactorId'),
+            comment: mongoIdObject('comment'),
+            reactor: mongoIdObject('reactor'),
             reactionType: {
                 trim: true,
                 notEmpty: true,

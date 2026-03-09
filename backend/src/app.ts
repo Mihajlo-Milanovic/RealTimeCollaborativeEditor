@@ -25,10 +25,10 @@ app.use(cors({
 app.use(express.json());
 app.use(logger);
 
-// if (process.env.NODE_ENV == 'development') {
+if (process.env.ENV == 'dev') {
     const swaggerDocument = YAML.load(path.join(__dirname, './swagger.yaml'));
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-// }
+}
 app.use('/users', userRouter);
 app.use('/directories', directoryRouter);
 app.use('/files', fileRouter);
@@ -38,7 +38,7 @@ app.use('/organizations', organizationRouter);
 
 app.get('/',
     (req: express.Request, res: express.Response) => {
-        res.send('Collaborative Editor Backend is running...');
+        res.send('Collab File System Backend is running...');
     }
 );
 
@@ -50,4 +50,5 @@ app.use(errorHandler);
         console.log(`Server running on http://localhost:${PORT}`);
     });
 })();
+
 

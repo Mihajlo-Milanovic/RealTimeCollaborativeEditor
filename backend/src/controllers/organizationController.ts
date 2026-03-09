@@ -129,29 +129,29 @@ export async function removeFromChildrenByIds (req: Request, res: Response, next
     }
 }
 
-// export async function addFilesByIds (req: Request, res: Response, next: NextFunction) {
-//
-//     if (checkForValidationErrors(req, res))
-//         return;
-//
-//     try {
-//         const data: {organizationId: string, files: Array<string>} = matchedData(req);
-//         const result = await os.addFilesByIds(data.organizationId, data.files);
-//        if (result)
-//             res.status(200).json({
-//                 success: true,
-//                 data: result,
-//             });
-//         else
-//             res.status(404).json({
-//                 success: false,
-//                 message: "Cant find organization.",
-//             });
-//     }
-//    catch (err) {
-//         next(err);
-//     }
-// }
+export async function addFilesByIds (req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const data: {organizationId: string, files: Array<string>} = matchedData(req);
+        const result = await os.addFilesByIds(data.organizationId, data.files);
+       if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+        else
+            res.status(404).json({
+                success: false,
+                message: "Cant find organization.",
+            });
+    }
+   catch (err) {
+        next(err);
+    }
+}
 //
 // export async function removeFromFilesByIds (req: Request, res: Response) {
 //
@@ -291,4 +291,56 @@ export async function deleteOrganization (req: Request, res: Response, next: Nex
     catch (err) {
         next(err);
     }
+}
+
+export async function getOrganizationsForUser(req: Request, res: Response, next: NextFunction) {
+  if (checkForValidationErrors(req, res)) return
+
+  try {
+    const data: { userId: string } = matchedData(req)
+    const result = await os.getOrganizationsForUser(data.userId)
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function addMemberByUsername(req: Request, res: Response, next: NextFunction) {
+  if (checkForValidationErrors(req, res)) return
+
+  try {
+    const data: { id: string; username: string; applicantId: string } = matchedData(req)
+    const result = await os.addMemberByUsername(data.id, data.username, data.applicantId)
+
+    if (!result) {
+      res.status(404).json({ success: false, message: "Organization or user not found." })
+      return
+    }
+
+    res.status(200).json({ success: true, data: result })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function leaveOrganization(req: Request, res: Response, next: NextFunction) {
+  if (checkForValidationErrors(req, res)) return
+
+  try {
+    const data: { id: string; userId: string } = matchedData(req)
+    const result = await os.leaveOrganization(data.id, data.userId)
+
+    if (!result) {
+      res.status(404).json({ success: false, message: "Organization not found." })
+      return
+    }
+
+    res.status(200).json({ success: true, data: result })
+  } catch (err) {
+    next(err)
+  }
 }
