@@ -11,8 +11,11 @@ export type ReactionView = PlainResource<IReaction, "comment" | "reactor">
 export function toReactionVew(reaction: IReaction): ReactionView{
 
     let r: UserView = { id: "", username: "", email: ""};
-    if (reaction.reactor != null && !(reaction.reactor instanceof Types.ObjectId))
-        r = toUserView(reaction.reactor as unknown as IUser);
+    if (reaction.reactor != null)
+        if(!(reaction.reactor instanceof Types.ObjectId))
+            r = toUserView(reaction.reactor as unknown as IUser);
+        else
+            r.id = reaction.reactor._id.toHexString();
 
     return {
         id: reaction._id.toHexString(),

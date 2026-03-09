@@ -101,6 +101,31 @@ export async function getUserById(req: Request, res: Response, next: NextFunctio
     }
 }
 
+export async function getUsersPasswordHash(req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const data: { id: string } = matchedData(req);
+
+        const result: string = await us.getUsersPasswordHash(data.id);
+
+        if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+        else
+            res.status(404).json({
+                success: false,
+                message: "User not found.",
+            });
+    }
+    catch (err) {
+        next(err);
+    }
+}
 
 export async function getUserByEmail(req: Request, res: Response, next: NextFunction) {
 

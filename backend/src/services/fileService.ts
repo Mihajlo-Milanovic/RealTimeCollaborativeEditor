@@ -7,7 +7,7 @@ import {toFileView} from "../data/types/FileView";
 import {toCommentView} from "../data/types/CommentView";
 
 
-export async function createFile (file: INewFile) {
+export async function createFile(file: INewFile) {
 
     const dir: IDirectory | null = await Directory.findById(file.parent).exec();
 
@@ -60,7 +60,12 @@ export async function getCommentsForFile(fileId: string) {
 
     const file = await File.findById(fileId)
         .select('comments')
-        .populate("comments")
+        .populate({
+            path: "comments",
+            populate: {
+                path: "commenter reactions"
+            }
+        })
         .exec();
 
     if (file == null)
@@ -73,7 +78,7 @@ export async function getStateForFileWithId(fileId: string) {
 
     const file = await File.findById(fileId).select("yDocState").exec() as IFile | null;
 
-    if(file == null)
+    if (file == null)
         return null;
     else
         return file.yDocState
@@ -82,11 +87,10 @@ export async function getStateForFileWithId(fileId: string) {
 export async function setStateForFileWithId(fileId: string, documentState: Buffer) {
 
     const file = await File.findById(fileId).exec() as IFile | null;
-    if(file != null) {
+    if (file != null) {
         file.yDocState = documentState;
         await file.save();
         return true;
-    }
-    else
+    } else
         return false;
 }

@@ -30,10 +30,10 @@ export type FileNode = {
 };
 
 type FolderResponse = {
-  _id: string;
+  id: string;
   name: string;
-  children?: Array<{ _id: string; name: string }>;
-  files?: Array<{ _id: string; name: string }>;
+  children?: Array<{ id: string; name: string }>;
+  files?: Array<{ id: string; name: string }>;
 };
 
 type Props = {
@@ -67,7 +67,7 @@ export function FileTreeItem({ node, onSelectFile, onRefresh }: Props) {
     if (!data) return;
 
     const folders: FileNode[] = (data.children || []).map((child) => ({
-      id: child._id,
+      id: child.id,
       name: child.name,
       type: "folder",
       parent_id: dirId,
@@ -77,7 +77,7 @@ export function FileTreeItem({ node, onSelectFile, onRefresh }: Props) {
     }));
 
     const files: FileNode[] = (data.files || []).map((file) => ({
-      id: file._id,
+      id: file.id,
       name: file.name,
       type: "file",
       parent_id: dirId,

@@ -24,9 +24,9 @@ export default function FileExplorer({ onSelectFile }: { onSelectFile?: (id: str
         const raw = payload?.data ?? payload;
         const rootDir = Array.isArray(raw) ? raw[0] : raw;
 
-        if (!rootDir?._id) return;
+        if (!rootDir?.id) return;
 
-        setRoot({ id: rootDir._id, name: rootDir.name, type: "folder" });
+        setRoot({ id: rootDir.id, name: rootDir.name, type: "folder" });
       };
 
       fetchRoot();

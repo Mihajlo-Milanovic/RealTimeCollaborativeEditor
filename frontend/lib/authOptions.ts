@@ -41,16 +41,26 @@ export const authOptions: AuthOptions = {
 
         const payload = await userData.json();
         const user = payload?.data;
+        console.log(user)
 
-        if (!user?.password) return null;
+        const passwordHash = await getRequestSingle(
+            `users/${encodeURIComponent(user.id)}/password`
+        );
 
-        const passwordsMatch = await bcrypt.compare(password, user.password);
+        const passpayload = await passwordHash.json();
+        const pass = passpayload.data;
+
+
+        if (!pass) return null;
+
+        console.log(pass + " "+ password);
+        const passwordsMatch = await bcrypt.compare(password, pass);
         if (!passwordsMatch) return null;
 
-        if (!user.verified) return null;
+        //if (!user.verified) return null;
 
         return {
-          id: user._id,
+          id: user.id,
           email: user.email,
           username: user.username,
         };
@@ -63,39 +73,39 @@ export const authOptions: AuthOptions = {
     maxAge: 60 * 60 * 24,
   },
 
-  cookies: {
-    sessionToken: {
-      name: `${isProd ? "__Secure-" : ""}next-auth.session-token.${appInstance}`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: isProd,
-      },
-    },
-    callbackUrl: {
-      name: `${isProd ? "__Secure-" : ""}next-auth.callback-url.${appInstance}`,
-      options: {
-        sameSite: "lax",
-        path: "/",
-        secure: isProd,
-      },
-    },
-    csrfToken: {
-      name: `${isProd ? "__Host-" : ""}next-auth.csrf-token.${appInstance}`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: isProd,
-      },
-    },
-  },
+  // cookies: {
+  //   sessionToken: {
+  //     name: `${isProd ? "__Secure-" : ""}next-auth.session-token.${appInstance}`,
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure: isProd,
+  //     },
+  //   },
+  //   callbackUrl: {
+  //     name: `${isProd ? "__Secure-" : ""}next-auth.callback-url.${appInstance}`,
+  //     options: {
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure: isProd,
+  //     },
+  //   },
+  //   csrfToken: {
+  //     name: `${isProd ? "__Host-" : ""}next-auth.csrf-token.${appInstance}`,
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure: isProd,
+  //     },
+  //   },
+  // },
 
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = (user as any).id || (user as any)._id || token.id;
+        token.id = (user as any).id || (user as any).id || token.id;
         token.username = (user as any).username || token.username;
       }
       return token;

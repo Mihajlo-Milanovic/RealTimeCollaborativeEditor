@@ -8,22 +8,21 @@ import {Types} from "mongoose";
 
 
 export type DirectoryView = PlainResource<IDirectory, "parents" | "owner" | "children" | "files">
-    & {owner: UserView, children: Array<DirectoryView>, files: Array<FileView>};
+    & { owner: UserView, children: Array<DirectoryView>, files: Array<FileView> };
 
 export function toDirectoryView(directory: IDirectory): DirectoryView {
 
     let c: Array<DirectoryView> = [];
-    let f: Array<FileView> = [];
-
     if (directory.children.length > 0 && !(directory.children[0] instanceof Types.ObjectId))
         c = directory.children.map(c => toDirectoryView(c as unknown as IDirectory));
 
+    let f: Array<FileView> = [];
     if (directory.files.length > 0 && !(directory.files[0] instanceof Types.ObjectId))
-        f = directory.files.map(f  => toFileView(f as unknown as IFile));
+        f = directory.files.map(f => toFileView(f as unknown as IFile));
 
-    let o: UserView = { id: "", username: "", email: ""};
+    let o: UserView = {id: "", username: "", email: ""};
     if (directory.owner != null)
-        if(!(directory.owner instanceof Types.ObjectId))
+        if (!(directory.owner instanceof Types.ObjectId))
             o = toUserView(directory.owner as unknown as IUser);
         else
             o.id = directory.owner._id.toHexString();

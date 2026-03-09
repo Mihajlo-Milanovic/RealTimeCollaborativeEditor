@@ -112,7 +112,7 @@ export function validateDirectory()  {
             },
             children: optionalArrayOfTrimmedMongoIdsObject(),
             files: optionalArrayOfTrimmedMongoIdsObject(),
-            collaborators: optionalArrayOfTrimmedMongoIdsObject()
+            //collaborators: optionalArrayOfTrimmedMongoIdsObject()
         },
         ['body']
     );

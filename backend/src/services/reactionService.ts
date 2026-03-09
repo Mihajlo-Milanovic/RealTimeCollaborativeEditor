@@ -28,8 +28,8 @@ export async function getReactionByCommentAndUser(userId: string, commentId: str
 export async function createOrUpdateReaction(reaction: INewReaction) {
 
     const r =  await Reaction.findOne({
-        reactor: reaction.reactorId,
-        comment: reaction.commentId
+        reactor: reaction.reactor,
+        comment: reaction.comment
     }).exec();
 
     if (r != null)

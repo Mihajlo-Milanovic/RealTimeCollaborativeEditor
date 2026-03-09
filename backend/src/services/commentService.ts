@@ -22,11 +22,11 @@ export async function getCommentById(commentId: string) {
 
 export async function createComment(comment: INewComment) {
 
-    const commenter: IUser | null = await User.findById(comment.commenterId).exec();
+    const commenter: IUser | null = await User.findById(comment.commenter).exec();
     if(commenter == null)
         return Error("User not found!");
 
-    const file: IFile | null = await File.findById(comment.fileId).exec();
+    const file: IFile | null = await File.findById(comment.file).exec();
     if(file == null)
         return Error("File not found!");
 
@@ -71,9 +71,14 @@ export async function deleteComment(commentId: string) {
 export async function getAllReactionsForComment(commentId: string): Promise<Array<ReactionView> | null> {
 
     const comment = await Comment.findById(commentId)
-        .populate('reactions')
+        .populate("reactions")
+        // .populate({
+        //     path: 'reactions',
+        // populate: {
+        //         path: "reactor"
+        // }})
         .select('reactions')
-        .lean()
+        // .lean()
         .exec() as IComment | null;
 
     if (comment == null)

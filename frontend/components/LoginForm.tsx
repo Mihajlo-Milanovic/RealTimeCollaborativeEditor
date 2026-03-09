@@ -31,6 +31,7 @@ export default function LoginForm() {
     setIsLoading(true);
     setError("");
     
+    console.debug(email + " + " + password);
     try {
       const res = await signIn("credentials", {
         email,
@@ -44,6 +45,7 @@ export default function LoginForm() {
           setEmailToVerify(email);
           setShowSendEmailLink(true);
         } else {
+          console.log(res);
           setError("Nevalidni kredencijali!");
           setShowSendEmailLink(false);
         }

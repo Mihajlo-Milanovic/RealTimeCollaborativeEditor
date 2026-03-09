@@ -14,7 +14,7 @@ export async function createDirectory (req: Request, res: Response, next: NextFu
         return;
 
     try {
-        const dir: INewDirectory = {...matchedData(req) };
+        const dir = matchedData(req) as INewDirectory;
         const result: DirectoryView | null = await ds.createDirectory(dir);
         if (result)
             res.status(201).json({

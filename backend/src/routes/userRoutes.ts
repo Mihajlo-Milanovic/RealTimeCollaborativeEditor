@@ -21,6 +21,11 @@ userRouter.get('/:id',
     uc.getUserById
 );
 
+userRouter.get('/:id/password',
+    validation.validateIdFromPath('id'),
+    uc.getUsersPasswordHash
+);
+
 userRouter.get('/email/:email',
     validation.validateEmail(),
     uc.getUserByEmail

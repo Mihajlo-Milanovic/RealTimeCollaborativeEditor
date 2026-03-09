@@ -53,6 +53,16 @@ export async function getUserById(uuid: string) {
         return toUserView(user);
 }
 
+export async function getUsersPasswordHash(uuid: string) {
+
+    const user: IUser | null = await User.findById(uuid).exec();
+
+    if (user == null)
+        return "";
+    else
+        return user.password;
+}
+
 export async function getUserWithUsername(username: string) {
 
     const user = await User.findOne({username: username}).exec();

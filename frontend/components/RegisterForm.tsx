@@ -68,11 +68,11 @@ try {
 
   const rootDirData = {
     name: `${ansUser.username}'s root directory`,
-    owner: ansUser._id,
+    owner: ansUser.id,
     parents: [], // neka ga
     children: [],
     files: [],
-    collaborators: [],
+    //collaborators: [],
   };
 
   // 

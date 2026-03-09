@@ -16,7 +16,7 @@ type ReactionType =
     | "relaxed";
 
 type Reaction = {
-    _id: string;
+    id: string;
     reactionType: ReactionType;
     reactor: User,
 };
@@ -33,7 +33,7 @@ type CommentDto = {
 export default function CommentsPanel({fileId}: { fileId: string }) {
 
     const {data} = useSession();
-    const myUserId = data == null ? "" : (data.user as unknown as User)?.id ?? (data?.user as unknown as {_id: string})?._id;
+    const myUserId = data == null ? "" : (data.user as unknown as User)?.id;
 
     const [comments, setComments] = useState<CommentDto[]>([]);
     const [newText, setNewText] = useState("");
@@ -110,10 +110,8 @@ export default function CommentsPanel({fileId}: { fileId: string }) {
                 console.log(res);
                 if (!res.ok) return;
                 const payload = await res.json();
-                console.log("payload");
                 console.log(payload);
                 const data = payload?.data ?? payload;
-                console.log("data");
                 console.log(data);
 
                 res = await deleteRequest(`reactions/${data.id}/delete`)
@@ -243,7 +241,7 @@ function CommentItem({
                         className="text-[10px] opacity-50 px-1.5 py-0.5 rounded-full bg-slate-700">(izmenjeno)</span>}
                 </div>
 
-                {(user.id == myUserId || (user as unknown as {_id: string})._id == myUserId) && (
+                {(user.id == myUserId) && (
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                             className="p-1.5 hover:bg-slate-700 rounded-lg text-yellow-500/70 hover:text-yellow-400 transition-colors"
@@ -366,7 +364,7 @@ function CommentItem({
                     {showEmojiPicker && (
                         <div
                             className="absolute bottom-full mb-2 left-0 z-50 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-2 flex gap-1 animate-in fade-in slide-in-from-bottom-2">
-                            {emojis.keys().map(emoji => (
+                            {Array.from(emojis.keys().map(emoji => (
                                 <button
                                     key={emoji}
                                     onClick={() => {
@@ -377,7 +375,7 @@ function CommentItem({
                                 >
                                     {emojis.get(emoji)}
                                 </button>
-                            ))}
+                            )))}
                         </div>
                     )}
                 </div>
