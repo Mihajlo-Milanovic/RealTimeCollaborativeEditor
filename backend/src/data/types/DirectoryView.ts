@@ -22,8 +22,11 @@ export function toDirectoryView(directory: IDirectory): DirectoryView {
         f = directory.files.map(f  => toFileView(f as unknown as IFile));
 
     let o: UserView = { id: "", username: "", email: ""};
-    if (directory.owner != null && !(directory.owner instanceof Types.ObjectId))
-        o = toUserView(directory.owner as unknown as IUser);
+    if (directory.owner != null)
+        if(!(directory.owner instanceof Types.ObjectId))
+            o = toUserView(directory.owner as unknown as IUser);
+        else
+            o.id = directory.owner._id.toHexString();
 
     return {
         id: directory._id.toHexString(),
