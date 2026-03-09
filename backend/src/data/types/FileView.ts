@@ -17,10 +17,14 @@ export function toFileView(file: IFile): FileView {
     if (file.comments.length > 0 && !(file.comments[0] instanceof Types.ObjectId))
         c = file.comments.map(c => toCommentView(c as unknown as IComment));
 
+    let o: UserView = { id: "", username: "", email: ""};
+    if (file.owner != null && !(file.owner instanceof Types.ObjectId))
+        o = toUserView(file.owner as unknown as IUser);
+
     return {
-        id: file.id,
+        id: file._id.toHexString(),
         name: file.name,
-        owner: toUserView(file.owner as unknown as IUser),
+        owner: o,
         yDocState: file.yDocState,
         version: file.version,
         comments: c,

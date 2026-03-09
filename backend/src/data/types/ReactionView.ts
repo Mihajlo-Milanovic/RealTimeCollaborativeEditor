@@ -2,6 +2,7 @@ import {PlainResource} from "./PlainResource";
 import {IReaction} from "../interfaces/IReaction";
 import {toUserView, UserView} from "./UserView";
 import {IUser} from "../interfaces/IUser";
+import {Types} from "mongoose";
 
 
 export type ReactionView = PlainResource<IReaction, "comment" | "reactor">
@@ -9,9 +10,13 @@ export type ReactionView = PlainResource<IReaction, "comment" | "reactor">
 
 export function toReactionVew(reaction: IReaction): ReactionView{
 
+    let r: UserView = { id: "", username: "", email: ""};
+    if (reaction.reactor != null && !(reaction.reactor instanceof Types.ObjectId))
+        r = toUserView(reaction.reactor as unknown as IUser);
+
     return {
-        id: reaction.id,
+        id: reaction._id.toHexString(),
         reactionType: reaction.reactionType,
-        reactor: toUserView(reaction.reactor as unknown as IUser)
+        reactor: r
     }
 }

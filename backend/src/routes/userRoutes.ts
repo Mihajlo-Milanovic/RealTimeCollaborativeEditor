@@ -4,15 +4,6 @@ import * as validation from "../middlewares/validation/httpRequestValidation";
 
 export const userRouter = Router();
 
-userRouter.all('/',
-    (req: Request, res: Response) => {
-
-    const routes: Array<string> = userRouter.stack.map(({route}) =>
-        `[${[...new Set(route?.stack?.map(entry => entry.method))]}] ${route?.path}`
-    );
-    res.json(routes).end();
-});
-
 userRouter.post('/create',
     validation.validateUser(),
     uc.createUser

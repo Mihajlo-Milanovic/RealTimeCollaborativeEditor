@@ -24,7 +24,7 @@ export async function getOrganizationByName(orgName: string) {
 
 export async function getOrganizationById(orgId: string) {
 
-    const org = await Organization.findById(orgId)
+    const org: IOrganization | null = await Organization.findById(orgId)
         .populate(["children", "projections", "organizer"])
         .exec();
 
@@ -129,63 +129,64 @@ export async function removeFromMembersByIds(organizationId: string, membersIdsT
 
 
 //TODO: revisit this function <too sleepy to think>
-export async function addProjectionsByIds(organizationId: string, projectionsIds: Array<string>): Promise<IOrganization | null> {
+export async function addProjectionsByIds(organizationId: string, projectionsIds: Array<string>) {
 
     const org: IOrganization | null = await Organization.findById(organizationId)
-        .select('projections')
-        .populate('projections')
-        .exec()
+        .populate(["children", "projections", "organizer"])
+        .exec();
 
-    if (org != null) {
+    if (org == null)
+        return null;
 
-        const projectionsDict = new Map<string, IDirectory>();
+    const projectionsDict = new Map<string, IDirectory>();
 
-        org.projections.forEach(projection => {
-            const proj = projection as unknown as IDirectory;
-            projectionsDict.set(proj.name, proj);
-        });
+    org.projections.forEach(projection => {
+        const proj = projection as unknown as IDirectory;
+        projectionsDict.set(proj.name, proj);
+    });
 
-        const projections: Array<IDirectory> = await Directory.find({_id: {$in: projectionsIds}})
-            .select('owner')
-            .populate('owner')
-            .exec();
+    const projections: Array<IDirectory> = await Directory.find({_id: {$in: projectionsIds}})
+        .select('owner')
+        .populate('owner')
+        .exec();
 
-        for (const projection of projections) {
+    for (const projection of projections) {
 
-            const owner = projection.owner as unknown as IUser;
+        const owner = projection.owner as unknown as IUser;
 
-            if (projectionsDict.has(owner.username)) {
+        if (projectionsDict.has(owner.username)) {
 
-                const dir = projectionsDict.get(owner.username)
-                if (dir) {
-                    dir.children = [...new Set(dir.children.concat(projection._id as Types.ObjectId))];
-                    await dir.save();
+            const dir = projectionsDict.get(owner.username);
 
-                    projection.parents = [...new Set(projection.parents.concat(dir._id as Types.ObjectId))];
-                }
-            } else {
+            if (dir) {
+                dir.children = [...new Set(dir.children.concat(projection._id as Types.ObjectId))];
+                await dir.save();
 
-                const newNamespace = await createDirectory({
-                    name: owner.username,
-                    owner: owner.id,
-
-                    parents: [org.id],
-                });
-
-                if (newNamespace != null) {
-
-                    await addChildrenByIds(newNamespace.id, [projection.id]);
-                    projection.parents.push(newNamespace._id as Types.ObjectId);
-                    org.projections.push(newNamespace._id as Types.ObjectId);
-                }
+                projection.parents = [...new Set(projection.parents.concat(dir._id as Types.ObjectId))];
             }
+        } else {
 
-            await projection.save();
+            const newNamespace = await createDirectory({
+                name: owner.username,
+                owner: owner.id,
+
+                parents: [org.id],
+            });
+
+            if (newNamespace != null) {
+
+                await addChildrenByIds(newNamespace.id, [projection.id]);
+                projection.parents.push(new Types.ObjectId(newNamespace.id));
+                org.projections.push(new Types.ObjectId(newNamespace.id));
+            }
         }
 
-        await org.save();
+        await projection.save();
     }
-    return org;
+
+    await org.save();
+
+    return toOrganizationView(org);
 }
 
 //TODO: revisit this function <too sleepy to think>

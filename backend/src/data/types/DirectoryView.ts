@@ -21,10 +21,14 @@ export function toDirectoryView(directory: IDirectory): DirectoryView {
     if (directory.files.length > 0 && !(directory.files[0] instanceof Types.ObjectId))
         f = directory.files.map(f  => toFileView(f as unknown as IFile));
 
+    let o: UserView = { id: "", username: "", email: ""};
+    if (directory.owner != null && !(directory.owner instanceof Types.ObjectId))
+        o = toUserView(directory.owner as unknown as IUser);
+
     return {
-        id: directory.id,
+        id: directory._id.toHexString(),
         name: directory.name,
-        owner: toUserView(directory.owner as unknown as IUser),
+        owner: o,
         //parents: directory.parents,
         children: c,
         files: f,

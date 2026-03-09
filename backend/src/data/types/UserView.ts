@@ -6,7 +6,7 @@ export type UserView = PlainResource<IUser, "password" | "verified" | "verificat
 
 export function toUserView(user: IUser): UserView{
     return {
-        id: user.id,
+        id: user._id.toHexString(),
         username: user.username,
         email: user.email
     }
