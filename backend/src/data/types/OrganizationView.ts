@@ -19,20 +19,29 @@ export type OrganizationView = PlainResource<IOrganization, "organizer" | "child
 
 export function toOrganizationView(organization: IOrganization): OrganizationView{
 
-    let c: Array<DirectoryView> = [];
-    if (organization.children.length > 0 && !(organization.children[0] instanceof Types.ObjectId))
-        c = organization.children.map(c => toDirectoryView(c as unknown as IDirectory));
+    let c: any = [];
+    if (organization.children.length > 0) {
+        if (!(organization.children[0] instanceof Types.ObjectId))
+            c = organization.children.map(c => toDirectoryView(c as unknown as IDirectory));
+        else
+            c = organization.children;
+    }
 
-    let p: Array<DirectoryView> = [];
-    if (organization.projections.length > 0 && !(organization.projections[0] instanceof Types.ObjectId))
-        p = organization.projections.map(p  => toDirectoryView(p as unknown as IDirectory));
+    let p: any = [];
+    if (organization.projections.length > 0) {
+        if (!(organization.projections[0] instanceof Types.ObjectId))
+            p = organization.projections.map(p => toDirectoryView(p as unknown as IDirectory));
+        else
+            p = organization.projections;
+    }
 
     let o: UserView = { id: "", username: "", email: ""};
-    if (organization.organizer != null)
-        if(!(organization.organizer instanceof Types.ObjectId))
+    if (organization.organizer != null) {
+        if (!(organization.organizer instanceof Types.ObjectId))
             o = toUserView(organization.organizer as unknown as IUser);
         else
             o.id = organization.organizer._id.toHexString();
+    }
 
     return {
         id: organization._id.toHexString(),

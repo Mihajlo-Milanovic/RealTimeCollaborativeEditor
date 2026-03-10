@@ -63,7 +63,7 @@ export async function getCommentsForFile(fileId: string) {
         .populate({
             path: "comments",
             populate: {
-                path: "commenter reactions"
+                path: "reactions commenter"
             }
         })
         .exec();

@@ -33,7 +33,7 @@ type CommentDto = {
 export default function CommentsPanel({fileId}: { fileId: string }) {
 
     const {data} = useSession();
-    const myUserId = data == null ? "" : (data.user as unknown as User)?.id;
+    const myUserId = data == null ? "" : (data.user as unknown as User)?.id || "";
 
     const [comments, setComments] = useState<CommentDto[]>([]);
     const [newText, setNewText] = useState("");
@@ -96,9 +96,9 @@ export default function CommentsPanel({fileId}: { fileId: string }) {
 
     const addReaction = async (commentId: string, emoji: string, alreadyReacted: boolean) => {
 
-        if (!myUserId) return;
+        if (myUserId.length == 0) return;
 
-        const comment = comments.find(c => c.id === commentId);
+        const comment = comments.find(c => c.id == commentId);
         if (!comment) return;
 
         let res: Response;
@@ -364,7 +364,7 @@ function CommentItem({
                     {showEmojiPicker && (
                         <div
                             className="absolute bottom-full mb-2 left-0 z-50 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-2 flex gap-1 animate-in fade-in slide-in-from-bottom-2">
-                            {Array.from(emojis.keys().map(emoji => (
+                            {[...emojis.keys().map(emoji => (
                                 <button
                                     key={emoji}
                                     onClick={() => {
@@ -375,7 +375,7 @@ function CommentItem({
                                 >
                                     {emojis.get(emoji)}
                                 </button>
-                            )))}
+                            ))]}
                         </div>
                     )}
                 </div>

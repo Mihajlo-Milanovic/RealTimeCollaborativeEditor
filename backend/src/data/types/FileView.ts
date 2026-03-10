@@ -13,16 +13,21 @@ export type FileView = PlainResource<IFile, "parent" | "owner" | "comments">
 
 export function toFileView(file: IFile): FileView {
 
-    let c: Array<CommentView> = [];
-    if (file.comments.length > 0 && !(file.comments[0] instanceof Types.ObjectId))
-        c = file.comments.map(c => toCommentView(c as unknown as IComment));
+    let c: any = [];
+    if (file.comments.length > 0) {
+        if (!(file.comments[0] instanceof Types.ObjectId))
+            c = file.comments.map(c => toCommentView(c as unknown as IComment));
+        else
+            c = file.comments;
+    }
 
     let o: UserView = {id: "", username: "", email: ""};
-    if (file.owner != null)
+    if (file.owner != null) {
         if (!(file.owner instanceof Types.ObjectId))
             o = toUserView(file.owner as unknown as IUser);
         else
             o.id = file.owner._id.toHexString();
+    }
 
     return {
         id: file._id.toHexString(),
