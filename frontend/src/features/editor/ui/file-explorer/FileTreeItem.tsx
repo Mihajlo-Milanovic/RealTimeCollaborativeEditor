@@ -16,7 +16,7 @@ import {
   postRequest,
   deleteRequest,
 } from "@/app/api/serverRequests/methods";
-import { UserView } from "../../models/user";
+import { UserView } from "@/models/user";
 
 export type FileNode = {
   id: string;

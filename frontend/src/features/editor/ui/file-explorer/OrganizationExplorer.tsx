@@ -2,11 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
-import {
-  getRequestSingle,
-  postRequest,
-} from "@/app/api/serverRequests/methods"
-import { UserView } from "../../models/user"
+import { Plus, Search } from "lucide-react"
+import { getRequestSingle } from "@/app/api/serverRequests/methods"
+import { UserView } from "@/models/user"
 import { FileTreeItem, FileNode } from "./FileTreeItem"
 
 type OrganizationNode = FileNode & {
@@ -22,6 +20,8 @@ export default function OrganizationExplorer({
   onSelectFile?: (id: string) => void
 }) {
   const [organizations, setOrganizations] = useState<OrganizationNode[]>([])
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
   const { data: session, status } = useSession()
 
   const fetchOrganizations = useCallback(async () => {
@@ -54,28 +54,18 @@ export default function OrganizationExplorer({
     fetchOrganizations()
   }, [status, session, fetchOrganizations])
 
-  const handleCreateOrganization = async () => {
-    const name = prompt("Unesite ime organizacije:")
-    if (!name) return
-
-    const userId = UserView.getInstance().id
-    if (!userId) return
-
-    const res = await postRequest("organizations/create", {
-      name,
-      organizer: userId,
-      members: {},
-      children: [],
-      files: [],
-    })
-
-    if (!res.ok) {
-      alert("Kreiranje organizacije nije uspelo.")
-      return
-    }
-
-    await fetchOrganizations()
+  const handleCreateOrganization = () => {
+    // TODO: Implement create organization flow
   }
+
+  const handleSearchOrganizations = () => {
+    setIsSearchOpen((prev) => !prev)
+    // TODO: Implement organization search flow
+  }
+
+  const filteredOrganizations = organizations.filter((org) =>
+    org.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+  )
 
   if (status === "loading") return null
   if (!session) return null
@@ -87,22 +77,47 @@ export default function OrganizationExplorer({
           Organizations
         </div>
 
-        <button
-          onClick={handleCreateOrganization}
-          className="rounded-md px-2 py-1 text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-          title="Create organization"
-        >
-          + Organization
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleCreateOrganization}
+            className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+            title="Create organization"
+            aria-label="Create organization"
+          >
+            <Plus size={14} />
+          </button>
+          <button
+            onClick={handleSearchOrganizations}
+            className={`rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${
+              isSearchOpen ? "bg-slate-800 text-white" : ""
+            }`}
+            title="Search organizations"
+            aria-label="Search organizations"
+          >
+            <Search size={14} />
+          </button>
+        </div>
       </div>
 
-      {organizations.length === 0 ? (
+      {isSearchOpen && (
+        <div className="px-1 pb-2">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search organizations..."
+            className="w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:border-slate-500 focus:outline-none"
+          />
+        </div>
+      )}
+
+      {filteredOrganizations.length === 0 ? (
         <div className="px-2 py-1 text-xs text-slate-500">
           Nema organizacija.
         </div>
       ) : (
         <div className="space-y-1">
-          {organizations.map((org) => (
+          {filteredOrganizations.map((org) => (
             <FileTreeItem
               key={org.id}
               node={org}

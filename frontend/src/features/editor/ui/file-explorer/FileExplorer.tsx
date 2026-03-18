@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { getRequestSingle } from "@/app/api/serverRequests/methods";
-import { UserView } from "../../models/user";
+import { UserView } from "@/models/user";
 import { FileTreeItem, FileNode } from "./FileTreeItem";
 import OrganizationExplorer from "./OrganizationExplorer"
 

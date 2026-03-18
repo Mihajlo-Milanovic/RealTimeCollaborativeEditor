@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { AuthOptions } from "next-auth";
-import { getRequestSingle } from "../src/app/api/serverRequests/methods";
+import { getRequestSingle } from "@/app/api/serverRequests/methods";
 
 const appInstance = process.env.APP_INSTANCE || "3000";
 const isProd = process.env.NODE_ENV === "production";

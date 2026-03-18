@@ -3,10 +3,10 @@
 
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import FileExplorer from "./file-explorer/FileExplorer";
-import CommentsPanel from "./CommentsPanel";
+import CommentsPanel from "@/features/comments/ui/CommentsPanel";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { UserView } from "../models/user";
+import { UserView } from "@/models/user";
 import {JSX, useState} from "react";
 import { PanelRightOpen, MessageSquare, LogOut } from "lucide-react";
 
