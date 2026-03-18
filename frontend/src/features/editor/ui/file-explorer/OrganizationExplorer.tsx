@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { Plus, Search } from "lucide-react"
-import { getRequestSingle } from "@/app/api/serverRequests/methods"
+import { getRequestSingle, postRequest } from "@/app/api/serverRequests/methods"
 import { UserView } from "@/models/user"
 import { FileTreeItem, FileNode } from "./FileTreeItem"
 
@@ -20,9 +20,33 @@ export default function OrganizationExplorer({
   onSelectFile?: (id: string) => void
 }) {
   const [organizations, setOrganizations] = useState<OrganizationNode[]>([])
+  const [visibleOrganizations, setVisibleOrganizations] = useState<
+    OrganizationNode[]
+  >([])
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const { data: session, status } = useSession()
+
+  const toOrganizationNode = useCallback(
+    (org: any, userId: string): OrganizationNode => {
+      const organizationId = org.id ?? org._id
+      const organizerId =
+        typeof org.organizer === "string"
+          ? org.organizer
+          : org.organizer?.id ?? org.organizer?._id
+
+      return {
+        id: organizationId,
+        name: org.name,
+        type: "folder",
+        scope: "organization",
+        isOrganizationRoot: true,
+        organizationId,
+        isOwner: String(organizerId) === String(userId),
+      }
+    },
+    []
+  )
 
   const fetchOrganizations = useCallback(async () => {
     const userId = UserView.getInstance().id
@@ -33,19 +57,11 @@ export default function OrganizationExplorer({
 
     const payload = await res.json()
     const list = payload?.data ?? []
+    const mapped = list.map((org: any) => toOrganizationNode(org, userId))
 
-    setOrganizations(
-      list.map((org: any) => ({
-        id: org._id,
-        name: org.name,
-        type: "folder",
-        scope: "organization",
-        isOrganizationRoot: true,
-        organizationId: org._id,
-        isOwner: String(org.organizer) === String(userId),
-      }))
-    )
-  }, [])
+    setOrganizations(mapped)
+    setVisibleOrganizations(mapped)
+  }, [toOrganizationNode])
 
   useEffect(() => {
     if (status !== "authenticated" || !session?.user) return
@@ -54,18 +70,62 @@ export default function OrganizationExplorer({
     fetchOrganizations()
   }, [status, session, fetchOrganizations])
 
-  const handleCreateOrganization = () => {
-    // TODO: Implement create organization flow
+  const handleCreateOrganization = async () => {
+    const name = prompt("Enter organization name:")
+    if (!name?.trim()) return
+
+    const userId = UserView.getInstance().id
+    if (!userId) return
+
+    const res = await postRequest("organizations/create", {
+      name: name.trim(),
+      organizer: userId,
+    })
+
+    if (!res.ok) {
+      alert("Could not create organization.")
+      return
+    }
+
+    await fetchOrganizations()
+    setSearchQuery("")
   }
 
-  const handleSearchOrganizations = () => {
-    setIsSearchOpen((prev) => !prev)
-    // TODO: Implement organization search flow
-  }
+  const searchOrganizationsByName = useCallback(async () => {
+    const query = searchQuery.trim()
+    if (!query) {
+      setVisibleOrganizations(organizations)
+      return
+    }
 
-  const filteredOrganizations = organizations.filter((org) =>
-    org.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
-  )
+    const res = await getRequestSingle(
+      `organizations/name/${encodeURIComponent(query)}`
+    )
+
+    if (!res.ok) {
+      setVisibleOrganizations([])
+      return
+    }
+
+    const payload = await res.json()
+    const org = payload?.data
+    const userId = UserView.getInstance().id
+    if (!org || !userId) {
+      setVisibleOrganizations([])
+      return
+    }
+
+    setVisibleOrganizations([toOrganizationNode(org, userId)])
+  }, [organizations, searchQuery, toOrganizationNode])
+
+  const handleSearchOrganizations = async () => {
+    if (!isSearchOpen) {
+      setIsSearchOpen(true)
+      return
+    }
+
+    await searchOrganizationsByName()
+  }
 
   if (status === "loading") return null
   if (!session) return null
@@ -104,20 +164,33 @@ export default function OrganizationExplorer({
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value
+              setSearchQuery(value)
+
+              if (!value.trim()) {
+                setVisibleOrganizations(organizations)
+              }
+            }}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault()
+                await searchOrganizationsByName()
+              }
+            }}
             placeholder="Search organizations..."
             className="w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:border-slate-500 focus:outline-none"
           />
         </div>
       )}
 
-      {filteredOrganizations.length === 0 ? (
+      {visibleOrganizations.length === 0 ? (
         <div className="px-2 py-1 text-xs text-slate-500">
           Nema organizacija.
         </div>
       ) : (
         <div className="space-y-1">
-          {filteredOrganizations.map((org) => (
+          {visibleOrganizations.map((org) => (
             <FileTreeItem
               key={org.id}
               node={org}
