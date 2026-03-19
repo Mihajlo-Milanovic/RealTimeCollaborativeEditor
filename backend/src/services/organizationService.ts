@@ -38,10 +38,27 @@ export async function getOrganizationById(orgId: string) {
 
 export async function createOrganization(organization: INewOrganization) {
 
-    const org = await Organization.create(organization);
+    const user: IUser | null = await User.findById(organization.organizer).exec();
+    if (user == null)
+        return Error('User not found.');
+
+    const o = {
+        name: organization,
+        organizer: user,
+        members: new Map<string, UserPrivileges>(),
+        children: [],
+        projections: [],
+    }
+
+    o.members.set(user.id, 'admin');
+
+    const org: IOrganization | null = await Organization.create(organization);
 
     if (org == null)
-        return null;
+        return Error("Couldn't create organization.");
+
+    user.organizations.set(organization.name, 'admin');
+    await user.save();
 
     await org.populate(["children", "projections", "organizer"]);
     return toOrganizationView(org);
@@ -61,9 +78,14 @@ export async function updateOrganization(organizationId: string, organizationUpd
 
     if (organizationUpdate.name != "")
         org.name = organizationUpdate.name;
-    if (organizationUpdate.organizer.length > 0)
-        org.organizer = new Types.ObjectId(organizationUpdate.organizer);
-
+    if (organizationUpdate.organizer.length > 0) {
+        const newAdmin = await User.findById(organizationUpdate.organizer).exec();
+        if (newAdmin != null) {
+            newAdmin.organizations.set(org.name, 'admin')
+            await newAdmin.save();
+            org.organizer = newAdmin._id;
+        }
+    }
     await org.save();
     await org.populate(["children", "projections", "organizer"]);
     return toOrganizationView(org);
