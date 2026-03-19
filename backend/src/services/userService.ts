@@ -8,11 +8,11 @@ import {ReactionView} from "../data/types/ReactionView";
 
 export async function getOrganizationsForUser(id: string) {
 
-    const user: IUser | null = await User.findById(id).populate("organizations").exec();
+    const user: IUser | null = await User.findById(id).exec();
 
     if (user == null)
         return Error("User not found!");
-    return toUserView(user);
+    return toUserView(user).organizations;
 }
 
 
@@ -43,9 +43,9 @@ export async function deleteUserWithId(uuid: string) {
         return toUserView(user);
 }
 
-export async function getAllUsers() {
+export async function getUsersByIds(usersIds: Array<string>) {
 
-    const users = await User.find().exec();
+    const users = await User.find({_id: {$in: usersIds}}).exec();
 
     const views: Array<UserView> = [];
     for (const user of users) {

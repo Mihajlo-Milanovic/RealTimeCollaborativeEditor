@@ -87,10 +87,14 @@ export async function deleteUserWithId(req: Request, res: Response, next: NextFu
 }
 
 
-export async function getUsers(req: Request, res: Response, next: NextFunction) {
+export async function getUsersByIds(req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
 
     try {
-        const users: Array<UserView> = await us.getAllUsers();
+        const data: { userIds: string[] } = matchedData(req);
+        const users: Array<UserView> = await us.getUsersByIds(data.userIds);
 
         res.status(200).json({
             success: true,

@@ -14,7 +14,10 @@ userRouter.delete('/:id/delete',
     uc.deleteUserWithId
 );
 
-userRouter.get('/', uc.getUsers);
+userRouter.get('/',
+    validation.validateUserIdArray(),
+    uc.getUsersByIds
+);
 
 userRouter.get('/:id',
     validation.validateIdFromPath('id'),

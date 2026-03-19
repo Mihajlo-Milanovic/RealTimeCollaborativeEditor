@@ -145,11 +145,34 @@ export async function addMembersByIds(organizationId: string, membersIdsAndPrivi
 
     if (org != null) {
 
-        const users: IUser[] | null = await User.find({_id: {$in: membersIdsAndPrivileges.keys()}}).exec();
+        const users: IUser[] | null = await User.find({_id: {$in: [...membersIdsAndPrivileges.keys()]}}).exec();
         if (users != null) {
             for (const u of users) {
                 org.members.set(u.id, membersIdsAndPrivileges.get(u.id) as UserPrivileges);
                 u.organizations.set(org.name, membersIdsAndPrivileges.get(u.id) as UserPrivileges);
+                await u.save();
+            }
+        }
+        await org.save()
+
+        return toOrganizationView(org);
+    }
+
+    return null;
+}
+
+export async function addMembersByUsername(organizationId: string, usernamesAndRoles: Map<string, UserPrivileges>) {
+    const org: IOrganization | null = await Organization.findById(organizationId)
+        .populate(["children", "projections", "organizer"])
+        .exec();
+
+    if (org != null) {
+
+        const users: IUser[] | null = await User.find({username: {$in: [...usernamesAndRoles.keys()]}}).exec();
+        if (users != null) {
+            for (const u of users) {
+                org.members.set(u.id, usernamesAndRoles.get(u.username) as UserPrivileges);
+                u.organizations.set(org.name, usernamesAndRoles.get(u.username) as UserPrivileges);
                 await u.save();
             }
         }
@@ -168,7 +191,7 @@ export async function removeFromMembersByIds(organizationId: string, membersIdsT
 
     if (org != null) {
 
-        const users: IUser[] | null = await User.find({_id: {$in: membersIdsToRemove.keys()}}).exec();
+        const users: IUser[] | null = await User.find({_id: {$in: membersIdsToRemove}}).exec();
         if (users != null) {
             for (const u of users) {
                 org.members.delete(u.id);

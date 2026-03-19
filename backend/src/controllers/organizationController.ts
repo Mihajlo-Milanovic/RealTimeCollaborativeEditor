@@ -161,8 +161,54 @@ export async function addMembersByIds (req: Request, res: Response, next: NextFu
         return;
 
     try {
-        const data: {id: string, members: Map<string, UserPrivileges>} = matchedData(req);
-        const result: OrganizationView | null = await os.addMembersByIds(data.id, data.members);
+        const data: {
+            id: string,
+            members: [{
+                userId: string,
+                role: UserPrivileges
+            }]
+        } = matchedData(req);
+
+        const map = new Map();
+        for (const member of data.members) {
+            map.set(member.userId, member.role);
+        }
+        const result = await os.addMembersByIds(data.id, map as Map<string, UserPrivileges>);
+        if (result)
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+        else
+            res.status(400).json({
+                success: false,
+                message: "Can't add members.",
+            });
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
+export async function addMembersByUsername(req: Request, res: Response, next: NextFunction){
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const data: {
+            id: string,
+            members: [{
+                username: string,
+                role: UserPrivileges
+            }]
+        } = matchedData(req);
+
+        const map = new Map();
+        for (const member of data.members) {
+            map.set(member.username, member.role);
+        }
+        const result = await os.addMembersByUsername(data.id, map as Map<string, UserPrivileges>);
         if (result)
             res.status(200).json({
                 success: true,

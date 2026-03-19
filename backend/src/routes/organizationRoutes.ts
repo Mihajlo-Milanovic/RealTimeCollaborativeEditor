@@ -3,7 +3,7 @@ import * as oc from "../controllers/organizationController";
 import * as validation from "../middlewares/validation/httpRequestValidation";
 import {
     validateChildrenAdmission,
-    validateIdFromPath, validateMembersIds,
+    validateIdFromPath, validateMembersByUsernames, validateMembersIds, validateMembersIdsAndRoles,
     validateOrganization,
     validateString
 } from "../middlewares/validation/httpRequestValidation";
@@ -47,8 +47,14 @@ organizationRouter.put('/:id/update/',
 
 organizationRouter.put('/:id/addMembers',
     validateIdFromPath('id'),
-    validateMembersIds(),
+    validateMembersIdsAndRoles(),
     oc.addMembersByIds
+);
+
+organizationRouter.put('/:id/addMembersByUsername',
+    validateIdFromPath('id'),
+    validateMembersByUsernames(),
+    oc.addMembersByUsername
 );
 
 organizationRouter.put('/:id/removeMembers/',

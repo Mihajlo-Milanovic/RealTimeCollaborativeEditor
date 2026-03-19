@@ -94,6 +94,12 @@ function optionalArrayOfTrimmedMongoIdsObject(){
     }
 }
 
+export function validateUserIdArray(){
+    return validator.checkSchema( {
+        userIds: optionalArrayOfTrimmedMongoIdsObject(),
+    }, ["query"] );
+}
+
 /**
  * @return
  * Validation chain for validating Directory from Body
@@ -244,12 +250,81 @@ export function validateFilesAdmission(){
  * Validation chain for validating members to be added to the organization
  */
 export function validateMembersIds(){
+    return validator.checkSchema( {
+        members: optionalArrayOfTrimmedMongoIdsObject(),
+        applicantId: mongoIdObject('applicantId'),
+    }, ["body"] );
+}
+
+export function validateMembersIdsAndRoles(){
     return validator.checkSchema(
         {
-            members: optionalArrayOfTrimmedMongoIdsObject()
+            members: {
+                in: ["body"],
+                isArray: {
+                    errorMessage: "members must be an array"
+                },
+                optional: true
+            },
+
+            "members.*.userId": {
+                in: ["body"],
+                isMongoId: {
+                    errorMessage: "userId must be a valid MongoId"
+                }
+            },
+
+            "members.*.role": {
+                in: ["body"],
+                isString: true,
+                notEmpty: {
+                    errorMessage: "role is required"
+                },
+                isIn: {
+                    options: [["admin", "editor", "viewer"]],
+                    errorMessage: "invalid role"
+                }
+            }
         },
         ["body"]
-    )
+    );
+}
+
+export function validateMembersByUsernames(){
+    return validator.checkSchema(
+        {
+            members: {
+                in: ["body"],
+                isArray: {
+                    errorMessage: "members must be an array"
+                },
+                optional: true
+            },
+
+            "members.*.username": {
+                in: ["body"],
+                isString: true,
+                trim: true,
+                notEmpty: {
+                    errorMessage: "username is required"
+                }
+            },
+
+            "members.*.role": {
+                in: ["body"],
+                isString: true,
+                trim: true,
+                notEmpty: {
+                    errorMessage: "role is required"
+                },
+                isIn: {
+                    options: [["admin", "editor", "viewer"]],
+                    errorMessage: "invalid role"
+                }
+            }
+        },
+        ["body"]
+    );
 }
 
 /**
