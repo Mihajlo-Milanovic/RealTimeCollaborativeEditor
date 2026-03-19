@@ -4,7 +4,6 @@ import { matchedData } from "express-validator";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
 import { INewOrganization } from "../data/interfaces/IOrganization";
 import {OrganizationView} from "../data/types/OrganizationView";
-import {STATUS_CODES} from "node:http";
 import {UserPrivileges} from "../data/types/UserPrivileges";
 
 
@@ -63,17 +62,17 @@ export async function createOrganization(req: Request, res: Response, next: Next
 
     try {
         const bodyObj = matchedData(req) as INewOrganization;
-        const result: OrganizationView | null = await os.createOrganization(bodyObj);
-       if (result != null)
+        const result = await os.createOrganization(bodyObj);
+       if (result instanceof Error)
+            res.status(400).json({
+                success: false,
+                message: result.message,
+            });
+       else
            res.status(201).json({
                success: true,
                data: result,
            });
-       else
-            res.status(400).json({
-                success: false,
-                message: "Couldn't create organization.",
-            });
     }
     catch (err) {
         next(err);
