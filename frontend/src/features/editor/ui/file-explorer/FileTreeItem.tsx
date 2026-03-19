@@ -5,6 +5,7 @@ import {
   Trash2,
   FilePlus,
   FolderPlus,
+  Link,
   Folder,
   FolderOpen,
   FileText,
@@ -40,9 +41,17 @@ type Props = {
   node: FileNode;
   onSelectFile?: (id: string) => void;
   onRefresh?: () => void | Promise<void>;
+  alwaysShowActions?: boolean;
+  onAddProjection?: (node: FileNode) => void | Promise<void>;
 };
 
-export function FileTreeItem({ node, onSelectFile, onRefresh }: Props) {
+export function FileTreeItem({
+  node,
+  onSelectFile,
+  onRefresh,
+  alwaysShowActions = false,
+  onAddProjection,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<FileNode[] | null>(null);
 
@@ -219,7 +228,8 @@ export function FileTreeItem({ node, onSelectFile, onRefresh }: Props) {
 
   // U svim folderima može folder
   const canCreateFolder =
-    isDirectory && (!isOrganizationNode || !!node.isOwner);
+    isDirectory &&
+    (!isOrganizationNode || isOrganizationRoot || !!node.isOwner);
 
   // Fajl može svuda kao i do sada, osim na samom organization root-u
   const canCreateFile =
@@ -228,6 +238,7 @@ export function FileTreeItem({ node, onSelectFile, onRefresh }: Props) {
     (!isOrganizationNode || !!node.isOwner);
 
   const showRegularDelete = !isOrganizationRoot;
+  const canAddProjection = isOrganizationRoot && isOrganizationNode;
 
   return (
     <div className="pl-1">
@@ -268,7 +279,13 @@ export function FileTreeItem({ node, onSelectFile, onRefresh }: Props) {
           </span>
         </div>
 
-        <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div
+          className={`flex gap-1.5 transition-opacity ${
+            alwaysShowActions
+              ? "opacity-100"
+              : "opacity-0 group-hover:opacity-100"
+          }`}
+        >
           {canCreateFolder && (
             <button
               onClick={(e) => {
@@ -279,6 +296,19 @@ export function FileTreeItem({ node, onSelectFile, onRefresh }: Props) {
               title="New Folder"
             >
               <FolderPlus size={14} />
+            </button>
+          )}
+
+          {canAddProjection && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddProjection?.(node);
+              }}
+              className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-cyan-400 transition-colors"
+              title="Add projection from personal folders"
+            >
+              <Link size={14} />
             </button>
           )}
 
@@ -357,6 +387,7 @@ export function FileTreeItem({ node, onSelectFile, onRefresh }: Props) {
               node={child}
               onRefresh={() => fetchChildren()}
               onSelectFile={onSelectFile}
+              onAddProjection={onAddProjection}
             />
           ))}
         </div>

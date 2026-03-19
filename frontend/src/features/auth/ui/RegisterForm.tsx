@@ -5,7 +5,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {postRequest} from "../src/app/api/serverRequests/methods"
+import {postRequest} from "@/app/api/serverRequests/methods"
 
 export default function RegisterForm() {
   const [name, setName] = useState("");

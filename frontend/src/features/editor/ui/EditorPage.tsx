@@ -8,7 +8,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { UserView } from "@/models/user";
 import {JSX, useState} from "react";
-import { PanelRightOpen, MessageSquare, LogOut } from "lucide-react";
+import {PanelRightOpen, MessageSquare, LogOut, PanelLeftClose, PanelLeftOpen} from "lucide-react";
 
 export default function EditorPage() {
   const { data: session } = useSession();
@@ -54,12 +54,19 @@ export default function EditorPage() {
                 className="border-r border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"
             >
               <div className="p-4 border-b border-slate-800 flex justify-between items-center">
-                <h2 className="font-semibold text-slate-100 truncate">Fajlovi</h2>
+                <button
+                    onClick={handleLogout}
+                    className="p-2 hover:bg-slate-800 rounded text-red-400"
+                    title="Logout"
+                >
+                  <LogOut size={20} />
+                </button>
+
                 <button
                     onClick={() => setExplorerCollapsed(true)}
                     className="p-1 hover:bg-slate-800 rounded text-slate-400"
                 >
-                  <PanelRightOpen size={18} />
+                  <PanelLeftClose size={18} />
                 </button>
               </div>
 
@@ -67,6 +74,7 @@ export default function EditorPage() {
                 <FileExplorer onSelectFile={setSelectedFileId} />
               </div>
 
+              {/*TODO: move to a right sidebar panel*/}
               <div className="p-4 border-t border-slate-800 space-y-2">
                 <button
                     onClick={() => setShowComments((p) => !p)}
@@ -74,13 +82,6 @@ export default function EditorPage() {
                     className="w-full px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-50"
                 >
                   Komentari
-                </button>
-
-                <button
-                    onClick={handleLogout}
-                    className="w-full px-3 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400"
-                >
-                  Odjavi se
                 </button>
               </div>
 
@@ -98,7 +99,7 @@ export default function EditorPage() {
                   className="p-2 hover:bg-slate-800 rounded text-slate-400"
                   title="Open Explorer"
               >
-                <PanelRightOpen size={20} />
+                <PanelLeftOpen size={20} />
               </button>
 
               <button
