@@ -5,6 +5,33 @@ import { checkForValidationErrors } from "../middlewares/validation/checkForVali
 import { matchedData } from "express-validator";
 import {UserView} from "../data/types/UserView";
 
+export async function getOrganizationsForUser(req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+    try {
+        const data: { id: string } = matchedData(req);
+
+        const result = await us.getOrganizationsForUser(data.id);
+
+        if (result instanceof Error)
+            res.status(404).json({
+                success: false,
+                message: result.message,
+            });
+        else
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
+
 export async function createUser(req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))

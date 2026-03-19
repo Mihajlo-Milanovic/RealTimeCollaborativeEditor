@@ -7,6 +7,7 @@ import {Types} from "mongoose";
 import {IDirectory} from "../interfaces/IDirectory";
 import {IFile} from "../interfaces/IFile";
 import {DirectoryView, toDirectoryView} from "./DirectoryView";
+import {UserPrivileges} from "./UserPrivileges";
 
 
 export type OrganizationView = PlainResource<IOrganization, "organizer" | "children" | "projections">
@@ -35,7 +36,7 @@ export function toOrganizationView(organization: IOrganization): OrganizationVie
             p = organization.projections;
     }
 
-    let o: UserView = { id: "", username: "", email: ""};
+    let o: UserView = { id: "", username: "", email: "", organizations: new Map<string, UserPrivileges>};
     if (organization.organizer != null) {
         if (!(organization.organizer instanceof Types.ObjectId))
             o = toUserView(organization.organizer as unknown as IUser);

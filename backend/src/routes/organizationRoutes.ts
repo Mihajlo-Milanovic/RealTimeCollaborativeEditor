@@ -7,6 +7,7 @@ import {
     validateOrganization,
     validateString
 } from "../middlewares/validation/httpRequestValidation";
+import {updateOrganization} from "../controllers/organizationController";
 
 export const organizationRouter = Router();
 
@@ -37,13 +38,12 @@ organizationRouter.put('/:id/removeChildren/',
     oc.removeFromChildrenByIds
 );
 
-// organizationRouter.put('/addFilesByIds/',
-//     oc.addFilesByIds
-// );
-//
-// organizationRouter.put('/removeFromFilesByIds/',
-//     oc.removeFromFilesByIds
-// );
+organizationRouter.put('/:id/update/',
+    validateIdFromPath('id'),
+    validateOrganization(),
+    oc.updateOrganization
+);
+
 
 organizationRouter.put('/:id/addMembers',
     validateIdFromPath('id'),
@@ -76,23 +76,23 @@ organizationRouter.delete('/:id/delete/userId/:userId',
 );
 
 
-organizationRouter.get(
-  "/user/:userId",
-  validation.validateIdFromPath("userId"),
-  oc.getOrganizationsForUser
-)
-
-organizationRouter.put(
-  "/:id/addMemberByUsername",
-  validation.validateIdFromPath("id"),
-  validation.validateString("username"),
-  validation.validateIdFromPath("applicantId"),
-  oc.addMemberByUsername
-)
-
-organizationRouter.delete(
-  "/:id/leave/userId/:userId",
-  validation.validateIdFromPath("id"),
-  validation.validateIdFromPath("userId"),
-  oc.leaveOrganization
-)
+// organizationRouter.get(
+//   "/user/:userId",
+//   validation.validateIdFromPath("userId"),
+//   oc.getOrganizationsForUser
+// )
+//
+// organizationRouter.put(
+//   "/:id/addMemberByUsername",
+//   validation.validateIdFromPath("id"),
+//   validation.validateString("username"),
+//   validation.validateIdFromPath("applicantId"),
+//   oc.addMemberByUsername
+// )
+//
+// organizationRouter.delete(
+//   "/:id/leave/userId/:userId",
+//   validation.validateIdFromPath("id"),
+//   validation.validateIdFromPath("userId"),
+//   oc.leaveOrganization
+// )

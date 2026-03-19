@@ -41,3 +41,7 @@ userRouter.get('/verify/:verificationToken',
     uc.verifyUser
 );
 
+userRouter.get('/:id/organizations',
+    validation.validateIdFromPath('id'),
+    uc.getOrganizationsForUser
+);

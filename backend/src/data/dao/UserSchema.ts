@@ -25,6 +25,13 @@ const UserSchema: Schema<IUser> = new Schema({
     verificationToken: {
       type: String,
     },
+    organizations: {
+        type: Map,
+        of: {
+            key: {type: SchemaTypes.ObjectId, ref: 'Organization'},
+            value: {type: String, default: "viewer"}
+        }
+    }
 }, { timestamps: true });
 
 export default model<IUser>('User', UserSchema);

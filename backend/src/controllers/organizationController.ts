@@ -4,6 +4,8 @@ import { matchedData } from "express-validator";
 import { checkForValidationErrors } from "../middlewares/validation/checkForValidationErrors";
 import { INewOrganization } from "../data/interfaces/IOrganization";
 import {OrganizationView} from "../data/types/OrganizationView";
+import {STATUS_CODES} from "node:http";
+import {UserPrivileges} from "../data/types/UserPrivileges";
 
 
 export async function getOrganizationByName (req: Request, res: Response, next: NextFunction) {
@@ -54,7 +56,6 @@ export async function getOrganizationById(req: Request, res: Response, next: Nex
     }
 }
 
-
 export async function createOrganization(req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
@@ -79,6 +80,33 @@ export async function createOrganization(req: Request, res: Response, next: Next
     }
 }
 
+export async function updateOrganization(req: Request, res: Response, next: NextFunction) {
+
+    if (checkForValidationErrors(req, res))
+        return;
+
+    try {
+        const data = matchedData(req);
+        const result = await os.updateOrganization(
+            data.organizationId, {
+                name: data.name,
+                organizer: data.organizer
+            });
+        if (!(result instanceof Error))
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+        else
+            res.status(400).json({
+                success: false,
+                message: result.message,
+            });
+    }
+    catch (err) {
+        next(err);
+    }
+}
 
 export async function addChildrenByIds (req: Request, res: Response, next: NextFunction) {
 
@@ -104,7 +132,6 @@ export async function addChildrenByIds (req: Request, res: Response, next: NextF
     }
 }
 
-
 export async function removeFromChildrenByIds (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
@@ -129,56 +156,13 @@ export async function removeFromChildrenByIds (req: Request, res: Response, next
     }
 }
 
-export async function addFilesByIds (req: Request, res: Response, next: NextFunction) {
-
-    if (checkForValidationErrors(req, res))
-        return;
-
-    try {
-        const data: {organizationId: string, files: Array<string>} = matchedData(req);
-        const result = await os.addFilesByIds(data.organizationId, data.files);
-       if (result)
-            res.status(200).json({
-                success: true,
-                data: result,
-            });
-        else
-            res.status(404).json({
-                success: false,
-                message: "Cant find organization.",
-            });
-    }
-   catch (err) {
-        next(err);
-    }
-}
-//
-// export async function removeFromFilesByIds (req: Request, res: Response) {
-//
-//     if (checkForValidationErrors(req, res))
-//         return;
-//
-//     try {
-//         const bodyObj: {organizationId: string, files: Array<string>} = matchedData(req);
-//         const org = await os.removeFromFilesByIds(bodyObj.organizationId, bodyObj.files);
-//         if (org)
-//             res.status(204).end();
-//         else
-//             res.status(404).send("Organization not found.").end();
-//     }
-//     catch (err){
-//         console.error(err);
-//         res.status(500).send("Internal server error occurred.").end();
-//     }
-// }
-
 export async function addMembersByIds (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const data: {id: string, members: Map<string,string>} = matchedData(req);
+        const data: {id: string, members: Map<string, UserPrivileges>} = matchedData(req);
         const result: OrganizationView | null = await os.addMembersByIds(data.id, data.members);
         if (result)
             res.status(200).json({
@@ -268,7 +252,6 @@ export async function removeFromProjectionsByIds (req: Request, res: Response, n
     }
 }
 
-
 export async function deleteOrganization (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
@@ -293,54 +276,20 @@ export async function deleteOrganization (req: Request, res: Response, next: Nex
     }
 }
 
-export async function getOrganizationsForUser(req: Request, res: Response, next: NextFunction) {
-  if (checkForValidationErrors(req, res)) return
-
-  try {
-    const data: { userId: string } = matchedData(req)
-    const result = await os.getOrganizationsForUser(data.userId)
-
-    res.status(200).json({
-      success: true,
-      data: result,
-    })
-  } catch (err) {
-    next(err)
-  }
-}
-
-export async function addMemberByUsername(req: Request, res: Response, next: NextFunction) {
-  if (checkForValidationErrors(req, res)) return
-
-  try {
-    const data: { id: string; username: string; applicantId: string } = matchedData(req)
-    const result = await os.addMemberByUsername(data.id, data.username, data.applicantId)
-
-    if (!result) {
-      res.status(404).json({ success: false, message: "Organization or user not found." })
-      return
-    }
-
-    res.status(200).json({ success: true, data: result })
-  } catch (err) {
-    next(err)
-  }
-}
-
-export async function leaveOrganization(req: Request, res: Response, next: NextFunction) {
-  if (checkForValidationErrors(req, res)) return
-
-  try {
-    const data: { id: string; userId: string } = matchedData(req)
-    const result = await os.leaveOrganization(data.id, data.userId)
-
-    if (!result) {
-      res.status(404).json({ success: false, message: "Organization not found." })
-      return
-    }
-
-    res.status(200).json({ success: true, data: result })
-  } catch (err) {
-    next(err)
-  }
-}
+// export async function addMemberByUsername(req: Request, res: Response, next: NextFunction) {
+//   if (checkForValidationErrors(req, res)) return
+//
+//   try {
+//     const data: { id: string; username: string; applicantId: string } = matchedData(req)
+//     const result = await os.addMemberByUsername(data.id, data.username, data.applicantId)
+//
+//     if (!result) {
+//       res.status(404).json({ success: false, message: "Organization or user not found." })
+//       return
+//     }
+//
+//     res.status(200).json({ success: true, data: result })
+//   } catch (err) {
+//     next(err)
+//   }
+// }

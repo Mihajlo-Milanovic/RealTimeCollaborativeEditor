@@ -6,6 +6,16 @@ import {sendVerificationEmail} from "../mailer/mailer"
 import {toUserView, UserView} from "../data/types/UserView";
 import {ReactionView} from "../data/types/ReactionView";
 
+export async function getOrganizationsForUser(id: string) {
+
+    const user: IUser | null = await User.findById(id).populate("organizations").exec();
+
+    if (user == null)
+        return Error("User not found!");
+    return toUserView(user);
+}
+
+
 export async function createNewUser(user: INewUser) {
 
     const hashedPassword = await bcrypt.hash(user.password, 10);

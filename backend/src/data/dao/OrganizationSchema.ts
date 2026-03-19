@@ -13,7 +13,10 @@ const OrganizationSchema: Schema<IOrganization> = new Schema({
     },
     members: {
         type: Map,
-        of: String
+        of: {
+            key: {type: SchemaTypes.String, ref: 'User'},
+            value: {type: SchemaTypes.String, default: "viewer"}
+        }
     },
     children: [{
         type: SchemaTypes.ObjectId,

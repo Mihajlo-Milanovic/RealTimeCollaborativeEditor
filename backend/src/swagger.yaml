@@ -76,6 +76,22 @@ paths:
         "404":
           description: User not found
 
+  /users/{id}/password:
+    get:
+      tags: [Users]
+      summary: Get user password hash
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Password hash found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasswordHashResponse"
+        "404":
+          description: User not found
+
   /users/{id}/delete:
     delete:
       tags: [Users]
@@ -139,6 +155,22 @@ paths:
                 $ref: "#/components/schemas/UserResponse"
         "404":
           description: Invalid or expired token
+
+  /users/{id}/organizations:
+    get:
+      tags: [Users]
+      summary: Get organizations for user
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: User with organizations found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "404":
+          description: User not found
 
   /directories/create:
     post:
@@ -647,7 +679,29 @@ paths:
         "400":
           description: Bad request
 
-  /organizations/{id}/addChildren/:
+  /organizations/{id}/update/:
+    put:
+      tags: [Organizations]
+      summary: Update organization
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/INewOrganization"
+      responses:
+        "200":
+          description: Organization updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationResponse"
+        "400":
+          description: Bad request
+
+  /organizations/{id}/addChildren:
     put:
       tags: [Organizations]
       summary: Add children to organization
@@ -691,7 +745,7 @@ paths:
         "404":
           description: Not found
 
-  /organizations/{id}/addMembers/:
+  /organizations/{id}/addMembers:
     put:
       tags: [Organizations]
       summary: Add members to organization
@@ -920,6 +974,10 @@ components:
           type: string
         email:
           type: string
+        organizations:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/UserPrivilege"
     DirectoryView:
       type: object
       properties:
@@ -986,15 +1044,23 @@ components:
         name:
           type: string
         organizer:
-          type: string
+          $ref: "#/components/schemas/UserView"
         children:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/DirectoryView"
         projections:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/DirectoryView"
+        members:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/UserPrivilege"
+
+    UserPrivilege:
+      type: string
+      enum: [admin, editor, viewer]
 
     # Update/Input objects
     ChildrenAdmission:
@@ -1035,6 +1101,15 @@ components:
           type: boolean
         data:
           $ref: "#/components/schemas/UserView"
+        message:
+          type: string
+    PasswordHashResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: string
         message:
           type: string
     UsersResponse:

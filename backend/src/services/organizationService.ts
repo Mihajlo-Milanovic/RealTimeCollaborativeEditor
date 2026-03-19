@@ -1,5 +1,6 @@
 import {IOrganization, INewOrganization} from "../data/interfaces/IOrganization";
 import Organization from "../data/dao/OrganizationSchema";
+import User from "../data/dao/UserSchema";
 import {Types} from "mongoose";
 import {deleteFile} from "./fileService"
 import {createDirectory, deleteDirectory} from "./directoryService";
@@ -8,6 +9,7 @@ import Directory from "../data/dao/DirectorySchema";
 import {IUser} from "../data/interfaces/IUser";
 import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
 import {toOrganizationView} from "../data/types/OrganizationView";
+import {UserPrivileges} from "../data/types/UserPrivileges";
 
 
 export async function getOrganizationByName(orgName: string) {
@@ -41,6 +43,28 @@ export async function createOrganization(organization: INewOrganization) {
     if (org == null)
         return null;
 
+    await org.populate(["children", "projections", "organizer"]);
+    return toOrganizationView(org);
+}
+
+export async function updateOrganization(organizationId: string, organizationUpdate: INewOrganization) {
+
+    if (organizationUpdate.name != "") {
+        const organization = await Organization.findOne({name: organizationUpdate.name}).exec();
+        if (organization != null)
+            return Error('Organization with this name already exists.');
+    }
+    const org = await Organization.findById(organizationId).exec();
+
+    if (org == null)
+        return Error('Organization not found.');
+
+    if (organizationUpdate.name != "")
+        org.name = organizationUpdate.name;
+    if (organizationUpdate.organizer.length > 0)
+        org.organizer = new Types.ObjectId(organizationUpdate.organizer);
+
+    await org.save();
     await org.populate(["children", "projections", "organizer"]);
     return toOrganizationView(org);
 
@@ -90,14 +114,22 @@ export async function removeFromChildrenByIds(organizationId: string, childrenId
     return null;
 }
 
-export async function addMembersByIds(organizationId: string, membersIdsAndPrivileges: Map<string, string>) {
+export async function addMembersByIds(organizationId: string, membersIdsAndPrivileges: Map<string, UserPrivileges>) {
 
     const org: IOrganization | null = await Organization.findById(organizationId)
         .populate(["children", "projections", "organizer"])
         .exec();
 
     if (org != null) {
-        membersIdsAndPrivileges.forEach((value, key) => org.members.set(key, value));
+
+        const users: IUser[] | null = await User.find({_id: {$in: membersIdsAndPrivileges.keys()}}).exec();
+        if (users != null) {
+            for (const u of users) {
+                org.members.set(u.id, membersIdsAndPrivileges.get(u.id) as UserPrivileges);
+                u.organizations.set(org.name, membersIdsAndPrivileges.get(u.id) as UserPrivileges);
+                await u.save();
+            }
+        }
         await org.save()
 
         return toOrganizationView(org);
@@ -113,9 +145,14 @@ export async function removeFromMembersByIds(organizationId: string, membersIdsT
 
     if (org != null) {
 
-        membersIdsToRemove.forEach(memberId => {
-            org.members.delete(memberId);
-        });
+        const users: IUser[] | null = await User.find({_id: {$in: membersIdsToRemove.keys()}}).exec();
+        if (users != null) {
+            for (const u of users) {
+                org.members.delete(u.id);
+                u.organizations.delete(org.name);
+                await u.save();
+            }
+        }
 
         await org.save();
 
@@ -294,7 +331,7 @@ export async function removeFromProjectionsByIds(
     }
 
     const projectionsToRemove = await Directory.find({
-        _id: { $in: projectionsIdsToRemove },
+        _id: {$in: projectionsIdsToRemove},
     })
         .populate(["owner", "parents"])
         .exec();

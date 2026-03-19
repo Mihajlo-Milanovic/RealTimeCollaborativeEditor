@@ -1,4 +1,5 @@
 import { Document, Types } from "mongoose";
+import {UserPrivileges} from "../types/UserPrivileges";
 
 export interface IOrganization extends Document {
     _id: Types.ObjectId;
@@ -7,7 +8,7 @@ export interface IOrganization extends Document {
     organizer: Types.ObjectId;
     children: Array<Types.ObjectId>;
     projections: Array<Types.ObjectId>;
-    members: Map<string, string>;
+    members: Map<string, UserPrivileges>;
 }
 
 export type INewOrganization = {
