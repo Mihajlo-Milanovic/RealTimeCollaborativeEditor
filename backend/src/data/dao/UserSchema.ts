@@ -27,10 +27,8 @@ const UserSchema: Schema<IUser> = new Schema({
     },
     organizations: {
         type: Map,
-        of: {
-            key: {type: SchemaTypes.ObjectId, ref: 'Organization'},
-            value: {type: String, default: "viewer"}
-        }
+        of: SchemaTypes.String,
+        default: new Map(),
     }
 }, { timestamps: true });
 

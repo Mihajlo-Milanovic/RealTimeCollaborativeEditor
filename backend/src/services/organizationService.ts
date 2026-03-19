@@ -42,22 +42,23 @@ export async function createOrganization(organization: INewOrganization) {
     if (user == null)
         return Error('User not found.');
 
+    const m = new Map<string, UserPrivileges>();
+    m.set(user.id, 'admin');
+
     const o = {
-        name: organization,
+        name: organization.name,
         organizer: user,
-        members: new Map<string, UserPrivileges>(),
+        members: m,
         children: [],
         projections: [],
     }
 
-    o.members.set(user.id, 'admin');
-
-    const org: IOrganization | null = await Organization.create(organization);
+    const org: IOrganization | null = await Organization.create(o);
 
     if (org == null)
         return Error("Couldn't create organization.");
 
-    user.organizations.set(organization.name, 'admin');
+    user.organizations.set(o.name, 'admin');
     await user.save();
 
     await org.populate(["children", "projections", "organizer"]);
