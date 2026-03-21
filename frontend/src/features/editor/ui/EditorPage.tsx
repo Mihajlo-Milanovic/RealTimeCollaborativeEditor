@@ -1,4 +1,3 @@
-// app/EditorPage.tsx
 'use client';
 
 import {SimpleEditor} from "@/components/tiptap-templates/simple/simple-editor";
@@ -90,12 +89,14 @@ export default function EditorPage() {
 
                         const payload = await userRes.json();
                         const users = payload?.data as UserView[] | null;
-                        if (users) {
+                        if (users != null) {
+                            console.log("Loaded members for", users);
                             const members = users.map(u=> {
                                 return {...u, role: orgMemMap.get(u.id) || "viewer"} as OrganizationMember;
                             });
-                            members.sort((a, b) => a.username.localeCompare(b.username));
-                            setOrganizationMembers([...members]);
+                            console.log("Loaded members for", members);
+                            // members.sort((a, b) => a.username.localeCompare(b.username));
+                            setOrganizationMembers(members);
                             return;
                         }
                     }
@@ -104,7 +105,7 @@ export default function EditorPage() {
         }
         setOrganizationMembers([]);
         return;
-    }, []);
+    }, [membersModalOrganization]);
 
     const openMembersModal = async (org: OrganizationView) => {
         setMembersModalOrganization(org);
@@ -344,7 +345,7 @@ export default function EditorPage() {
 
                             {isMembersLoading ? (
                                 <div className="text-xs text-slate-400">Loading members...</div>
-                            ) : organizationMembers.length === 0 ? (
+                            ) : organizationMembers.length == 0 ? (
                                 <div className="text-xs text-slate-400">No members found.</div>
                             ) : (
                                 <div className="max-h-[60vh] overflow-y-auto space-y-2">
@@ -355,7 +356,7 @@ export default function EditorPage() {
                                         >
                                             <div className="min-w-0">
                                                 <div className="truncate text-sm text-slate-200">{member.username}</div>
-                                                <div className="text-[11px] text-slate-500">{member.id}</div>
+                                                <div className="text-[11px] text-slate-500">{member.email}</div>
                                             </div>
                                             <div className="flex items-center gap-2">
                                             <span

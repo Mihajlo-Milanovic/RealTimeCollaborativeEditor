@@ -320,21 +320,3 @@ export async function deleteOrganization (req: Request, res: Response, next: Nex
         next(err);
     }
 }
-
-// export async function addMemberByUsername(req: Request, res: Response, next: NextFunction) {
-//   if (checkForValidationErrors(req, res)) return
-//
-//   try {
-//     const data: { id: string; username: string; applicantId: string } = matchedData(req)
-//     const result = await os.addMemberByUsername(data.id, data.username, data.applicantId)
-//
-//     if (!result) {
-//       res.status(404).json({ success: false, message: "Organization or user not found." })
-//       return
-//     }
-//
-//     res.status(200).json({ success: true, data: result })
-//   } catch (err) {
-//     next(err)
-//   }
-// }

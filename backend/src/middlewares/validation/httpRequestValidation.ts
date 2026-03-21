@@ -96,7 +96,11 @@ function optionalArrayOfTrimmedMongoIdsObject(){
 
 export function validateUserIdArray(){
     return validator.checkSchema( {
-        userIds: optionalArrayOfTrimmedMongoIdsObject(),
+        userIds: {
+            trim: true,
+            isMongoId: {errorMessage: "Invalid ID!"},
+            // isArray: optional,
+        },
     }, ["query"] );
 }
 

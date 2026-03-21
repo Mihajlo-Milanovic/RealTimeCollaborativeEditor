@@ -31,7 +31,6 @@ export async function getOrganizationsForUser(req: Request, res: Response, next:
     }
 }
 
-
 export async function createUser(req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
@@ -59,7 +58,6 @@ export async function createUser(req: Request, res: Response, next: NextFunction
     }
 }
 
-
 export async function deleteUserWithId(req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
@@ -86,15 +84,15 @@ export async function deleteUserWithId(req: Request, res: Response, next: NextFu
     }
 }
 
-
 export async function getUsersByIds(req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const data: { userIds: string[] } = matchedData(req);
-        const users: Array<UserView> = await us.getUsersByIds(data.userIds);
+        const data: { userIds: string[] | string } = matchedData(req);
+        const ids = Array.isArray(data.userIds) ? data.userIds : [data.userIds];
+        const users: Array<UserView> = await us.getUsersByIds(ids);
 
         res.status(200).json({
             success: true,
@@ -184,7 +182,6 @@ export async function getUserByEmail(req: Request, res: Response, next: NextFunc
     }
 }
 
-
 export async function getUserByVerificationToken(req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
@@ -210,7 +207,6 @@ export async function getUserByVerificationToken(req: Request, res: Response, ne
         next(err);
     }
 }
-
 
 export async function verifyUser(req: Request, res: Response, next: NextFunction) {
 
