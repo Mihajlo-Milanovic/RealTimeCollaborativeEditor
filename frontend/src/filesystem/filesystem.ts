@@ -1,5 +1,5 @@
-import { filesystemService } from "./services"
+import { fsService } from "./services"
 
 export const createFileSystem = () => {
-    return filesystemService
+    return fsService
 }

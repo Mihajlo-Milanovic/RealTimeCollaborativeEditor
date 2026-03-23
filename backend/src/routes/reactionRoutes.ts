@@ -19,7 +19,7 @@ reactionRouter.get('/comment/:commentId/user/:userId',
     rc.getReactionByCommentAndUser
 );
 
-reactionRouter.delete('/:id/delete',
+reactionRouter.delete('/:id',
     validateIdFromPath('id'),
     rc.deleteReaction
 );

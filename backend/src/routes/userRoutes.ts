@@ -4,12 +4,12 @@ import * as validation from "../middlewares/validation/httpRequestValidation";
 
 export const userRouter = Router();
 
-userRouter.post('/create',
+userRouter.post('/',
     validation.validateUser(),
     uc.createUser
 );
 
-userRouter.delete('/:id/delete',
+userRouter.delete('/:id',
     validation.validateIdFromPath('id'),
     uc.deleteUserWithId
 );

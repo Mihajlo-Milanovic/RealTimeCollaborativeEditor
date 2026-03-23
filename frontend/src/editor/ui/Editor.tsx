@@ -1,19 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { UserView } from "@/core/types/UserView";
-import { OrganizationView } from "@/core/types/OrganizationView";
-import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
-import { MembersModal } from "@/filesystem/organization/MembersModal";
+import React, {useEffect, useState} from "react";
+import {useSession} from "next-auth/react";
+import {UserView} from "@/core/types/UserView";
+import {OrganizationView} from "@/core/types/OrganizationView";
+import {SimpleEditor} from "@/components/tiptap-templates/simple/simple-editor";
+import {MembersModal} from "@/filesystem/organization/MembersModal";
 import CommentsPanel from "@/filesystem/comments/CommentsPanel";
-import { getRequestSingle } from "@/core/api/serverRequests/methods";
+import {getRequestSingle} from "@/core/api/serverRequests/methods";
 import Sidebar from "@/filesystem/Sidebar";
-import FileTree from "@/filesystem/FileTree";
 import {X} from "lucide-react";
+import OrganizationExplorer from "@/filesystem/organization/OrganizationExplorer";
 
 export default function Editor() {
-    const { data: session, status } = useSession();
+    const {data: session, status} = useSession();
     const [user, setUser] = useState<UserView | null>(null);
     const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
     const [showComments, setShowComments] = useState(false);
@@ -50,7 +50,7 @@ export default function Editor() {
     if (!user) return null;
 
     return (
-        <div 
+        <div
             className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden select-none"
             onMouseMove={resize}
             onMouseUp={() => {
@@ -58,7 +58,7 @@ export default function Editor() {
                 setIsResizingComments(false);
             }}
         >
-            <Sidebar 
+            <Sidebar
                 user={user}
                 collapsed={explorerCollapsed}
                 width={explorerWidth}
@@ -68,17 +68,22 @@ export default function Editor() {
                 onToggleComments={() => setShowComments(!showComments)}
                 selectedFileId={selectedFileId}
             >
-                <FileTree 
-                    user={user}
-                    onSelectFile={setSelectedFileId}
-                    onOpenMembersManager={setMembersModalOrganization}
-                    refreshKey={organizationsRefreshKey}
-                />
+                <div className="overflow-y-auto flex flex-col">
+                    <div className="flex-1">
+                        <OrganizationExplorer
+                            user={user}
+                            onSelectFileAction={setSelectedFileId}
+                            onOpenMembersManagerAction={setMembersModalOrganization}
+                            organizationsRefreshKey={organizationsRefreshKey}
+                        />
+                    </div>
+                </div>
+
             </Sidebar>
 
             <main className="flex-1 flex flex-col min-w-0 bg-slate-950">
                 {selectedFileId ? (
-                    <SimpleEditor key={selectedFileId} fileId={selectedFileId} />
+                    <SimpleEditor key={selectedFileId} fileId={selectedFileId}/>
                 ) : (
                     <div className="flex-1 flex items-center justify-center text-slate-500">
                         Choose a file for editing
@@ -87,18 +92,18 @@ export default function Editor() {
             </main>
 
             {showComments && selectedFileId && (
-                <aside 
-                    style={{ width: commentsWidth }}
+                <aside
+                    style={{width: commentsWidth}}
                     className="border-l border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"
                 >
-                    <div 
+                    <div
                         onMouseDown={() => setIsResizingComments(true)}
                         className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize"
                     />
                     <div className="p-4 border-b border-slate-800 flex justify-between">
                         <h2 className="font-semibold">Comments</h2>
                         <button onClick={() => setShowComments(false)}>
-                            <X />
+                            <X/>
                         </button>
                     </div>
                     <CommentsPanel
@@ -108,7 +113,7 @@ export default function Editor() {
             )}
 
             {membersModalOrganization && (
-                <MembersModal 
+                <MembersModal
                     organization={membersModalOrganization}
                     currentUserId={user.id}
                     onClose={() => setMembersModalOrganization(null)}

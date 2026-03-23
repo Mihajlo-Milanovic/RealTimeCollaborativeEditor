@@ -5,12 +5,12 @@ import * as validation from "../middlewares/validation/httpRequestValidation";
 export const directoryRouter = Router();
 
 
-directoryRouter.post('/create',
+directoryRouter.post('/',
     validation.validateDirectory(),
     dc.createDirectory
 );
 
-directoryRouter.delete('/:id/delete',
+directoryRouter.delete('/:id',
     validation.validateIdFromPath('id'),
     dc.deleteDirectory
 );

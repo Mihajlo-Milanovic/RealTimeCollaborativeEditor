@@ -2,17 +2,22 @@
 
 import {useCallback, useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
-import {Edit, FolderPlus, LogOut, Plus, Search, Trash2, User, X} from "lucide-react";
+import {
+    Edit,
+    Plus,
+    Search,
+    Trash2,
+    User,
+} from "lucide-react";
 import {deleteRequest, getRequestSingle, postRequest, putRequest,} from "@/core/api/serverRequests/methods";
 import {FileNode} from "@/core/types/FileNode";
 import {UserView} from "@/core/types/UserView";
-import FileItem from "../FileItem";
 import {OrganizationView} from "@/core/types/OrganizationView";
 import {OrganizationRole} from "@/core/types/OrganizationRole";
 import FileTree from "@/filesystem/FileTree";
-import {FcLeave} from "react-icons/fc";
-import {BiExit} from "react-icons/bi";
 import {ImExit} from "react-icons/im";
+import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
+import {TOrganizationExplorer} from "@/core/types/elementTypes/TOrganizationExplorer";
 
 const roleClasses: Record<OrganizationRole, string> = {
     admin: "text-red-300 bg-red-500/10 border-red-500/30",
@@ -20,31 +25,30 @@ const roleClasses: Record<OrganizationRole, string> = {
     viewer: "text-slate-300 bg-slate-500/10 border-slate-500/30",
 }
 
-export default function OrganizationExplorer({
-    user,
-    onSelectFile,
-    onOpenMembersManager,
-    organizationsRefreshKey = 0,
-}: {
-    user: UserView,
-    onSelectFile?: (id: string) => void,
-    onOpenMembersManager?: (organization: OrganizationView) => void,
-    organizationsRefreshKey?: number,
-}) {
-    const [organizations, setOrganizations] = useState<OrganizationView[]>([])
-    const [visibleOrganizations, setVisibleOrganizations] = useState<OrganizationView[]>([])
-    const [isSearchOpen, setIsSearchOpen] = useState(false)
-    const [searchQuery, setSearchQuery] = useState("")
-    const [openedOrganization, setOpenedOrganization] = useState<OrganizationView | null>(null)
-    const [openedOrganizationItems, setOpenedOrganizationItems] = useState<FileNode[]>([])
-    const {data: session, status} = useSession()
+export default function OrganizationExplorer(
+    {
+        user,
+        onSelectFileAction,
+        onOpenMembersManagerAction,
+        organizationsRefreshKey = 0,
+    }: TOrganizationExplorer
+) {
+
+    const [isOpen, setIsOpen] = useState(false);
+    const [organizations, setOrganizations] = useState<OrganizationView[]>([]);
+    const [visibleOrganizations, setVisibleOrganizations] = useState<OrganizationView[]>([]);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [openedOrganization, setOpenedOrganization] = useState<OrganizationView | null>(null);
+    const [openedOrganizationItems, setOpenedOrganizationItems] = useState<FileNode[]>([]);
+    const {data: session, status} = useSession();
 
     const filterOrganizations = useCallback(
         (query: string, source: OrganizationView[] = organizations) => {
-            const normalized = query.trim().toLowerCase()
+            const normalized = query.trim().toLowerCase();
             if (!normalized) {
-                setVisibleOrganizations(source)
-                return
+                setVisibleOrganizations(source);
+                return;
             }
 
             setVisibleOrganizations(
@@ -107,9 +111,9 @@ export default function OrganizationExplorer({
         const folders: FileNode[] = (details.children ?? []).map((child) => ({
             id: child.id,
             name: child.name,
-            type: "folder",
-            scope: "organization",
-            organizationId: organization.id,
+            isDirectory: true,
+            // scope: "organization",
+            // organizationId: organization.id,
         }))
 
         setOpenedOrganizationItems(folders)
@@ -225,14 +229,42 @@ export default function OrganizationExplorer({
         await fetchOrganizationRootItems(openedOrganization)
     }
 
+    // const handleAddFolderToRoot = async () => {
+    //     if (!root?.id) return;
+    //
+    //     const folderName = prompt("Enter folder name:");
+    //     if (!folderName?.trim()) return;
+    //
+    //     const ownerId = user.id;
+    //     const res = await postRequest("directories/create", {
+    //         name: folderName.trim(),
+    //         owner: ownerId,
+    //         parents: [root.id],
+    //         children: [],
+    //         files: [],
+    //         collaborators: [],
+    //         organization: null,
+    //     });
+    //
+    //     if (res.ok) {
+    //         await fetchRootContents(root.id);
+    //     }
+    // };
+
+
     if (status === "loading") return null
     if (!session) return null
 
     return (
         <div className="mt-4">
-            <div className="mb-2 flex items-center justify-between px-1">
-                <div className="p-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Organizations
+            <div className="mb-2 flex items-center justify-between px-1"
+                 onClick={() => setIsOpen(!isOpen)}
+            >
+                <div className="mb-2 flex items-center justify-around px-1">
+                    {isOpen ? (<AiOutlineDown/>) : (<AiOutlineRight/>)}
+                    <div className="p-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        Organizations
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-1">
@@ -272,146 +304,116 @@ export default function OrganizationExplorer({
                     />
                 </div>
             )}
+            <div
+                className={`transition-all duration-300 overflow-hidden ${
+                    isOpen ? "max-h-125" : "max-h-0"
+                }`}
+            >
+                {visibleOrganizations.length === 0 ? (
+                    <div className="px-2 py-1 text-xs text-slate-500">No organizations.</div>
+                ) : (
+                    <ul className="space-y-1 px-1">
+                        {visibleOrganizations.map((organization) => {
+                            const role = organization.members.get(user.id)
+                            return (
+                                <li
+                                    key={organization.id}
+                                    className="rounded-lg px-2 py-1.5 hover:bg-slate-800 transition-colors"
+                                >
+                                    <div className="flex items-center justify-between gap-2">
+                                        <button
+                                            onClick={() => {
+                                                void handleOpenOrganization(organization)
+                                            }}
+                                            className="flex flex-1 items-center justify-between gap-2 text-left"
+                                            title={organization.name}
+                                        >
+                                            <span
+                                                className="truncate text-slate-300 hover:text-white transition-colors">
+                                                {organization.name}
+                                            </span>
+                                        </button>
 
-            {visibleOrganizations.length === 0 ? (
-                <div className="px-2 py-1 text-xs text-slate-500">No organizations.</div>
-            ) : (
-                <ul className="space-y-1 px-1">
-                    {visibleOrganizations.map((organization) => {
-                        const role = organization.members.get(user.id)
-                        return (
-                            <li
-                                key={organization.id}
-                                className="rounded-lg px-2 py-1.5 hover:bg-slate-800 transition-colors"
-                            >
-                                <div className="flex items-center justify-between gap-2">
-                                    <button
-                                        onClick={() => {
-                                            void handleOpenOrganization(organization)
-                                        }}
-                                        className="flex flex-1 items-center justify-between gap-2 text-left"
-                                        title={organization.name}
-                                    >
-                                        <span className="truncate text-slate-300 hover:text-white transition-colors">
-                                            {organization.name}
-                                        </span>
-                                    </button>
-
-                                    {role === "admin" && (
                                         <div className="flex gap-1 ml-2">
-                                            <button
-                                                onClick={() => handleEditOrganization()}
-                                                className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
-                                                title="Edit organization"
-                                            >
-                                                <Edit size={14}/>
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteOrganization(organization)}
-                                                className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
-                                                title="Delete organization"
-                                            >
-                                                <Trash2 size={14}/>
-                                            </button>
+                                            {role === "admin" && (<span>
+                                                <button
+                                                    onClick={() => handleEditOrganization()}
+                                                    className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-orange-400 transition-colors"
+                                                    title="Edit organization"
+                                                >
+                                                    <Edit size={14}/>
+                                                </button>
+
+                                                <button
+                                                    onClick={() => handleDeleteOrganization(organization)}
+                                                    className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-500 transition-colors"
+                                                    title="Delete organization"
+                                                >
+                                                    <Trash2 size={14}/>
+                                                </button>
+
+                                            </span>
+                                            )}
 
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation()
-                                                    onOpenMembersManager?.(organization)
+                                                    onOpenMembersManagerAction?.(organization)
                                                 }}
-                                                className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-purple-400 transition-colors"
+                                                className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-green-500 transition-colors"
                                                 title="Manage members"
                                             >
                                                 <User size={14}/>
                                             </button>
                                         </div>
-                                    )}
 
-                                    {/*<button*/}
-                                    {/*    onClick={(e) => {*/}
-                                    {/*        console.log("ADD PROJECTIONS :::: NO IMPLEMENTATION");*/}
-                                    {/*    }}*/}
-                                    {/*    className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-cyan-400 transition-colors"*/}
-                                    {/*    title="Add projection from personal folders"*/}
-                                    {/*>*/}
-                                    {/*    <Add />*/}
-                                    {/*</button>*/}
+                                        {/*TODO: MOVE TO FILE TREE*/}
+                                        {/*<button*/}
+                                        {/*    onClick={(e) => {*/}
+                                        {/*        console.log("ADD PROJECTIONS :::: NO IMPLEMENTATION");*/}
+                                        {/*    }}*/}
+                                        {/*    className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-cyan-400 transition-colors"*/}
+                                        {/*    title="Add projection from personal folders"*/}
+                                        {/*>*/}
+                                        {/*    <Add />*/}
+                                        {/*</button>*/}
 
-                                    <button
-                                        onClick={(e) => {
-                                            // handleLeaveOrganization();
-                                        }}
-                                        className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-orange-400 transition-colors"
-                                        title="Leave organization"
-                                    >
-                                        <ImExit size={14}/>
-                                    </button>
+                                        <button
+                                            onClick={(e) => {
+                                                // handleLeaveOrganization();
+                                            }}
+                                            className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
+                                            title="Leave organization"
+                                        >
+                                            <ImExit size={14}/>
+                                        </button>
 
-                                    <span
-                                        className={`shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                                            role
-                                                ? roleClasses[role as OrganizationRole]
-                                                : "bg-gray-500"
-                                        }`}
-                                    >
-                                        {role ?? "unknown"}
-                                    </span>
-                                </div>
-                            </li>
-                        )
-                    })}
-                </ul>
-            )}
+                                        <span
+                                            className={`shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                                                role
+                                                    ? roleClasses[role as OrganizationRole]
+                                                    : "bg-gray-500"
+                                            }`}
+                                        >
+                                            {role ?? "unknown"}
+                                        </span>
+                                    </div>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                )}
+            </div>
 
-            {openedOrganization && (
-                <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/60 p-2">
-                    <div className="mb-2 flex items-center justify-between px-1">
-                        <div className="truncate text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                            {openedOrganization.name}
-                        </div>
-                        <div className="flex items-center gap-1">
-                            {openedOrganization.members.get(user.id) != "viewer" && (
-                                <button
-                                    onClick={handleAddFolderToOrganization}
-                                    className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-                                    title="New folder"
-                                    aria-label="New folder"
-                                >
-                                    <FolderPlus size={14}/>
-                                </button>
-                            )}
-                            <button
-                                onClick={() => {
-                                    setOpenedOrganization(null)
-                                    setOpenedOrganizationItems([])
-                                }}
-                                className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-                                title="Close organization explorer"
-                                aria-label="Close organization explorer"
-                            >
-                                <X size={14}/>
-                            </button>
-                        </div>
-                    </div>
+            <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/60 p-2">
 
-                    {openedOrganizationItems.length === 0 ? (
-                        <div className="px-2 py-1 text-xs text-slate-500">No folders.</div>
-                    ) : (
-                        <div className="space-y-1">
-                            {openedOrganizationItems.map((item) => (
-                                <FileItem
-                                    org={openedOrganization}
-                                    user={user}
-                                    key={item.id}
-                                    node={item}
-                                    onSelectFile={onSelectFile}
-                                    onRefresh={() => fetchOrganizationRootItems(openedOrganization)}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )}
+                <FileTree
+                    user={user}
+                    organization={openedOrganization}
+                    onSelectFile={onSelectFileAction}
+                    refreshKey={organizationsRefreshKey}
+                />
+            </div>
         </div>
     )
 }

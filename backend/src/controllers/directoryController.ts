@@ -110,7 +110,10 @@ export async function getDirectoryWithChildrenAndFiles(req: Request, res: Respon
         if (result)
             res.status(200).json({
                 success: true,
-                data: result,  
+                data: {
+                    children: result.children,
+                    files: result.files,
+                },
             });
         else
             res.status(404).json({

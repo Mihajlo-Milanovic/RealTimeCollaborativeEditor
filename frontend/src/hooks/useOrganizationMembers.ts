@@ -1,6 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import { getRequestSingle, putRequest } from "@/core/api/serverRequests/methods";
-import { OrganizationView, UserView, OrganizationMember, OrganizationRole } from "@/core/types/FileNode";
+import {OrganizationView} from "@/core/types/OrganizationView";
+import {OrganizationMember} from "@/core/types/OrganizationMember";
+import {OrganizationRole} from "@/core/types/OrganizationRole";
+import {UserView} from "@/core/types/UserView";
+
 
 export function useOrganizationMembers(organization: OrganizationView | null, currentUserId?: string) {
     const [members, setMembers] = useState<OrganizationMember[]>([]);

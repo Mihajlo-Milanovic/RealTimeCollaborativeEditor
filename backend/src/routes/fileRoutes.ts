@@ -5,7 +5,7 @@ import {validateFile, validateIdFromPath} from "../middlewares/validation/httpRe
 export const fileRouter = Router();
 
 
-fileRouter.post('/create',
+fileRouter.post('/',
     validateFile(),
     fc.createFile
 );
@@ -15,7 +15,7 @@ fileRouter.get('/:id',
     fc.getFile
 );
 
-fileRouter.delete('/:id/delete',
+fileRouter.delete('/:id',
     validateIdFromPath('id'),
     fc.deleteFile
 );

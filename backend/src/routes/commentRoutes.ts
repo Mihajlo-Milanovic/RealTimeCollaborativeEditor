@@ -9,7 +9,7 @@ import {
 
 export const commentRouter = Router();
 
-commentRouter.post('/create',
+commentRouter.post('/',
     validateComment(),
     cc.createComment
 );
@@ -29,7 +29,7 @@ commentRouter.put('/:id/update',
     cc.updateComment
 );
 
-commentRouter.delete('/:id/delete',
+commentRouter.delete('/:id',
     validateIdFromPath('id'),
     cc.deleteComment
 );

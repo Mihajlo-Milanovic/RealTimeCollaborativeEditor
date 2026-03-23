@@ -79,6 +79,8 @@ export const MembersModal: React.FC<MembersModalProps> = ({
                     </div>
 
                     <div className="flex gap-1">
+
+                        {organization.members.get(currentUserId) == "admin" && (
                         <button
                             onClick={() => setIsAddMemberDialogOpen(true)}
                             className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
@@ -86,7 +88,7 @@ export const MembersModal: React.FC<MembersModalProps> = ({
                         >
                             <UserPlus size={16} />
                         </button>
-
+                            )}
                         <button
                             onClick={onClose}
                             className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
@@ -107,6 +109,7 @@ export const MembersModal: React.FC<MembersModalProps> = ({
                             <MemberItem
                                 key={member.id}
                                 member={member}
+                                showChangeRoleAndRemove={organization.members.get(currentUserId) == "admin"}
                                 onChangeRole={(m) => {
                                     setMemberForRoleChange(m);
                                     setSelectedRole(m.role);

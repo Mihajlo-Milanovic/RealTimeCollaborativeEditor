@@ -28,7 +28,7 @@ export function toDirectoryView(directory: IDirectory): DirectoryView {
             f = directory.files;
     }
 
-    let o: UserView = {id: "", username: "", email: ""};
+    let o: UserView = {id: "", username: "", email: "", organizations: new Map};
     if (directory.owner != null) {
         if (!(directory.owner instanceof Types.ObjectId))
             o = toUserView(directory.owner as unknown as IUser);

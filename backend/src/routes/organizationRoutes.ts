@@ -1,4 +1,4 @@
-import {Request, Response, Router} from "express";
+import {Router} from "express";
 import * as oc from "../controllers/organizationController";
 import * as validation from "../middlewares/validation/httpRequestValidation";
 import {
@@ -7,7 +7,6 @@ import {
     validateOrganization,
     validateString
 } from "../middlewares/validation/httpRequestValidation";
-import {updateOrganization} from "../controllers/organizationController";
 
 export const organizationRouter = Router();
 
@@ -21,7 +20,7 @@ organizationRouter.get('/:id',
     oc.getOrganizationById
 );
 
-organizationRouter.post('/create',
+organizationRouter.post('/',
     validateOrganization(),
     oc.createOrganization
 );
@@ -75,30 +74,8 @@ organizationRouter.put('/:id/removeProjections/',
     oc.removeFromProjectionsByIds
 );
 
-organizationRouter.delete('/:id/delete/userId/:userId',
+organizationRouter.delete('/:id/:userId',
     validation.validateIdFromPath("id"),
     validation.validateIdFromPath("userId"),
     oc.deleteOrganization
 );
-
-
-// organizationRouter.get(
-//   "/user/:userId",
-//   validation.validateIdFromPath("userId"),
-//   oc.getOrganizationsForUser
-// )
-//
-// organizationRouter.put(
-//   "/:id/addMemberByUsername",
-//   validation.validateIdFromPath("id"),
-//   validation.validateString("username"),
-//   validation.validateIdFromPath("applicantId"),
-//   oc.addMemberByUsername
-// )
-//
-// organizationRouter.delete(
-//   "/:id/leave/userId/:userId",
-//   validation.validateIdFromPath("id"),
-//   validation.validateIdFromPath("userId"),
-//   oc.leaveOrganization
-// )
