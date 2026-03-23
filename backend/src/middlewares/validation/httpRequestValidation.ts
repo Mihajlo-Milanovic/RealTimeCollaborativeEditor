@@ -7,7 +7,7 @@ import {IFile} from "../../data/interfaces/IFile";
 import {IDirectory} from "../../data/interfaces/IDirectory";
 
 /**
- * Use in pair with <code>validate{Object}</code> to check if the 'id' is included
+ * Use in a pair with <code>validate{Object}</code> to check if the 'id' is included
  * Field 'id' is needed for the update methods
  * @return
  * Validation chain that checks if the body of request has field 'id'
@@ -39,7 +39,7 @@ export function validateToken() {
 
 /**
  * @param fieldName
- * Name used for field that holds the ID
+ * Name used for the field that holds the ID
  *
  * @return
  * Validation chain for validating ID from Query
@@ -67,7 +67,7 @@ export function validateIdFromPath(fieldNames: string | Array<string>) {
 
 /**
  * @param fieldName
- * Name used for field that holds the ID
+ * Name used for the field that holds the ID
  *
  * @return
  * Object representation of the Mongo ID validation chain

@@ -1,5 +1,5 @@
-import EditorPage from "@/features/editor/ui/EditorPage";
+import Editor from "@/editor/ui/Editor";
 
-export default async function Editor() {
-    return <EditorPage />;
+export default function EditorPage() {
+    return <Editor />;
 }
