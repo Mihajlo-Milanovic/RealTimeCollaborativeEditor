@@ -2,7 +2,7 @@ import Directory from "../data/dao/DirectorySchema";
 import File from "../data/dao/FileSchema";
 import User from "../data/dao/UserSchema";
 import {IDirectory, INewDirectory} from "../data/interfaces/IDirectory";
-import mongoose, {Types} from "mongoose"
+import {Types} from "mongoose"
 import {IFile} from "../data/interfaces/IFile";
 import {IUser} from "../data/interfaces/IUser";
 import {NumberOfDeletions} from "../data/classes/NumberOfDeletions";
@@ -107,15 +107,14 @@ export async function getDirectoryWithChildrenAndFiles(dirId: string) {
 
 export async function getUserRootDirectories(ownerId: string) {
 
-    const dirs = await Directory.find({ owner: ownerId, parents: [] })
+    const rootDir: IDirectory | null = await Directory.findOne({ owner: ownerId, parents: null })
         .populate(["files", "children", "owner"])
         .exec();
 
-    if (dirs == null)
-        return [];
+    if (rootDir == null)
+        return null;
 
-    const views: Array<DirectoryView> = dirs.map(d => toDirectoryView(d));
-    return views;
+    return toDirectoryView(rootDir);
 }
 
 export async function getDirectoriesStructured (ownerId: string) {

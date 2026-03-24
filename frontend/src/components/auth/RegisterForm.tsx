@@ -66,27 +66,27 @@ try {
     return;
   }
 
-  const rootDirData = {
-    name: `${ansUser.username}'s root directory`,
-    owner: ansUser.id,
-    parents: [], // neka ga
-    children: [],
-    files: [],
-    //collaborators: [],
-  };
-
-  // 
-  const userRootDirectory = await postRequest("directories/create", rootDirData);
-  const ansRootDir = await userRootDirectory.json(); //
-
-  if (userRootDirectory.ok) {
-    console.log("Registracija uspela.");
-    (e.target as HTMLFormElement).reset();
-    router.push("/");
-  } else {
-    setIsLoading(false);
-    setError((ansRootDir?.message ?? "Greška pri kreiranju root direktorijuma. ->" + ansRootDir?.message));
-  }
+  // const rootDirData = {
+  //   name: `${ansUser.username}'s root directory`,
+  //   owner: ansUser.id,
+  //   parents: [], // neka ga
+  //   children: [],
+  //   files: [],
+  //   //collaborators: [],
+  // };
+  //
+  // //
+  // const userRootDirectory = await postRequest("directories/create", rootDirData);
+  // const ansRootDir = await userRootDirectory.json(); //
+  //
+  // if (userRootDirectory.ok) {
+  //   console.log("Registracija uspela.");
+  //   (e.target as HTMLFormElement).reset();
+  //   router.push("/");
+  // } else {
+  //   setIsLoading(false);
+  //   setError((ansRootDir?.message ?? "Greška pri kreiranju root direktorijuma. ->" + ansRootDir?.message));
+  // }
 } catch (error) {
       console.log("Greška prilikom registracije: ", error);
       setIsLoading(false);

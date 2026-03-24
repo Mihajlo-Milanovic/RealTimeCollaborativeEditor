@@ -7,6 +7,7 @@ export type TFileTree = {
     organization: OrganizationView | null;
     onSelectFile?: (id: string) => void;
     refreshKey?: number;
+    onCloseCurrentOrganizationFS: () => void;
     // onCloseTreeAction: () => void;
     // onAddFolderAction: () => void;
     // onAddFileAction: () => void;

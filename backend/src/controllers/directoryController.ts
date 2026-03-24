@@ -133,7 +133,7 @@ export async function getUserRootDirectories(req: Request, res: Response, next: 
 
     try {
         const { userId } = matchedData(req);
-        const result: Array<DirectoryView> | null = await ds.getUserRootDirectories(userId);
+        const result: DirectoryView | null = await ds.getUserRootDirectories(userId);
 
         if (result)
             res.status(200).json({

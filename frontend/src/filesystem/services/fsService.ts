@@ -1,4 +1,4 @@
-import {deleteRequest, getRequestSingle, postRequest} from "@/core/api/serverRequests/methods";
+import {deleteRequest, getRequestSingle, postRequest, putRequest} from "@/core/api/serverRequests/methods";
 import {FileNode} from "@/core/types/FileNode";
 
 export const fsService = {
@@ -26,11 +26,25 @@ export const fsService = {
         return res.ok;
     },
 
-    async createFolder(folderName: string, parentId: string | null, ownerId: string): Promise<boolean> {
-        const res = await postRequest("directories", {
+    async createFolderInFolder(folderName: string, parentId: string | null, ownerId: string, parentIsOrganization: boolean): Promise<boolean> {
+        let res = await postRequest("directories", {
             owner: ownerId,
             parents: parentId ? [parentId] : [],
             name: folderName
+        });
+
+        if(parentIsOrganization && res.ok && parentId) {
+            const payload = await res.json();
+            const data = payload?.data ?? payload;
+            return await this.addFolderToOrganization(data.id, parentId);
+        }
+
+        return res.ok;
+    },
+
+    async addFolderToOrganization(folderId: string, organizationId: string): Promise<boolean> {
+        const res = await putRequest(`organizations/${organizationId}/addChildren`, {
+            children: [folderId],
         });
         return res.ok;
     },

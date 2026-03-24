@@ -1,7 +1,6 @@
 "use client"
 
 import {useCallback, useEffect, useState} from "react";
-import {useSession} from "next-auth/react";
 import {
     Edit,
     Plus,
@@ -9,12 +8,10 @@ import {
     Trash2,
     User,
 } from "lucide-react";
-import {deleteRequest, getRequestSingle, postRequest, putRequest,} from "@/core/api/serverRequests/methods";
-import {FileNode} from "@/core/types/FileNode";
-import {UserView} from "@/core/types/UserView";
+import {deleteRequest, getRequestSingle, postRequest} from "@/core/api/serverRequests/methods";
 import {OrganizationView} from "@/core/types/OrganizationView";
 import {OrganizationRole} from "@/core/types/OrganizationRole";
-import FileTree from "@/filesystem/FileTree";
+import FileTree from "@/filesystem/ui/FileTree";
 import {ImExit} from "react-icons/im";
 import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
 import {TOrganizationExplorer} from "@/core/types/elementTypes/TOrganizationExplorer";
@@ -40,8 +37,6 @@ export default function OrganizationExplorer(
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [openedOrganization, setOpenedOrganization] = useState<OrganizationView | null>(null);
-    const [openedOrganizationItems, setOpenedOrganizationItems] = useState<FileNode[]>([]);
-    const {data: session, status} = useSession();
 
     const filterOrganizations = useCallback(
         (query: string, source: OrganizationView[] = organizations) => {
@@ -94,35 +89,10 @@ export default function OrganizationExplorer(
         setVisibleOrganizations(mapped)
     }, [user.id])
 
-    const fetchOrganizationRootItems = useCallback(async (organization: OrganizationView) => {
-        const detailsRes = await getRequestSingle(`organizations/${organization.id}`)
-        if (!detailsRes.ok) {
-            setOpenedOrganizationItems([])
-            return
-        }
-
-        const payload = await detailsRes.json()
-        const details = (payload?.data ?? null) as OrganizationView | null
-        if (details == null) {
-            setOpenedOrganizationItems([])
-            return
-        }
-
-        const folders: FileNode[] = (details.children ?? []).map((child) => ({
-            id: child.id,
-            name: child.name,
-            isDirectory: true,
-            // scope: "organization",
-            // organizationId: organization.id,
-        }))
-
-        setOpenedOrganizationItems(folders)
-    }, [])
-
     useEffect(() => {
-        if (status !== "authenticated" || !session?.user) return
+        if (!user) return
         fetchOrganizations()
-    }, [status, session, organizationsRefreshKey])
+    }, [user, organizationsRefreshKey])
 
     const handleToggleSearch = () => {
         const nextSearchOpen = !isSearchOpen
@@ -175,85 +145,57 @@ export default function OrganizationExplorer(
     const handleOpenOrganization = async (organization: OrganizationView) => {
         if (openedOrganization?.id == organization.id) {
             setOpenedOrganization(null)
-            setOpenedOrganizationItems([])
             return
         }
 
         setOpenedOrganization(organization)
-        await fetchOrganizationRootItems(organization)
     }
 
-    const handleAddFolderToOrganization = async () => {
-        if (!openedOrganization) return
-        if (openedOrganization.members.get(user.id) == "viewer") return
-
-        const folderName = (prompt("Enter folder name:") || "").trim()
-        if (!folderName) return
-
-        if (!user.id) return
-
-        const createRes = await postRequest("directories/create", {
-            name: folderName.trim(),
-            owner: user.id,
-            parents: [],
-            children: [],
-            files: [],
-            collaborators: [],
-            organization: openedOrganization.id,
-        })
-
-        if (!createRes.ok) {
-            alert("Could not create folder.")
-            return
-        }
-
-        const createPayload = await createRes.json()
-        const createdDir = createPayload?.data ?? createPayload
-        const createdDirId = createdDir?.id
-
-        if (!createdDirId) {
-            alert("Could not resolve created folder id.")
-            return
-        }
-
-        const attachRes = await putRequest(
-            `organizations/${openedOrganization.id}/addChildren`,
-            {children: [createdDirId]}
-        )
-
-        if (!attachRes.ok) {
-            alert("Could not attach folder to organization.")
-            return
-        }
-
-        await fetchOrganizationRootItems(openedOrganization)
-    }
-
-    // const handleAddFolderToRoot = async () => {
-    //     if (!root?.id) return;
+    // const handleAddFolderToOrganization = async () => {
+    //     if (!openedOrganization) return
+    //     if (openedOrganization.members.get(user.id) == "viewer") return
     //
-    //     const folderName = prompt("Enter folder name:");
-    //     if (!folderName?.trim()) return;
+    //     const folderName = (prompt("Enter folder name:") || "").trim()
+    //     if (!folderName) return
     //
-    //     const ownerId = user.id;
-    //     const res = await postRequest("directories/create", {
+    //     if (!user.id) return
+    //
+    //     const createRes = await postRequest("directories/create", {
     //         name: folderName.trim(),
-    //         owner: ownerId,
-    //         parents: [root.id],
+    //         owner: user.id,
+    //         parents: [],
     //         children: [],
     //         files: [],
     //         collaborators: [],
-    //         organization: null,
-    //     });
+    //         organization: openedOrganization.id,
+    //     })
     //
-    //     if (res.ok) {
-    //         await fetchRootContents(root.id);
+    //     if (!createRes.ok) {
+    //         alert("Could not create folder.")
+    //         return
     //     }
-    // };
-
-
-    if (status === "loading") return null
-    if (!session) return null
+    //
+    //     const createPayload = await createRes.json()
+    //     const createdDir = createPayload?.data ?? createPayload
+    //     const createdDirId = createdDir?.id
+    //
+    //     if (!createdDirId) {
+    //         alert("Could not resolve created folder id.")
+    //         return
+    //     }
+    //
+    //     const attachRes = await putRequest(
+    //         `organizations/${openedOrganization.id}/addChildren`,
+    //         {children: [createdDirId]}
+    //     )
+    //
+    //     if (!attachRes.ok) {
+    //         alert("Could not attach folder to organization.")
+    //         return
+    //     }
+    //
+    //     await fetchOrganizationRootItems(openedOrganization)
+    // }
 
     return (
         <div className="mt-4">
@@ -411,7 +353,7 @@ export default function OrganizationExplorer(
                     user={user}
                     organization={openedOrganization}
                     onSelectFile={onSelectFileAction}
-                    refreshKey={organizationsRefreshKey}
+                    onCloseCurrentOrganizationFS={()=>{setOpenedOrganization(null)}}
                 />
             </div>
         </div>

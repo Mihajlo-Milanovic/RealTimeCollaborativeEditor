@@ -7,7 +7,6 @@ export class UserView {
     email: string;
     username: string;
     organizations: Map<string, string>;
-    rootDir: FileNode | null;
 
     constructor(
         id: string = "",
@@ -19,10 +18,5 @@ export class UserView {
         this.email = email;
         this.username = username;
         this.organizations = organizations;
-        this.rootDir = null;
-        fsService.getRootDirectory(id).then( value => {
-            this.rootDir = value
-        });
-
     }
 }

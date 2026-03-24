@@ -5,12 +5,12 @@ import {useSession} from "next-auth/react";
 import {UserView} from "@/core/types/UserView";
 import {OrganizationView} from "@/core/types/OrganizationView";
 import {SimpleEditor} from "@/components/tiptap-templates/simple/simple-editor";
-import {MembersModal} from "@/filesystem/organization/MembersModal";
-import CommentsPanel from "@/filesystem/comments/CommentsPanel";
+import {MembersModal} from "@/filesystem/ui/MembersModal";
+import CommentsPanel from "@/comments/CommentsPanel";
 import {getRequestSingle} from "@/core/api/serverRequests/methods";
 import Sidebar from "@/filesystem/Sidebar";
 import {X} from "lucide-react";
-import OrganizationExplorer from "@/filesystem/organization/OrganizationExplorer";
+import OrganizationExplorer from "@/filesystem/ui/OrganizationExplorer";
 
 export default function Editor() {
     const {data: session, status} = useSession();

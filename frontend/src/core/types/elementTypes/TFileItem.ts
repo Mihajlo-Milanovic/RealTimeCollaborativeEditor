@@ -9,5 +9,5 @@ export type TFileItem = {
     organization: OrganizationView | null;
     node: FileNode;
     onSelectFile?: (id: string) => void;
-    onRefreshAction: (id: string, setChildren: React.Dispatch<React.SetStateAction<FileNode[]>>) => void;
+    onRefreshAction: () => void;
 }

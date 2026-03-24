@@ -5,6 +5,8 @@ import {Folder, FolderOpen, FileText, Trash2, FolderPlus, FilePlus} from "lucide
 import {FileNode} from "@/core/types/FileNode";
 import {fsService} from "@/filesystem/services/fsService";
 import {TFileItem} from "@/core/types/elementTypes/TFileItem";
+import {useFetchChildren} from "@/hooks/useFetchChildren";
+import {prompts} from "@/filesystem/services/prompts";
 
 
 export default function FileItem(
@@ -13,17 +15,22 @@ export default function FileItem(
         user,
         node,
         onSelectFile,
-        onRefreshAction
+        onRefreshAction,
     }: TFileItem
 ) {
 
     const [isOpen, setIsOpen] = useState(false);
-    const [children, setChildren] = useState<FileNode[]>([]);
+
+    const {
+        items,
+        isLoading,
+        refresh
+    } = useFetchChildren(node.id)
 
     const handleOpenFolder = async () => {
         if (node.isDirectory) {
             if (!isOpen) {
-                onRefreshAction(node.id, setChildren);
+                refresh()
             }
             setIsOpen(!isOpen);
         } else {
@@ -31,26 +38,6 @@ export default function FileItem(
         }
     };
 
-    const handleDelete = async () => {
-        if (confirm(`Are you sure you want to delete ${node.isDirectory ? 'directory' : 'file'} "${node.name}"?`)) {
-            const success = await fsService.deleteNode(node.id, node.isDirectory);
-            if (success) onRefreshAction(node.id, setChildren);
-        }
-    };
-
-    const handleAddFolder = async () => {
-        const folderName = (prompt("Enter folder name:") || "")?.trim();
-        if (!folderName) return;
-        const success = await fsService.createFolder(folderName, node.id, user.id);
-        if (success) onRefreshAction(node.id, setChildren);
-    }
-
-    const handleAddFile = async () => {
-        const fileName = (prompt("Enter file name:") || "")?.trim();
-        if (!fileName) return;
-        const success = await fsService.createFile(fileName, node.id, user.id);
-        if (success) onRefreshAction(node.id, setChildren);
-    }
 
     const canEdit = organization == null || (organization.members.get(user.id) || "viewer") != "viewer";
     const showCreate = canEdit && node.isDirectory;
@@ -81,7 +68,9 @@ export default function FileItem(
                                     className="fill-slate-500/20"
                                 />
                             )
-                        ) : (<FileText size={16}/>)}
+                        ) : (
+                            <FileText size={16}/>
+                        )}
                     </div>
 
                     <span
@@ -97,7 +86,7 @@ export default function FileItem(
                 >
                     {canEdit && (
                         <button
-                            onClick={handleDelete}
+                            onClick={() => prompts.deleteFileNode(node, onRefreshAction)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
                             title="Delete"
                         >
@@ -107,7 +96,7 @@ export default function FileItem(
 
                     {showCreate && (
                         <button
-                            onClick={handleAddFolder}
+                            onClick={() => prompts.addFolderToFileNode(node, user.id, refresh)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-green-400 transition-colors"
                             title="New Folder"
                         >
@@ -116,7 +105,7 @@ export default function FileItem(
                     )}
                     {canEdit && node.isDirectory && (
                         <button
-                            onClick={handleAddFile}
+                            onClick={() => prompts.addFileToFileNode(node, user.id, refresh)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-blue-400 transition-colors"
                             title="New File"
                         >
@@ -126,16 +115,16 @@ export default function FileItem(
                 </div>
             </div>
 
-            {isOpen && children && (
+            {isOpen && items && (
                 <div className="pl-4 border-l border-slate-800 ml-4">
-                    {children.map(child => (
+                    {items.map(item => (
                         <FileItem
                             organization={organization}
-                            key={child.id}
-                            node={child}
+                            key={item.id}
+                            node={item}
                             user={user}
                             onSelectFile={onSelectFile}
-                            onRefreshAction={onRefreshAction}
+                            onRefreshAction={refresh}
                         />
                     ))}
                 </div>

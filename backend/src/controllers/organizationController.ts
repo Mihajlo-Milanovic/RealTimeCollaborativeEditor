@@ -123,7 +123,7 @@ export async function addChildrenByIds (req: Request, res: Response, next: NextF
         else
             res.status(400).json({
                 success: false,
-                message: "Cant add children.",
+                message: "Can't add children.",
             });
     }
    catch (err) {

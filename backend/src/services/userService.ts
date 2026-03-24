@@ -1,4 +1,5 @@
 import User from "../data/dao/UserSchema";
+import Directory from "../data/dao/DirectorySchema";
 import {IUser, INewUser} from "../data/interfaces/IUser";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -104,7 +105,7 @@ export async function getUserByVerificationToken(verificationToken: string) {
 
 export async function verifyUser(verificationToken: string) {
 
-    const user: IUser | null = await User.findOne({verificationToken: verificationToken});
+    const user: IUser | null = await User.findOne({verificationToken: verificationToken}).exec();
 
     if (user == null)
         return null;
@@ -112,6 +113,12 @@ export async function verifyUser(verificationToken: string) {
     user.verified = true;
     user.verificationToken = undefined;
     await user.save();
+
+    const rootDir = await Directory.create({
+        name: "Personal Workspace Root",
+        owner: user._id,
+        parent: null,
+    });
 
     return toUserView(user);
 }
