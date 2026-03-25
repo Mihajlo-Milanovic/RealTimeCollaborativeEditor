@@ -55,7 +55,7 @@ try {
   };
 
   //nova ruta
-  const res = await postRequest("users/create", data);
+  const res = await postRequest("users", data);
   const ans = await res.json();
   const ansUser = ans?.data;
   console.log(ansUser);
@@ -188,7 +188,7 @@ try {
 
               <div className="text-sm text-center text-slate-400 mt-2">
                 Već imate nalog?{" "}
-                <Link href="/frontend/public" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                <Link href="/" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
                   Prijavite se
                 </Link>
               </div>

@@ -1,12 +1,9 @@
 "use client";
 
-import {useEffect, useRef, useState} from "react";
-import {FileNode} from "@/core/types/FileNode";
-import {fsService} from "@/filesystem/services/fsService";
+import {useRef} from "react";
 import {FilePlus, FolderPlus, X} from "lucide-react";
 import {TFileTree} from "@/core/types/elementTypes/TFileTree";
 import FileItem from "@/filesystem/ui/FileItem";
-import {OrganizationView} from "@/core/types/OrganizationView";
 import {useFileSystem} from "@/hooks/useFileSystem";
 import {prompts} from "@/filesystem/services/prompts";
 

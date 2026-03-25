@@ -114,7 +114,7 @@ export default function OrganizationExplorer(
         const userId = user.id
         if (!userId) return
 
-        const res = await postRequest("organizations/create", {
+        const res = await postRequest("organizations", {
             name: name.trim(),
             organizer: userId,
         })
@@ -150,52 +150,6 @@ export default function OrganizationExplorer(
 
         setOpenedOrganization(organization)
     }
-
-    // const handleAddFolderToOrganization = async () => {
-    //     if (!openedOrganization) return
-    //     if (openedOrganization.members.get(user.id) == "viewer") return
-    //
-    //     const folderName = (prompt("Enter folder name:") || "").trim()
-    //     if (!folderName) return
-    //
-    //     if (!user.id) return
-    //
-    //     const createRes = await postRequest("directories/create", {
-    //         name: folderName.trim(),
-    //         owner: user.id,
-    //         parents: [],
-    //         children: [],
-    //         files: [],
-    //         collaborators: [],
-    //         organization: openedOrganization.id,
-    //     })
-    //
-    //     if (!createRes.ok) {
-    //         alert("Could not create folder.")
-    //         return
-    //     }
-    //
-    //     const createPayload = await createRes.json()
-    //     const createdDir = createPayload?.data ?? createPayload
-    //     const createdDirId = createdDir?.id
-    //
-    //     if (!createdDirId) {
-    //         alert("Could not resolve created folder id.")
-    //         return
-    //     }
-    //
-    //     const attachRes = await putRequest(
-    //         `organizations/${openedOrganization.id}/addChildren`,
-    //         {children: [createdDirId]}
-    //     )
-    //
-    //     if (!attachRes.ok) {
-    //         alert("Could not attach folder to organization.")
-    //         return
-    //     }
-    //
-    //     await fetchOrganizationRootItems(openedOrganization)
-    // }
 
     return (
         <div className="mt-4">
@@ -271,7 +225,7 @@ export default function OrganizationExplorer(
                                             title={organization.name}
                                         >
                                             <span
-                                                className="truncate text-slate-300 hover:text-white transition-colors">
+                                                className="w-1/2 truncate text-slate-300 hover:text-white transition-colors">
                                                 {organization.name}
                                             </span>
                                         </button>
@@ -320,16 +274,6 @@ export default function OrganizationExplorer(
                                         {/*    <Add />*/}
                                         {/*</button>*/}
 
-                                        <button
-                                            onClick={(e) => {
-                                                // handleLeaveOrganization();
-                                            }}
-                                            className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
-                                            title="Leave organization"
-                                        >
-                                            <ImExit size={14}/>
-                                        </button>
-
                                         <span
                                             className={`shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                                                 role
@@ -339,6 +283,16 @@ export default function OrganizationExplorer(
                                         >
                                             {role ?? "unknown"}
                                         </span>
+
+                                        <button
+                                            onClick={(e) => {
+                                                // handleLeaveOrganization();
+                                            }}
+                                            className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
+                                            title="Leave organization"
+                                        >
+                                            <ImExit size={14}/>
+                                        </button>
                                     </div>
                                 </li>
                             )

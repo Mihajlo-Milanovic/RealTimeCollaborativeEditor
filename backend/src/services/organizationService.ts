@@ -256,9 +256,6 @@ export async function addProjectionsByIds(organizationId: string, projectionsIds
 
             if (newNamespace != null) {
 
-                console.debug(newNamespace);
-                console.debug(projection);
-
                 await addChildrenByIds(newNamespace.id, [projection.id]);
                 projection.parents.push(new Types.ObjectId(newNamespace.id));
                 org.projections.push(new Types.ObjectId(newNamespace.id));

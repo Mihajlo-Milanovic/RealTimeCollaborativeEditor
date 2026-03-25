@@ -107,7 +107,7 @@ export async function getDirectoryWithChildrenAndFiles(dirId: string) {
 
 export async function getUserRootDirectories(ownerId: string) {
 
-    const rootDir: IDirectory | null = await Directory.findOne({ owner: ownerId, parents: null })
+    const rootDir: IDirectory | null = await Directory.findOne({ owner: ownerId, parents: [] })
         .populate(["files", "children", "owner"])
         .exec();
 
