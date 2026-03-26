@@ -20,6 +20,9 @@ export default function FileItem(
 ) {
 
     const [isOpen, setIsOpen] = useState(false);
+    
+    const [canEdit] = useState(organization == null || (organization.members.get(user.id) || "viewer") != "viewer");
+    const [showCreate] = useState(canEdit && node.isDirectory);
 
     const {
         items,
@@ -37,10 +40,6 @@ export default function FileItem(
             onSelectFile?.(node.id);
         }
     };
-
-
-    const canEdit = organization == null || (organization.members.get(user.id) || "viewer") != "viewer";
-    const showCreate = canEdit && node.isDirectory;
 
     return (
         <div className="flex flex-col">

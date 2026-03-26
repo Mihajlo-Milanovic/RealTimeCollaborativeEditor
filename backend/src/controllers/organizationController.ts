@@ -7,15 +7,18 @@ import {OrganizationView} from "../data/types/OrganizationView";
 import {UserPrivileges} from "../data/types/UserPrivileges";
 
 
-export async function getOrganizationByName (req: Request, res: Response, next: NextFunction) {
+export async function getOrganizationsByNames (req: Request, res: Response, next: NextFunction) {
 
     if (checkForValidationErrors(req, res))
         return;
 
     try {
-        const data: {name: string} = matchedData(req);
-        const result: OrganizationView | null = await os.getOrganizationByName(data.name);
-        if (result)
+        const data: {names: string[] | string} = matchedData(req);
+
+        const names = Array.isArray(data.names) ? data.names : [data.names];
+        const result: OrganizationView[] | null = await os.getOrganizationsByNames(names);
+
+        if (result != null)
             res.status(200).json({
                 success: true,
                 data: result,

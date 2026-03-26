@@ -3,16 +3,16 @@ import * as oc from "../controllers/organizationController";
 import * as validation from "../middlewares/validation/httpRequestValidation";
 import {
     validateChildrenAdmission,
-    validateIdFromPath, validateMembersByUsernames, validateMembersIds, validateMembersIdsAndRoles,
+    validateIdFromPath, validateMembersByUsernames, validateMembersIds, validateMembersIdsAndRoles, validateNamesArray,
     validateOrganization,
     validateString
 } from "../middlewares/validation/httpRequestValidation";
 
 export const organizationRouter = Router();
 
-organizationRouter.get('/name/:name',
-    validateString('name'),
-    oc.getOrganizationByName
+organizationRouter.get('/names',
+    validateNamesArray(),
+    oc.getOrganizationsByNames
 );
 
 organizationRouter.get('/:id',

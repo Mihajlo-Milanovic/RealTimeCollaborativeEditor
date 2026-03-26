@@ -12,16 +12,16 @@ import {toOrganizationView} from "../data/types/OrganizationView";
 import {UserPrivileges} from "../data/types/UserPrivileges";
 
 
-export async function getOrganizationByName(orgName: string) {
+export async function getOrganizationsByNames(orgNames: Array<string>) {
 
-    const org = await Organization.findOne({name: orgName})
+    const organizations = await Organization.find({name: {$in: orgNames}})
         .populate(["children", "projections", "organizer"])
         .exec();
 
-    if (org == null)
+    if (!organizations)
         return null;
     else
-        return toOrganizationView(org);
+        return organizations.map(o => toOrganizationView(o));
 }
 
 export async function getOrganizationById(orgId: string) {

@@ -24,7 +24,6 @@ export default function FileTree(
     } = useFileSystem(user.id, organization)
 
     const containerRef = useRef<HTMLDivElement | null>(null);
-    console.log("items", items)
 
     // if (isLoading) return <div>Loading...</div>
 
@@ -34,7 +33,7 @@ export default function FileTree(
 
                 {organization ?
                     (<div className="mb-2 flex items-center justify-between px-1">
-                        <div className="text-sm font-semibold text-slate-500 tracking-wider">
+                        <div className="text-sm font-semibold text-slate-500">
                             {organization.name}
                         </div>
 
@@ -47,23 +46,34 @@ export default function FileTree(
                         )}
 
                         <div className="flex items-center gap-1">
-                            {organization.members.get(user.id) != "viewer" && (
-                                <button
-                                    onClick={() => {
-                                        if (root)
-                                            prompts.addFolderToFileNode(root, user.id, refresh, true)
-                                    }}
-                                    className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-                                    title="New folder"
-                                    aria-label="New folder"
-                                >
-                                    <FolderPlus size={14}/>
-                                </button>
+                            {organization.members.get(user.id) != "viewer" && ( <span>
+
+                                    <button
+                                        onClick={() => {
+                                            if (root)
+                                                prompts.addFolderToFileNode(root, user.id, refresh, true)
+                                        }}
+                                        className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                                        title="New folder"
+                                        aria-label="New folder"
+                                    >
+                                        <FolderPlus size={14}/>
+                                    </button>
+
+                                     {/*<button*/}
+                                     {/*    onClick={(e) => {*/}
+                                     {/*        console.log("ADD PROJECTIONS :::: NO IMPLEMENTATION");*/}
+                                     {/*    }}*/}
+                                     {/*    className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-cyan-400 transition-colors"*/}
+                                     {/*    title="Add projection from personal folders"*/}
+                                     {/*>*/}
+                                     {/*    <Folder />*/}
+                                     {/*</button>*/}
+                                </span>
                             )}
                             <button
                                 onClick={() => {
                                     onCloseCurrentOrganizationFS()
-                                    refresh()
                                 }}
                                 className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                 title="Close organization explorer"
@@ -75,7 +85,7 @@ export default function FileTree(
                     </div>)
                     :
                     (<div className="mb-2 flex items-center justify-between px-1">
-                            <div className="text-sm font-semibold text-slate-500 tracking-wider">
+                            <div className="text-sm font-semibold text-slate-500">
                                 Personal Workspace
                             </div>
 

@@ -104,6 +104,15 @@ export function validateUserIdArray(){
     }, ["query"] );
 }
 
+export function validateNamesArray(){
+    return validator.checkSchema( {
+        names: {
+            trim: true,
+            // isArray: optional,
+        },
+    }, ["query"] );
+}
+
 /**
  * @return
  * Validation chain for validating Directory from Body

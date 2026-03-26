@@ -1,5 +1,6 @@
 import {fsService} from "@/filesystem/services/fsService";
 import {FileNode} from "@/core/types/FileNode";
+import {OrganizationView} from "@/core/types/OrganizationView";
 
 export const prompts = {
 
@@ -22,5 +23,14 @@ export const prompts = {
         if (!fileName) return;
         const success = await fsService.createFile(fileName, parentNode.id, userId);
         if (success) refresh()
+    },
+
+    async deleteOrganization(organization: OrganizationView, userId: string, refresh: () => void) {
+        if(!organization) return;
+        const confirmDelete = confirm(`Are you sure you want to delete ${organization.name}?`)
+        if (!confirmDelete) return
+        const success = await fsService.deleteOrganization(organization.id, userId);
+        if (success) refresh()
+
     }
 }

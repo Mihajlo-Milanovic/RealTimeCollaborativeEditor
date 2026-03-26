@@ -15,6 +15,8 @@ import FileTree from "@/filesystem/ui/FileTree";
 import {ImExit} from "react-icons/im";
 import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
 import {TOrganizationExplorer} from "@/core/types/elementTypes/TOrganizationExplorer";
+import {prompts} from "@/filesystem/services/prompts";
+import {useOrganizationExplorer} from "@/hooks/useOrganizationExplorer";
 
 const roleClasses: Record<OrganizationRole, string> = {
     admin: "text-red-300 bg-red-500/10 border-red-500/30",
@@ -32,80 +34,20 @@ export default function OrganizationExplorer(
 ) {
 
     const [isOpen, setIsOpen] = useState(false);
-    const [organizations, setOrganizations] = useState<OrganizationView[]>([]);
-    const [visibleOrganizations, setVisibleOrganizations] = useState<OrganizationView[]>([]);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
     const [openedOrganization, setOpenedOrganization] = useState<OrganizationView | null>(null);
 
-    const filterOrganizations = useCallback(
-        (query: string, source: OrganizationView[] = organizations) => {
-            const normalized = query.trim().toLowerCase();
-            if (!normalized) {
-                setVisibleOrganizations(source);
-                return;
-            }
+    const {
+        organizations,
+        query,
+        isSearchOpen,
+        isLoading,
+        toggleSearch,
+        queryOrganizations,
+        refresh,
+    } = useOrganizationExplorer(user.id);
 
-            setVisibleOrganizations(
-                source.filter((org) => org.name.toLowerCase().includes(normalized))
-            )
-        },
-        [organizations]
-    )
+    // console.log("ORGANIZATIONS :::: ", organizations);
 
-    const fetchOrganizations = useCallback(async () => {
-        if (!user.id) return
-
-        const membershipsRes = await getRequestSingle(`users/${user.id}/organizations`)
-        if (!membershipsRes.ok) {
-            setOrganizations([])
-            setVisibleOrganizations([])
-            return
-        }
-
-        const membershipsPayload = await membershipsRes.json()
-        const userOrganizations = new Map(Object.entries(membershipsPayload?.data ?? {}))
-
-        const nextOrganizations: Array<OrganizationView> = []
-        for (const orgName of userOrganizations.keys()) {
-            const orgViewResponse = await getRequestSingle(
-                `organizations/name/${encodeURIComponent(orgName)}`
-            )
-
-            if (orgViewResponse.ok) {
-                const orgViewPayload = await orgViewResponse.json()
-                if (orgViewPayload != null && orgViewPayload.data != null) {
-                    nextOrganizations.push({
-                        ...orgViewPayload.data,
-                        members: new Map(Object.entries(orgViewPayload.data.members ?? {})),
-                    })
-                }
-            }
-        }
-
-        const mapped = nextOrganizations.sort((a, b) => a.name.localeCompare(b.name))
-
-        setOrganizations(mapped)
-        setVisibleOrganizations(mapped)
-    }, [user.id])
-
-    useEffect(() => {
-        if (!user) return
-        fetchOrganizations()
-    }, [user, organizationsRefreshKey])
-
-    const handleToggleSearch = () => {
-        const nextSearchOpen = !isSearchOpen
-        setIsSearchOpen(nextSearchOpen)
-
-        if (!nextSearchOpen) {
-            setSearchQuery("")
-            setVisibleOrganizations(organizations)
-            return
-        }
-
-        filterOrganizations(searchQuery)
-    }
 
     const handleCreateOrganization = async () => {
         const name = prompt("Enter organization name:")
@@ -124,37 +66,27 @@ export default function OrganizationExplorer(
             return
         }
 
-        await fetchOrganizations()
+        await refresh()
     }
 
     const handleEditOrganization = async () => {
         // TODO: prompt for new name and owner
     }
 
-    const handleDeleteOrganization = async (organization: OrganizationView) => {
-        const confirmDelete = confirm(`Are you sure you want to delete ${organization.name}?`)
-        if (!confirmDelete) return
-
-        const res = await deleteRequest(`organizations/${organization.id}/delete/userId/${user.id}`)
-
-        if (res.ok) {
-            await fetchOrganizations()
-        }
-    }
-
     const handleOpenOrganization = async (organization: OrganizationView) => {
-        if (openedOrganization?.id == organization.id) {
+        if (openedOrganization?.id == organization.id)
             setOpenedOrganization(null)
-            return
-        }
-
-        setOpenedOrganization(organization)
+        else
+            setOpenedOrganization(organization)
     }
 
     return (
         <div className="mt-4">
             <div className="mb-2 flex items-center justify-between px-1"
-                 onClick={() => setIsOpen(!isOpen)}
+                 onClick={() => {
+                     setIsOpen(!isOpen);
+                     refresh();
+                 }}
             >
                 <div className="mb-2 flex items-center justify-around px-1">
                     {isOpen ? (<AiOutlineDown/>) : (<AiOutlineRight/>)}
@@ -173,7 +105,7 @@ export default function OrganizationExplorer(
                         <Plus size={14}/>
                     </button>
                     <button
-                        onClick={handleToggleSearch}
+                        onClick={toggleSearch}
                         className={`rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${
                             isSearchOpen ? "bg-slate-800 text-white" : ""
                         }`}
@@ -189,12 +121,8 @@ export default function OrganizationExplorer(
                 <div className="px-1 pb-2">
                     <input
                         type="text"
-                        value={searchQuery}
-                        onChange={(e) => {
-                            const value = e.target.value
-                            setSearchQuery(value)
-                            filterOrganizations(value)
-                        }}
+                        value={query}
+                        onChange={(e) => queryOrganizations(e.target.value) }
                         placeholder="Search organizations..."
                         className="w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:border-slate-500 focus:outline-none"
                     />
@@ -205,11 +133,11 @@ export default function OrganizationExplorer(
                     isOpen ? "max-h-125" : "max-h-0"
                 }`}
             >
-                {visibleOrganizations.length === 0 ? (
+                {organizations.length === 0 ? (
                     <div className="px-2 py-1 text-xs text-slate-500">No organizations.</div>
                 ) : (
                     <ul className="space-y-1 px-1">
-                        {visibleOrganizations.map((organization) => {
+                        {organizations.map((organization) => {
                             const role = organization.members.get(user.id)
                             return (
                                 <li
@@ -241,7 +169,7 @@ export default function OrganizationExplorer(
                                                 </button>
 
                                                 <button
-                                                    onClick={() => handleDeleteOrganization(organization)}
+                                                    onClick={() => prompts.deleteOrganization(organization, user.id, refresh)}
                                                     className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-500 transition-colors"
                                                     title="Delete organization"
                                                 >
@@ -262,17 +190,6 @@ export default function OrganizationExplorer(
                                                 <User size={14}/>
                                             </button>
                                         </div>
-
-                                        {/*TODO: MOVE TO FILE TREE*/}
-                                        {/*<button*/}
-                                        {/*    onClick={(e) => {*/}
-                                        {/*        console.log("ADD PROJECTIONS :::: NO IMPLEMENTATION");*/}
-                                        {/*    }}*/}
-                                        {/*    className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-cyan-400 transition-colors"*/}
-                                        {/*    title="Add projection from personal folders"*/}
-                                        {/*>*/}
-                                        {/*    <Add />*/}
-                                        {/*</button>*/}
 
                                         <span
                                             className={`shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${

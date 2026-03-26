@@ -1,13 +1,7 @@
 import React from 'react';
 import {OrganizationMember} from "@/core/types/OrganizationMember";
 import {OrganizationRole} from "@/core/types/OrganizationRole";
-
-interface MemberItemProps {
-    member: OrganizationMember;
-    showChangeRoleAndRemove: boolean;
-    onChangeRole: (member: OrganizationMember) => void;
-    onRemove: (member: OrganizationMember) => void;
-}
+import {TMemberItem} from "@/core/types/elementTypes/TMemberItem";
 
 const roleClasses: Record<OrganizationRole, string> = {
     admin: "text-red-300 bg-red-500/10 border-red-500/30",
@@ -15,7 +9,15 @@ const roleClasses: Record<OrganizationRole, string> = {
     viewer: "text-slate-300 bg-slate-500/10 border-slate-500/30",
 };
 
-export const MemberItem: React.FC<MemberItemProps> = ({member, onChangeRole, onRemove, showChangeRoleAndRemove}) => {
+export function MemberItem(
+    {
+        member,
+        onChangeRole,
+        onRemove,
+        showChangeRoleAndRemove
+    }: TMemberItem
+) {
+
     return (
         <div
             className="flex items-center justify-between gap-3 rounded-md border border-slate-800 bg-slate-950/70 px-3 py-2">

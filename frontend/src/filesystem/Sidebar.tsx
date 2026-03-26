@@ -68,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     return (
         <aside 
             style={{ width }}
-            className="border-r border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"
+            className="min-w-sm w-sm border-r border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"
         >
             <div className="p-4 border-b border-slate-800 flex justify-between items-center">
                 <button
