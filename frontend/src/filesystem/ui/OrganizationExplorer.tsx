@@ -1,6 +1,6 @@
 "use client"
 
-import {useCallback, useEffect, useState} from "react";
+import {useState} from "react";
 import {
     Edit,
     Plus,
@@ -8,8 +8,6 @@ import {
     Trash2,
     User,
 } from "lucide-react";
-import {deleteRequest, getRequestSingle, postRequest} from "@/core/api/serverRequests/methods";
-import {OrganizationView} from "@/core/types/OrganizationView";
 import {OrganizationRole} from "@/core/types/OrganizationRole";
 import FileTree from "@/filesystem/ui/FileTree";
 import {ImExit} from "react-icons/im";
@@ -33,63 +31,27 @@ export default function OrganizationExplorer(
     }: TOrganizationExplorer
 ) {
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [openedOrganization, setOpenedOrganization] = useState<OrganizationView | null>(null);
-
     const {
+        organizationExplorerCollapsed,
         organizations,
         query,
+        selected,
         isSearchOpen,
         isLoading,
         toggleSearch,
         queryOrganizations,
+        selectOrganization,
+        toggleOrganizationExplorer,
         refresh,
     } = useOrganizationExplorer(user.id);
-
-    // console.log("ORGANIZATIONS :::: ", organizations);
-
-
-    const handleCreateOrganization = async () => {
-        const name = prompt("Enter organization name:")
-        if (!name?.trim()) return
-
-        const userId = user.id
-        if (!userId) return
-
-        const res = await postRequest("organizations", {
-            name: name.trim(),
-            organizer: userId,
-        })
-
-        if (!res.ok) {
-            alert("Could not create organization.")
-            return
-        }
-
-        await refresh()
-    }
-
-    const handleEditOrganization = async () => {
-        // TODO: prompt for new name and owner
-    }
-
-    const handleOpenOrganization = async (organization: OrganizationView) => {
-        if (openedOrganization?.id == organization.id)
-            setOpenedOrganization(null)
-        else
-            setOpenedOrganization(organization)
-    }
 
     return (
         <div className="mt-4">
             <div className="mb-2 flex items-center justify-between px-1"
-                 onClick={() => {
-                     setIsOpen(!isOpen);
-                     refresh();
-                 }}
+                 onClick={() => toggleOrganizationExplorer()}
             >
                 <div className="mb-2 flex items-center justify-around px-1">
-                    {isOpen ? (<AiOutlineDown/>) : (<AiOutlineRight/>)}
+                    {organizationExplorerCollapsed ? (<AiOutlineDown/>) : (<AiOutlineRight/>)}
                     <div className="p-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                         Organizations
                     </div>
@@ -97,7 +59,7 @@ export default function OrganizationExplorer(
 
                 <div className="flex items-center gap-1">
                     <button
-                        onClick={handleCreateOrganization}
+                        onClick={() => prompts.createOrganization(user.id, refresh)}
                         className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                         title="Create organization"
                         aria-label="Create organization"
@@ -122,7 +84,7 @@ export default function OrganizationExplorer(
                     <input
                         type="text"
                         value={query}
-                        onChange={(e) => queryOrganizations(e.target.value) }
+                        onChange={(e) => queryOrganizations(e.target.value)}
                         placeholder="Search organizations..."
                         className="w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:border-slate-500 focus:outline-none"
                     />
@@ -130,7 +92,7 @@ export default function OrganizationExplorer(
             )}
             <div
                 className={`transition-all duration-300 overflow-hidden ${
-                    isOpen ? "max-h-125" : "max-h-0"
+                    organizationExplorerCollapsed ? "max-h-125" : "max-h-0"
                 }`}
             >
                 {organizations.length === 0 ? (
@@ -146,9 +108,7 @@ export default function OrganizationExplorer(
                                 >
                                     <div className="flex items-center justify-between gap-2">
                                         <button
-                                            onClick={() => {
-                                                void handleOpenOrganization(organization)
-                                            }}
+                                            onClick={() => selectOrganization(organization)}
                                             className="flex flex-1 items-center justify-between gap-2 text-left"
                                             title={organization.name}
                                         >
@@ -161,7 +121,7 @@ export default function OrganizationExplorer(
                                         <div className="flex gap-1 ml-2">
                                             {role === "admin" && (<span>
                                                 <button
-                                                    onClick={() => handleEditOrganization()}
+                                                    onClick={() => prompts.editOrganization(user.id, refresh)}
                                                     className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-orange-400 transition-colors"
                                                     title="Edit organization"
                                                 >
@@ -180,10 +140,7 @@ export default function OrganizationExplorer(
                                             )}
 
                                             <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    onOpenMembersManagerAction?.(organization)
-                                                }}
+                                                onClick={(e) => onOpenMembersManagerAction?.(organization)}
                                                 className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-green-500 transition-colors"
                                                 title="Manage members"
                                             >
@@ -202,8 +159,8 @@ export default function OrganizationExplorer(
                                         </span>
 
                                         <button
-                                            onClick={(e) => {
-                                                // handleLeaveOrganization();
+                                            onClick={() => {
+                                                // TODO: handleLeaveOrganization();
                                             }}
                                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
                                             title="Leave organization"
@@ -222,9 +179,9 @@ export default function OrganizationExplorer(
 
                 <FileTree
                     user={user}
-                    organization={openedOrganization}
+                    organization={selected}
                     onSelectFile={onSelectFileAction}
-                    onCloseCurrentOrganizationFS={()=>{setOpenedOrganization(null)}}
+                    onCloseCurrentOrganizationFS={() => selectOrganization(null)}
                 />
             </div>
         </div>

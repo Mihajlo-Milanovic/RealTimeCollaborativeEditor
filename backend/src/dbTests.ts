@@ -14,13 +14,13 @@ const populate = async () => {
     await File.deleteMany({});
     await Directory.deleteMany({});
 
-    console.log("First user...")
+    //console.log("First user...")
     const alice: IUser = await User.create({
         username: 'Alice',
         email: 'alice@example.com'
     });
 
-    console.log("Second user...")
+    //console.log("Second user...")
     let bob: IUser = await User.create({
         username: 'Bob',
         email: 'bob@example.com'
@@ -33,7 +33,7 @@ const populate = async () => {
     //     email: 'bob@example.com'
     // });
 
-    console.log("Directory [owner: Alice]...")
+    //console.log("Directory [owner: Alice]...")
     let dirAlcie: IDirectory = await Directory.create({
         name: 'Alices #root directory',
         owner: alice._id,
@@ -44,7 +44,7 @@ const populate = async () => {
         createdAt: new Date(),
     });
 
-    console.log("Nesting directories [1->3->2] ...");
+    //console.log("Nesting directories [1->3->2] ...");
     let dirNumerator = 3
     for (;dirNumerator < 6; dirNumerator++){
         let newDir: IDirectory = await Directory.create({
@@ -77,7 +77,7 @@ const populate = async () => {
         }
     }
 
-    console.log("Directory [owner: Bob]...");
+    //console.log("Directory [owner: Bob]...");
     let dirBob : IDirectory = await Directory.create({
         name: 'Bobs #root directory',
         owner: bob?._id,
@@ -89,7 +89,7 @@ const populate = async () => {
         updatedAt: new Date(),
     });
 
-    console.log("Nesting directories [Bobs #root directory->1->2->3->4->5] ...");
+    //console.log("Nesting directories [Bobs #root directory->1->2->3->4->5] ...");
     dirNumerator = 1
     let currentDir = dirBob
     for (;dirNumerator < 6; dirNumerator++){
@@ -110,7 +110,7 @@ const populate = async () => {
         currentDir = newDir
     }
 
-    console.log("File for Alice...");
+    // console.log("File for Alice...");
     let docAlice: IFile = await File.create({
         name: 'AliceDoc.md',
         owner: alice?._id,
@@ -122,7 +122,7 @@ const populate = async () => {
     dirAlcie?.files.push(docAlice?._id as Types.ObjectId);
     await dirAlcie?.save();
 
-    console.log("File for Bob...");
+    // console.log("File for Bob...");
     let docBob: IFile = await File.create({
         name: 'BobDoc.md',
         owner: bob?._id,
@@ -135,7 +135,7 @@ const populate = async () => {
     await currentDir.save();
 
 
-    console.log('Population complete ');
+    // console.log('Population complete ');
     await disconnectDB();
     process.exit(0);
 };

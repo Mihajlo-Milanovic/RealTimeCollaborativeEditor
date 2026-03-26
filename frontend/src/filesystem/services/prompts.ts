@@ -1,13 +1,15 @@
 import {fsService} from "@/filesystem/services/fsService";
 import {FileNode} from "@/core/types/FileNode";
 import {OrganizationView} from "@/core/types/OrganizationView";
+import {postRequest} from "@/core/api/serverRequests/methods";
 
 export const prompts = {
 
     async deleteFileNode(node: FileNode, refresh: () => void) {
         if (confirm(`Are you sure you want to delete ${node.isDirectory ? 'directory' : 'file'} "${node.name}"?`)) {
             const success = await fsService.deleteNode(node.id, node.isDirectory);
-            if (success) refresh()
+            if (success) refresh();
+            else alert(`Could not delete ${node.isDirectory ? 'directory' : 'file'} "${node.name}".`);
         }
     },
 
@@ -15,14 +17,16 @@ export const prompts = {
         const folderName = (prompt("Enter folder name:") || "")?.trim();
         if (!folderName) return;
         const success = await fsService.createFolderInFolder(folderName, parentNode.id, userId, parentIsOrganization);
-        if (success) refresh()
+        if (success) refresh();
+        else alert("Could not create folder.");
     },
 
     async addFileToFileNode(parentNode: FileNode, userId: string, refresh: () => void) {
         const fileName = (prompt("Enter file name:") || "")?.trim();
         if (!fileName) return;
         const success = await fsService.createFile(fileName, parentNode.id, userId);
-        if (success) refresh()
+        if (success) refresh();
+        else alert("Could not create file.");
     },
 
     async deleteOrganization(organization: OrganizationView, userId: string, refresh: () => void) {
@@ -30,7 +34,22 @@ export const prompts = {
         const confirmDelete = confirm(`Are you sure you want to delete ${organization.name}?`)
         if (!confirmDelete) return
         const success = await fsService.deleteOrganization(organization.id, userId);
-        if (success) refresh()
+        if (success) refresh();
+        else alert("Could not delete organization.");
 
+    },
+
+    async createOrganization(userId: string, refresh: () => void) {
+        if (!userId) return;
+        const name = prompt("Enter organization name:")?.trim() || "";
+        if (!name) return;
+        const success = await fsService.createOrganization(name, userId);
+        if (success) refresh();
+        else alert("Could not create organization.");
+    },
+
+    async editOrganization(userId: string, refresh: () => void) {
+        //TODO
+        alert("NO IMPLEMENTATION");
     }
 }

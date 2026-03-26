@@ -5,11 +5,13 @@ import {fsService} from "@/filesystem/services/fsService";
 
 export function useOrganizationExplorer(userId: string) {
 
+    const [isOpen, setIsOpen] = useState(false);
     const [organizations, setOrganizations] = useState<OrganizationView[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
     const [visibleOrganizations, setVisibleOrganizations] = useState<OrganizationView[]>([]);
+    const [selectedOrganization, setSelectedOrganization] = useState<OrganizationView | null>(null);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [queryString, setQueryString] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
 
     const fetchOrganizations = async () => {
@@ -18,8 +20,6 @@ export function useOrganizationExplorer(userId: string) {
         setIsLoading(true);
 
         const memberships = await fsService.getOrganizationsForUser(userId);
-
-        console.log("Fetched memberships:", memberships);
 
         if (!memberships.size) {
             setOrganizations([]);
@@ -34,8 +34,6 @@ export function useOrganizationExplorer(userId: string) {
 
         const organizations = await fsService.getOrganizationsByNames(names);
 
-        console.log("Fetched organizations:", organizations);
-
         const sortedOrganizations = organizations.sort((a, b) => a.name.localeCompare(b.name));
 
         setOrganizations(sortedOrganizations);
@@ -48,7 +46,6 @@ export function useOrganizationExplorer(userId: string) {
             const normalized = queryString.trim().toLowerCase();
             if (normalized)
                 return organizations.filter((org) => org.name.toLowerCase().includes(normalized));
-
         }
         return organizations;
     }
@@ -57,6 +54,19 @@ export function useOrganizationExplorer(userId: string) {
         setIsSearchOpen(!isSearchOpen);
 
         // if (!isSearchOpen) setQueryString("");
+    }
+
+    const selectOrganization= async (organization: OrganizationView | null) => {
+        if (organization == null || selectedOrganization?.id == organization.id) setSelectedOrganization(null);
+        else setSelectedOrganization(organization);
+    }
+
+    const toggleOrganizationExplorer = async () => {
+        setIsOpen(!isOpen);
+        if (isOpen) {
+            fetchOrganizations();
+            setVisibleOrganizations(filterOrganizations(organizations));
+        }
     }
 
     useEffect(() => {
@@ -69,11 +79,16 @@ export function useOrganizationExplorer(userId: string) {
 
 
     return {
+        organizationExplorerCollapsed: isOpen,
         organizations: visibleOrganizations,
         query: queryString,
+        selected: selectedOrganization,
         isSearchOpen,
         isLoading,
-        queryOrganizations: (query: string) => setQueryString(query),
         toggleSearch,
-        refresh: fetchOrganizations}
+        queryOrganizations: (query: string) => setQueryString(query),
+        selectOrganization,
+        refresh: fetchOrganizations,
+        toggleOrganizationExplorer
+    }
 }

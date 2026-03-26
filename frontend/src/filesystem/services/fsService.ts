@@ -136,5 +136,14 @@ export const fsService = {
             }
         }
         return [];
+    },
+
+    async createOrganization(organizationName: string, userId: string){
+        const res = await postRequest("organizations", {
+            name: organizationName,
+            organizer: userId,
+        })
+
+        return res.ok;
     }
 };

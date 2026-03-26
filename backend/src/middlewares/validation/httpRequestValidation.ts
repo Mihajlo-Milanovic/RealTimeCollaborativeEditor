@@ -406,8 +406,6 @@ async function validateDirectoryNameUniqueness(value: string, meta: Meta){
             }
         ).select('parents');
 
-        console.log(dirs);
-
         if (dirs.length > 0) {
 
             const s = dirs.flatMap(x => x.parents)

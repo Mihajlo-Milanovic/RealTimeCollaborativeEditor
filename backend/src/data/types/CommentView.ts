@@ -5,6 +5,7 @@ import {ReactionView, toReactionVew} from "./ReactionView";
 import {IUser} from "../interfaces/IUser";
 import {Types} from "mongoose";
 import {IReaction} from "../interfaces/IReaction";
+import {UserPrivileges} from "./UserPrivileges";
 
 export type CommentView = PlainResource<IComment, "file" | "commenter" | "reactions">
     & { commenter: UserView, reactions: Array<ReactionView> };
@@ -23,9 +24,9 @@ export function toCommentView(comment: IComment): CommentView {
             r = comment.reactions
     }
 
-    let o: UserView = {id: "", username: "", email: ""};
+    let o: UserView = {id: "", username: "", email: "", organizations: new Map<string, UserPrivileges>()};
     if (comment.commenter != null) {
-        if (!(comment.commenter instanceof Types.ObjectId))
+        if (!((comment.commenter as any) instanceof Types.ObjectId))
             o = toUserView(comment.commenter as unknown as IUser);
         else
             o.id = comment.commenter._id.toHexString();
