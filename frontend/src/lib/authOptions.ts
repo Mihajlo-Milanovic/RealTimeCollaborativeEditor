@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { AuthOptions } from "next-auth";
-import { getRequestSingle } from "@/core/api/serverRequests/methods";
+import { getRequestSingle } from "@/app/api/serverRequests/methods";
 
 const appInstance = process.env.APP_INSTANCE || "3000";
 const isProd = process.env.NODE_ENV === "production";
@@ -47,8 +47,8 @@ export const authOptions: AuthOptions = {
             `users/${encodeURIComponent(user.id)}/password`
         );
 
-        const passpayload = await passwordHash.json();
-        const pass = passpayload.data;
+        const passPayload = await passwordHash.json();
+        const pass = passPayload.data;
 
 
         if (!pass) return null;
@@ -57,7 +57,7 @@ export const authOptions: AuthOptions = {
         const passwordsMatch = await bcrypt.compare(password, pass);
         if (!passwordsMatch) return null;
 
-        //if (!user.verified) return null;
+        if (!user.verified) return null;
 
         return {
           id: user.id,
@@ -123,6 +123,7 @@ export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 
   pages: {
-    signIn: "/",
+    signIn: "/login",
+    newUser: "/register",
   },
 };

@@ -1,7 +1,7 @@
 import {fsService} from "@/filesystem/services/fsService";
 import {FileNode} from "@/core/types/FileNode";
 import {OrganizationView} from "@/core/types/OrganizationView";
-import {postRequest} from "@/core/api/serverRequests/methods";
+import {postRequest} from "@/app/api/serverRequests/methods";
 
 export const prompts = {
 

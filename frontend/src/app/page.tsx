@@ -1,4 +1,4 @@
-import LoginForm from "@/auth/LoginForm";
+import LoginForm from "./api/auth/LoginForm";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/authOptions";
@@ -7,9 +7,13 @@ export default async function Home() {
   const session = await getServerSession(authOptions);
   
   if (session) {
-    console.log(`Sesija postoji ${session}`)
+    console.log(`Session exists ${session}`)
     redirect("/editor");
-  } 
+  }
+  else {
+    console.log(`Session does not exist`)
+    redirect("/login");
+  }
 
   return (
     <main>

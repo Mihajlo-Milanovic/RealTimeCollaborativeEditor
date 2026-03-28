@@ -1,15 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function VerifySuccessPage() {
   const router = useRouter();
 
-  useEffect(() => {
-    alert("E-mail je uspešno verifikovan! Možete se sada prijaviti.");
-    router.push("/"); 
-  }, []);
-
-  return null; 
+  return <p className="flex flex-col items-center justify-center h-screen">
+      Your account is verified.
+      <a href="/" className="text-blue-500 hover:underline">Log in</a>
+    </p>
 }

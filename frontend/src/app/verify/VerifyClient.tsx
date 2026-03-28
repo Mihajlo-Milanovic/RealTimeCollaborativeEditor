@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import {useEffect, useState} from "react";
+import {useSearchParams, useRouter} from "next/navigation";
 
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
 export default function VerifyPage() {
-    const searchParams = (() => { return useSearchParams()})();
+    const searchParams = (() => {
+        return useSearchParams()
+    })();
     const token = searchParams.get("token");
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export default function VerifyPage() {
             try {
                 const res = await fetch(
                     `${API}/users/verify/${encodeURIComponent(token)}`,
-                    { method: "GET" }
+                    {method: "GET"}
                 );
 
                 if (res.ok) {
@@ -45,5 +47,6 @@ export default function VerifyPage() {
     }, [token, router]);
 
     if (error) return <p>{error}</p>;
-    return <p>Verifikujem vaš nalog...</p>;
+    return
+        ;
 }

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { getRequestSingle, putRequest } from "@/core/api/serverRequests/methods";
+import { getRequestSingle, putRequest } from "@/app/api/serverRequests/methods";
 import {OrganizationView} from "@/core/types/OrganizationView";
 import {OrganizationMember} from "@/core/types/OrganizationMember";
 import {OrganizationRole} from "@/core/types/OrganizationRole";

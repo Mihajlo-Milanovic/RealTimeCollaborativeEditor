@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import {getRequestSingle} from "@/core/api/serverRequests/methods"
+import {getRequestSingle} from "@/app/api/serverRequests/methods"
 
 export default function LoginForm() {
   const [email, setEmail] = useState<string>("");

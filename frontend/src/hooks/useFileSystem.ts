@@ -2,6 +2,8 @@ import { useState, useEffect } from "react"
 import { FileNode } from "@/core/types/FileNode"
 import {fsService} from "@/filesystem/services/fsService";
 import {OrganizationView} from "@/core/types/OrganizationView";
+import {FSNode} from "@/collaboration/FSNode";
+import {fsTree} from "@/collaboration/y";
 
 export function useFileSystem(userId: string, organization: OrganizationView | null) {
     const [root, setRoot] = useState<FileNode | null>(null)

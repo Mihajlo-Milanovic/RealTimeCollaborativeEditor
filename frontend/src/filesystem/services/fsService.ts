@@ -1,4 +1,4 @@
-import {deleteRequest, getRequestSingle, postRequest, putRequest} from "@/core/api/serverRequests/methods";
+import {deleteRequest, getRequestSingle, postRequest, putRequest} from "@/app/api/serverRequests/methods";
 import {FileNode} from "@/core/types/FileNode";
 import {OrganizationView} from "@/core/types/OrganizationView";
 import {OrganizationRole} from "@/core/types/OrganizationRole";

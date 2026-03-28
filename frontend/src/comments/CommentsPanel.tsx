@@ -2,7 +2,7 @@
 
 import {useCallback, useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
-import {getRequestSingle, postRequest, putRequest, deleteRequest} from "@/core/api/serverRequests/methods";
+import {getRequestSingle, postRequest, putRequest, deleteRequest} from "@/app/api/serverRequests/methods";
 import {CommentItem} from "@/comments/CommentItem";
 import {CommentView} from "@/core/types/CommentView";
 

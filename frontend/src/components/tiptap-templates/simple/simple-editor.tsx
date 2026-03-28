@@ -67,7 +67,7 @@ import * as Y from "yjs"
 import Collaboration from "@tiptap/extension-collaboration"
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor"
 import { WebsocketProvider } from "y-websocket"
-import { getBinary, postBinary } from "@/core/api/serverRequests/methods"
+import { getBinary, postBinary } from "@/app/api/serverRequests/methods"
 
 const WS_URL = process.env.NEXT_PUBLIC_YJS_WS_URL || "ws://localhost:1234"
 

@@ -7,7 +7,7 @@ import {OrganizationView} from "@/core/types/OrganizationView";
 import {SimpleEditor} from "@/components/tiptap-templates/simple/simple-editor";
 import {MembersModal} from "@/filesystem/ui/MembersModal";
 import CommentsPanel from "@/comments/CommentsPanel";
-import {getRequestSingle} from "@/core/api/serverRequests/methods";
+import {getRequestSingle} from "@/app/api/serverRequests/methods";
 import Sidebar from "@/filesystem/Sidebar";
 import {X} from "lucide-react";
 import OrganizationExplorer from "@/filesystem/ui/OrganizationExplorer";
