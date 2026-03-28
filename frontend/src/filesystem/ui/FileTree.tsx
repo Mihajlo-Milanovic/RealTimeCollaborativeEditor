@@ -12,7 +12,7 @@ export default function FileTree(
         user,
         organization,
         onSelectFile,
-        onCloseCurrentOrganizationFS
+        onCloseCurrentOrganizationFSAction
     }: TFileTree
 ) {
 
@@ -72,9 +72,7 @@ export default function FileTree(
                                 </span>
                             )}
                             <button
-                                onClick={() => {
-                                    onCloseCurrentOrganizationFS()
-                                }}
+                                onClick={() => onCloseCurrentOrganizationFSAction() }
                                 className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                 title="Close organization explorer"
                                 aria-label="Close organization explorer"

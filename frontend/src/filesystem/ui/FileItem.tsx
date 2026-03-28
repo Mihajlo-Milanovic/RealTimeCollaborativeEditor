@@ -2,8 +2,6 @@
 
 import React, {useState} from "react";
 import {Folder, FolderOpen, FileText, Trash2, FolderPlus, FilePlus} from "lucide-react";
-import {FileNode} from "@/core/types/FileNode";
-import {fsService} from "@/filesystem/services/fsService";
 import {TFileItem} from "@/core/types/elementTypes/TFileItem";
 import {useFetchChildren} from "@/hooks/useFetchChildren";
 import {prompts} from "@/filesystem/services/prompts";

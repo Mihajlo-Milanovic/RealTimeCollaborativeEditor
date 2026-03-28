@@ -181,7 +181,7 @@ export default function OrganizationExplorer(
                     user={user}
                     organization={selected}
                     onSelectFile={onSelectFileAction}
-                    onCloseCurrentOrganizationFS={() => selectOrganization(null)}
+                    onCloseCurrentOrganizationFSAction={() => selectOrganization(null)}
                 />
             </div>
         </div>
