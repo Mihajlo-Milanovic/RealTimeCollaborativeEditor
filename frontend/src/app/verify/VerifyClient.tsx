@@ -10,7 +10,7 @@ export default function VerifyPage() {
     const searchParams = (() => {
         return useSearchParams()
     })();
-    const token = searchParams.get("token");
+    const token = searchParams?.get("token");
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
 

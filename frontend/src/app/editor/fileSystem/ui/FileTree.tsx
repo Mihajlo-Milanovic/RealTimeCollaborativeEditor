@@ -3,9 +3,9 @@
 import {useRef} from "react";
 import {FilePlus, FolderPlus, X} from "lucide-react";
 import {TFileTree} from "@/core/types/elementTypes/TFileTree";
-import FileItem from "@/filesystem/ui/FileItem";
+import FileItem from "@/app/editor/fileSystem/ui/FileItem";
 import {useFileSystem} from "@/hooks/useFileSystem";
-import {prompts} from "@/filesystem/services/prompts";
+import {prompts} from "@/app/editor/fileSystem/services/prompts";
 
 export default function FileTree(
     {

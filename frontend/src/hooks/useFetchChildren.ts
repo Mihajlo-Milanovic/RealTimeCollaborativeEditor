@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react"
 import {FileNode} from "@/core/types/FileNode"
-import {fsService} from "@/filesystem/services/fsService";
+import {fsService} from "@/app/editor/fileSystem/services/fsService";
 
 
 export function useFetchChildren(dirId: string) {

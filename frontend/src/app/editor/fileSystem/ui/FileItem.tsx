@@ -4,7 +4,7 @@ import React, {useState} from "react";
 import {Folder, FolderOpen, FileText, Trash2, FolderPlus, FilePlus} from "lucide-react";
 import {TFileItem} from "@/core/types/elementTypes/TFileItem";
 import {useFetchChildren} from "@/hooks/useFetchChildren";
-import {prompts} from "@/filesystem/services/prompts";
+import {prompts} from "@/app/editor/fileSystem/services/prompts";
 
 
 export default function FileItem(

@@ -16,7 +16,7 @@ interface SidebarProps {
     children: React.ReactNode;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
+export const Sidebar: React.FC<SidebarProps> = ({
     user,
     collapsed,
     width,
@@ -31,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     const handleLogout = async () => {
         await signOut({ redirect: false });
-        router.push("/");
+        router.push("/login");
     };
 
     if (collapsed) {
@@ -97,7 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     disabled={!selectedFileId}
                     className="w-full px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-50"
                 >
-                    Komentari
+                    Comments
                 </button>
             </div>
 

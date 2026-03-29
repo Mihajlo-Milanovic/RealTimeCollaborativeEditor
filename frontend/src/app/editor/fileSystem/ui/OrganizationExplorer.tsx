@@ -9,11 +9,11 @@ import {
     User,
 } from "lucide-react";
 import {OrganizationRole} from "@/core/types/OrganizationRole";
-import FileTree from "@/filesystem/ui/FileTree";
+import FileTree from "@/app/editor/fileSystem/ui/FileTree";
 import {ImExit} from "react-icons/im";
 import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
 import {TOrganizationExplorer} from "@/core/types/elementTypes/TOrganizationExplorer";
-import {prompts} from "@/filesystem/services/prompts";
+import {prompts} from "@/app/editor/fileSystem/services/prompts";
 import {useOrganizationExplorer} from "@/hooks/useOrganizationExplorer";
 
 const roleClasses: Record<OrganizationRole, string> = {

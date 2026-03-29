@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {OrganizationView} from "@/core/types/OrganizationView";
-import {fsService} from "@/filesystem/services/fsService";
+import {fsService} from "@/app/editor/fileSystem/services/fsService";
 
 
 export function useOrganizationExplorer(userId: string) {

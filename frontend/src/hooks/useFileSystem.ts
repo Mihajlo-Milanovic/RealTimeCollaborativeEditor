@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { FileNode } from "@/core/types/FileNode"
-import {fsService} from "@/filesystem/services/fsService";
+import {fsService} from "@/app/editor/fileSystem/services/fsService";
 import {OrganizationView} from "@/core/types/OrganizationView";
 import {FSNode} from "@/collaboration/FSNode";
 import {fsTree} from "@/collaboration/y";

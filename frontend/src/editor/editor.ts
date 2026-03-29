@@ -14,27 +14,29 @@ import CollaborationCursor from "@tiptap/extension-collaboration-cursor"
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket"
 
-export const getEditorExtensions = (ydoc: Y.Doc, provider: WebsocketProvider, user: any) => [
-  StarterKit.configure({
-    history: false,
-  }),
-  TextAlign.configure({ types: ["heading", "paragraph"] }),
-  Underline,
-  TaskList,
-  TaskItem.configure({ nested: true }),
-  Highlight.configure({ multicolor: true }),
-  Image,
-  Typography,
-  Superscript,
-  Subscript,
-  Link.configure({
-    openOnClick: false,
-  }),
-  Collaboration.configure({
-    document: ydoc,
-  }),
-  CollaborationCursor.configure({
-    provider,
-    user: user,
-  }),
-]
+export function getEditorExtensions(ydoc: Y.Doc, provider: WebsocketProvider, user: any){
+  return [
+    StarterKit.configure({
+      history: false,
+    }),
+    TextAlign.configure({types: ["heading", "paragraph"]}),
+    Underline,
+    TaskList,
+    TaskItem.configure({nested: true}),
+    Highlight.configure({multicolor: true}),
+    Image,
+    Typography,
+    Superscript,
+    Subscript,
+    Link.configure({
+      openOnClick: false,
+    }),
+    Collaboration.configure({
+      document: ydoc,
+    }),
+    CollaborationCursor.configure({
+      provider,
+      user: user,
+    }),
+  ]
+}

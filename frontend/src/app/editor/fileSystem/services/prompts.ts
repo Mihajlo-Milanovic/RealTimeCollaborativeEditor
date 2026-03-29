@@ -1,4 +1,4 @@
-import {fsService} from "@/filesystem/services/fsService";
+import {fsService} from "@/app/editor/fileSystem/services/fsService";
 import {FileNode} from "@/core/types/FileNode";
 import {OrganizationView} from "@/core/types/OrganizationView";
 import {postRequest} from "@/app/api/serverRequests/methods";

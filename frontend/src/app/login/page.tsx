@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState, MouseEvent } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import {getRequestSingle} from "@/app/api/serverRequests/methods"
 
-export default function LoginForm() {
+export default function Page() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -21,17 +21,10 @@ export default function LoginForm() {
 
   const router = useRouter();
 
-  // ni ovo ga ne ubrzava
-  // useEffect(() => {
-  //   router.prefetch("/register");
-  // },[]);
-
-  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setIsLoading(true);
     setError("");
-    
-    console.debug(email + " + " + password);
+
     try {
       const res = await signIn("credentials", {
         email,
@@ -41,12 +34,12 @@ export default function LoginForm() {
 
       if (res?.error) {
         if (res.error === "Email is not verified!") {
-          setError("Nalog nije verifikovan. Proverite svoj mejl.");
+          setError("Account not verified. Check your email for the verification link.");
           setEmailToVerify(email);
           setShowSendEmailLink(true);
         } else {
           console.log(res);
-          setError("Nevalidni kredencijali!");
+          setError("Invalid credentials. Please try again!");
           setShowSendEmailLink(false);
         }
 
@@ -54,18 +47,16 @@ export default function LoginForm() {
         return;
       }
       const userRes = await getRequestSingle(`users/email/${encodeURIComponent(email)}`);
-      //const userRes = await fetch("http://localhost:5000" + "/user/getUserByEmail" + `?email=${email}`);
-      //const userRes = await fetch(`/api/user?email=${email}`);
       const userData = await userRes.json();
 
-      router.replace("editor");
+      router.replace("/editor");
     } catch (error) {
       console.log(error);
       setIsLoading(false);
     }
   };
 
-  const handleResendVerification = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleResendVerification = (e: MouseEvent<HTMLButtonElement>) => {
     // TODO 
 
     //e.preventDefault();
@@ -77,25 +68,25 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
-      <div className="w-full max-w-md bg-slate-800/50 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-slate-700/50">
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-b from-slate-950 via-slate-500 to-slate-950 px-4">
+        <div className="w-full max-w-md bg-slate-950/70 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-slate-700/50">
         {isLoading ? (
           <div className="flex flex-col justify-center items-center h-64 gap-4">
             <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-slate-400 animate-pulse">Prijavljivanje...</p>
+            <p className="text-slate-400 animate-pulse">Login you in...</p>
           </div>
         ) : (
           <>
             <div className="mb-8 text-center">
               <h1 className="text-3xl font-bold text-white mb-2">
-                Dobrodošli nazad
+                Collaborative system
               </h1>
-              <p className="text-slate-400">Ulogujte se u svoj nalog</p>
+              <p className="text-slate-400">Log into your account</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="flex flex-col gap-5">
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-300 ml-1">Email</label>
+                <label className="text-sm font-medium text-slate-300 ml-1">E-mail</label>
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -143,7 +134,7 @@ export default function LoginForm() {
                         onClick={handleResendVerification}
                         className="text-blue-400 hover:text-blue-300 underline underline-offset-4 transition-colors"
                       >
-                        Pošalji ponovo verifikacioni mejl
+                        Resend verification email
                       </button>
                     </div>
                   )}
@@ -151,9 +142,8 @@ export default function LoginForm() {
               )}
 
               <div className="text-sm text-center text-slate-400 mt-2">
-                Nemate nalog?{" "}
                 <Link href="/register" prefetch={true} className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
-                  Registrujte se
+                  Don't have an account?
                 </Link>
               </div>
             </form>

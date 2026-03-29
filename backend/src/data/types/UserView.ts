@@ -7,7 +7,7 @@ import {OrganizationView} from "./OrganizationView";
 import {IOrganization} from "../interfaces/IOrganization";
 
 
-export type UserView = PlainResource<IUser, "password" | "verified" | "verificationToken">;
+export type UserView = PlainResource<IUser, "password" | "verificationToken">;
 
 export function toUserView(user: IUser): UserView{
 
@@ -16,5 +16,6 @@ export function toUserView(user: IUser): UserView{
         username: user.username,
         email: user.email,
         organizations: user.organizations,
+        verified: user.verified,
     }
 }
