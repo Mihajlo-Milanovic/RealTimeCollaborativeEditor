@@ -1,5 +1,5 @@
-import {UserView} from "@/core/types/UserView";
-import {ReactionView} from "@/core/types/ReactionView";
+import {UserView} from "@/app/core/types/UserView";
+import {ReactionView} from "@/app/core/types/ReactionView";
 
 
 export type CommentView = {

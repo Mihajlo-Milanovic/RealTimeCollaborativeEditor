@@ -7,7 +7,7 @@ import {postRequest} from "@/app/api/serverRequests/methods"
 import {Eye, EyeClosed} from "lucide-react";
 
 
-export default function Page() {
+export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

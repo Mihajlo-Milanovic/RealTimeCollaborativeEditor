@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect } from "react";
 import { getRequestSingle, putRequest } from "@/app/api/serverRequests/methods";
-import {OrganizationView} from "@/core/types/OrganizationView";
-import {OrganizationMember} from "@/core/types/OrganizationMember";
-import {OrganizationRole} from "@/core/types/OrganizationRole";
-import {UserView} from "@/core/types/UserView";
+import {OrganizationView} from "@/app/core/types/OrganizationView";
+import {OrganizationMember} from "@/app/core/types/OrganizationMember";
+import {OrganizationRole} from "@/app/core/types/OrganizationRole";
+import {UserView} from "@/app/core/types/UserView";
 
 
 export function useOrganizationMembers(organization: OrganizationView | null, currentUserId?: string) {

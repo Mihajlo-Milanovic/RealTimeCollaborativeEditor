@@ -1,6 +1,6 @@
 import {fsService} from "@/app/editor/fileSystem/services/fsService";
-import {FileNode} from "@/core/types/FileNode";
-import {OrganizationView} from "@/core/types/OrganizationView";
+import {FileNode} from "@/app/core/types/FileNode";
+import {OrganizationView} from "@/app/core/types/OrganizationView";
 import {postRequest} from "@/app/api/serverRequests/methods";
 
 export const prompts = {

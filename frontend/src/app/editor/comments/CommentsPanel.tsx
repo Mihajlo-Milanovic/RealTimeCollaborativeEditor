@@ -3,8 +3,8 @@
 import {useCallback, useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
 import {getRequestSingle, postRequest, putRequest, deleteRequest} from "@/app/api/serverRequests/methods";
-import {CommentItem} from "@/comments/CommentItem";
-import {CommentView} from "@/core/types/CommentView";
+import {CommentItem} from "@/app/editor/comments/CommentItem";
+import {CommentView} from "@/app/core/types/CommentView";
 
 export default function CommentsPanel({fileId}: { fileId: string }) {
 

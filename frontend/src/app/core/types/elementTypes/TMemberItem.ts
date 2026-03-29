@@ -1,4 +1,4 @@
-import {OrganizationMember} from "@/core/types/OrganizationMember";
+import {OrganizationMember} from "@/app/core/types/OrganizationMember";
 
 
 export type TMemberItem = {

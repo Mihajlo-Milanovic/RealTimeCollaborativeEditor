@@ -2,9 +2,9 @@
 
 import {useRef} from "react";
 import {FilePlus, FolderPlus, X} from "lucide-react";
-import {TFileTree} from "@/core/types/elementTypes/TFileTree";
-import FileItem from "@/app/editor/fileSystem/ui/FileItem";
-import {useFileSystem} from "@/hooks/useFileSystem";
+import {TFileTree} from "@/app/core/types/elementTypes/TFileTree";
+import FileItem from "@/app/editor/fileSystem/fileItem/FileItem";
+import {useFileTree} from "@/app/editor/fileSystem/fileTree/useFileTree";
 import {prompts} from "@/app/editor/fileSystem/services/prompts";
 
 export default function FileTree(
@@ -21,7 +21,7 @@ export default function FileTree(
         items,
         isLoading,
         refresh
-    } = useFileSystem(user.id, organization)
+    } = useFileTree(user.id, organization)
 
     const containerRef = useRef<HTMLDivElement | null>(null);
 

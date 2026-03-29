@@ -1,7 +1,5 @@
-import React from 'react';
-import {OrganizationMember} from "@/core/types/OrganizationMember";
-import {OrganizationRole} from "@/core/types/OrganizationRole";
-import {TMemberItem} from "@/core/types/elementTypes/TMemberItem";
+import {OrganizationRole} from "@/app/core/types/OrganizationRole";
+import {TMemberItem} from "@/app/core/types/elementTypes/TMemberItem";
 
 const roleClasses: Record<OrganizationRole, string> = {
     admin: "text-red-300 bg-red-500/10 border-red-500/30",

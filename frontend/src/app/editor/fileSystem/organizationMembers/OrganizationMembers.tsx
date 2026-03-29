@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { X, UserPlus } from 'lucide-react';
-import { MemberItem } from './MemberItem';
-import {useOrganizationMembers} from "@/hooks/useOrganizationMembers";
-import {OrganizationView} from "@/core/types/OrganizationView";
-import {OrganizationMember} from "@/core/types/OrganizationMember";
-import {OrganizationRole} from "@/core/types/OrganizationRole";
+import { MemberItem } from '../memberItem/MemberItem';
+import {useOrganizationMembers} from "@/app/editor/fileSystem/organizationMembers/useOrganizationMembers";
+import {OrganizationView} from "@/app/core/types/OrganizationView";
+import {OrganizationMember} from "@/app/core/types/OrganizationMember";
+import {OrganizationRole} from "@/app/core/types/OrganizationRole";
 
-interface MembersModalProps {
+interface OrganizationMembersProps {
     organization: OrganizationView;
     currentUserId: string;
     onClose: () => void;
     onRefreshOrganizations: () => void;
 }
 
-export const MembersModal: React.FC<MembersModalProps> = ({
+export const OrganizationMembers: React.FC<OrganizationMembersProps> = ({
     organization,
     currentUserId,
     onClose,

@@ -1,7 +1,7 @@
 import {deleteRequest, getRequestSingle, postRequest, putRequest} from "@/app/api/serverRequests/methods";
-import {FileNode} from "@/core/types/FileNode";
-import {OrganizationView} from "@/core/types/OrganizationView";
-import {OrganizationRole} from "@/core/types/OrganizationRole";
+import {FileNode} from "@/app/core/types/FileNode";
+import {OrganizationView} from "@/app/core/types/OrganizationView";
+import {OrganizationRole} from "@/app/core/types/OrganizationRole";
 
 export const fsService = {
 

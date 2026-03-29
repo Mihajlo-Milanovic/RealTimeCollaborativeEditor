@@ -1,6 +1,6 @@
 import React from 'react';
 import { LogOut, PanelLeftClose, PanelLeftOpen, MessageSquare } from "lucide-react";
-import { UserView } from "@/core/types/UserView";
+import { UserView } from "@/app/core/types/UserView";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 

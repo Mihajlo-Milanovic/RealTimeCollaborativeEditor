@@ -3,16 +3,16 @@
 import Editor from "@/editor/ui/Editor";
 import {useEffect, useState} from "react";
 import {getRequestSingle} from "@/app/api/serverRequests/methods";
-import { OrganizationView } from "@/core/types/OrganizationView";
+import { OrganizationView } from "@/app/core/types/OrganizationView";
 import {useSession} from "next-auth/react";
-import {UserView} from "@/core/types/UserView";
-import OrganizationExplorer from "@/app/editor/fileSystem/ui/OrganizationExplorer";
-import Sidebar from "@/app/editor/fileSystem/Sidebar";
-import CommentsPanel from "@/comments/CommentsPanel";
-import {MembersModal} from "@/app/editor/fileSystem/ui/MembersModal";
+import {UserView} from "@/app/core/types/UserView";
+import OrganizationExplorer from "@/app/editor/fileSystem/organizationExplorer/OrganizationExplorer";
+import Sidebar from "@/app/editor/Sidebar";
+import CommentsPanel from "@/app/editor/comments/CommentsPanel";
+import {OrganizationMembers} from "@/app/editor/fileSystem/organizationMembers/OrganizationMembers";
 import {X} from "lucide-react";
 
-export default function Page() {
+export default function EditorPage() {
 
     const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
     const [explorerCollapsed, setExplorerCollapsed] = useState(false);
@@ -22,7 +22,7 @@ export default function Page() {
     const [commentsWidth, setCommentsWidth] = useState(384);
     const [isResizingComments, setIsResizingComments] = useState(false);
     const [organizationsRefreshKey, setOrganizationsRefreshKey] = useState(0);
-    const [membersModalOrganization, setMembersModalOrganization] = useState<OrganizationView | null>(null);
+    const [organizationForMemberList, setOrganizationForMemberList] = useState<OrganizationView | null>(null);
 
     const {data: session, status} = useSession();
     const [user, setUser] = useState<UserView | null>(null);
@@ -74,8 +74,13 @@ export default function Page() {
                 <div className="flex-1">
                     <OrganizationExplorer
                         user={user}
-                        onSelectFileAction={setSelectedFileId}
-                        onOpenMembersManagerAction={setMembersModalOrganization}
+                        onSelectFileAction={ (fileId: string) =>{
+                            if (selectedFileId != fileId)
+                                setSelectedFileId(fileId); //Open
+                            else
+                                setSelectedFileId(null); //Close
+                        }}
+                        onOpenMembersManagerAction={setOrganizationForMemberList}
                         organizationsRefreshKey={organizationsRefreshKey}
                     />
                 </div>
@@ -110,11 +115,11 @@ export default function Page() {
             </aside>
         )}
 
-        {membersModalOrganization && (
-            <MembersModal
-                organization={membersModalOrganization}
+        {organizationForMemberList && (
+            <OrganizationMembers
+                organization={organizationForMemberList}
                 currentUserId={user.id}
-                onClose={() => setMembersModalOrganization(null)}
+                onClose={() => setOrganizationForMemberList(null)}
                 onRefreshOrganizations={() => setOrganizationsRefreshKey(k => k + 1)}
             />
         )}

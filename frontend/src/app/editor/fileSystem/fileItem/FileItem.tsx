@@ -2,8 +2,8 @@
 
 import React, {useState} from "react";
 import {Folder, FolderOpen, FileText, Trash2, FolderPlus, FilePlus} from "lucide-react";
-import {TFileItem} from "@/core/types/elementTypes/TFileItem";
-import {useFetchChildren} from "@/hooks/useFetchChildren";
+import {TFileItem} from "@/app/core/types/elementTypes/TFileItem";
+import {useFetchChildrenItems} from "@/app/editor/fileSystem/fileItem/useFetchChildrenItems";
 import {prompts} from "@/app/editor/fileSystem/services/prompts";
 
 
@@ -26,7 +26,7 @@ export default function FileItem(
         items,
         isLoading,
         refresh
-    } = useFetchChildren(node.id)
+    } = useFetchChildrenItems(node.id)
 
     const handleOpenFolder = async () => {
         if (node.isDirectory) {

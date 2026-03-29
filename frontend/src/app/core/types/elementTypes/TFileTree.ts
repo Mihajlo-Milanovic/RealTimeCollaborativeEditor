@@ -1,5 +1,5 @@
-import {UserView} from "@/core/types/UserView";
-import {OrganizationView} from "@/core/types/OrganizationView";
+import {UserView} from "@/app/core/types/UserView";
+import {OrganizationView} from "@/app/core/types/OrganizationView";
 
 
 export type TFileTree = {

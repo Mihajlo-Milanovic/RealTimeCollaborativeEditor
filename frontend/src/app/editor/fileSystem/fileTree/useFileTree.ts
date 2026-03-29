@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
-import { FileNode } from "@/core/types/FileNode"
+import { FileNode } from "@/app/core/types/FileNode"
 import {fsService} from "@/app/editor/fileSystem/services/fsService";
-import {OrganizationView} from "@/core/types/OrganizationView";
+import {OrganizationView} from "@/app/core/types/OrganizationView";
 import {FSNode} from "@/collaboration/FSNode";
 import {fsTree} from "@/collaboration/y";
 
-export function useFileSystem(userId: string, organization: OrganizationView | null) {
+export function useFileTree(userId: string, organization: OrganizationView | null) {
     const [root, setRoot] = useState<FileNode | null>(null)
     const [items, setItems] = useState<FileNode[]>([])
     const [isLoading, setIsLoading] = useState(false)

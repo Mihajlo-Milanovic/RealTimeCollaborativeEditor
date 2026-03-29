@@ -1,7 +1,7 @@
-import {emojisMap} from "@/core/types/ReactionType";
+import {emojisMap} from "@/app/core/types/ReactionType";
 import {useEffect, useState} from "react";
-import {UserView} from "@/core/types/UserView";
-import {CommentView} from "@/core/types/CommentView";
+import {UserView} from "@/app/core/types/UserView";
+import {CommentView} from "@/app/core/types/CommentView";
 
 export function CommentItem({
                          myUserId,

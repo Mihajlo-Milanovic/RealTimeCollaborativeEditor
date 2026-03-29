@@ -1,6 +1,6 @@
-import {OrganizationView} from "@/core/types/OrganizationView";
-import {UserView} from "@/core/types/UserView";
-import {FileNode} from "@/core/types/FileNode";
+import {OrganizationView} from "@/app/core/types/OrganizationView";
+import {UserView} from "@/app/core/types/UserView";
+import {FileNode} from "@/app/core/types/FileNode";
 
 
 export type TFileItem = {

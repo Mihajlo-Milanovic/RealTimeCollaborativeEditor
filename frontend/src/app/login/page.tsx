@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import {getRequestSingle} from "@/app/api/serverRequests/methods"
 
-export default function Page() {
+export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
