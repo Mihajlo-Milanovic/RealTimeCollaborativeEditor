@@ -8,7 +8,7 @@ import {useSession} from "next-auth/react";
 import {UserView} from "@/app/core/types/UserView";
 import OrganizationExplorer from "@/app/editor/fileSystem/organizationExplorer/OrganizationExplorer";
 import Sidebar from "@/app/editor/Sidebar";
-import CommentsPanel from "@/app/editor/comments/CommentsPanel";
+import CommentsPanel from "@/app/editor/comments/components/CommentsPanel";
 import {OrganizationMembers} from "@/app/editor/fileSystem/organizationMembers/OrganizationMembers";
 import {X} from "lucide-react";
 
