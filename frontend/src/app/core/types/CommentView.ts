@@ -6,7 +6,7 @@ export type CommentView = {
     id: string;
     content: string;
     commenter: UserView;
-    createdAt?: string;
-    edited?: boolean;
-    reactions?: ReactionView[];
+    createdAt: string;
+    edited: boolean;
+    reactions: ReactionView[];
 };

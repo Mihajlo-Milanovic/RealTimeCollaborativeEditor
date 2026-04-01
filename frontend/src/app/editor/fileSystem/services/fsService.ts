@@ -102,7 +102,10 @@ export const fsService = {
     },
 
     async deleteOrganization(organizationId: string, userId: string,) {
-        return (await deleteRequest(`organizations/${encodeURIComponent(organizationId)}/delete/userId/${encodeURIComponent(userId)}`)).ok;
+
+        const res = await deleteRequest(`organizations/${organizationId}/${userId}`);
+        console.log(res);
+        return (res).ok;
     },
 
     async getOrganizationsForUser(userId: string) {

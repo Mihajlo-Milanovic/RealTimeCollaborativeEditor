@@ -29,7 +29,7 @@ export const cService = {
     },
 
     async deleteComment(commentId: string): Promise<boolean> {
-        const res = await deleteRequest(`comments/${commentId}/delete`);
+        const res = await deleteRequest(`comments/${commentId}`);
         return res.ok;
     },
 
@@ -50,7 +50,7 @@ export const cService = {
         const payload = await res.json();
         const data = payload?.data ?? payload;
 
-        const deleteRes = await deleteRequest(`reactions/${data.id}/delete`);
+        const deleteRes = await deleteRequest(`reactions/${data.id}`);
         return deleteRes.ok;
     }
 };

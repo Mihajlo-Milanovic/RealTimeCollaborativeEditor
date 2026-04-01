@@ -5,7 +5,6 @@ import {
     validateChildrenAdmission,
     validateIdFromPath, validateMembersByUsernames, validateMembersIds, validateMembersIdsAndRoles, validateNamesArray,
     validateOrganization,
-    validateString
 } from "../middlewares/validation/httpRequestValidation";
 
 export const organizationRouter = Router();

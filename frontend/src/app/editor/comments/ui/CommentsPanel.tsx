@@ -1,24 +1,25 @@
 "use client";
 
-import {useSession} from "next-auth/react";
-import {CommentItem} from "@/app/editor/comments/components/CommentItem";
-import {useComments} from "@/app/editor/comments/hooks/useComments";
+import {CommentItem} from "@/app/editor/comments/ui/CommentItem";
+import {useComments} from "@/app/editor/comments/state/useComments";
+import {TCommentPanel} from "@/app/core/types/elementTypes/TCommentPanel";
 
-export default function CommentsPanel({fileId}: { fileId: string }) {
-
-    const {data} = useSession();
-    const myUserId = (data?.user as unknown as {id: string})?.id || "";
+export default function CommentsPanel(
+    {
+        userId,
+        fileId
+    }: TCommentPanel
+) {
 
     const {
         comments,
-        loading,
+        isLoading,
         newText,
         setNewText,
         addComment,
         updateComment,
         deleteComment,
-        react
-    } = useComments(fileId, myUserId);
+    } = useComments(fileId, userId);
 
     return (
         <div className="w-full h-full flex flex-col p-4 bg-slate-900/50 text-white overflow-hidden">
@@ -34,30 +35,27 @@ export default function CommentsPanel({fileId}: { fileId: string }) {
                     onClick={addComment}
                     className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500"
                 >
-                    Dodaj
+                    Add
                 </button>
             </div>
 
             <div className="flex-1 overflow-y-auto pr-1">
-                {loading ? (
-                    <div className="text-center text-slate-400">Učitavam...</div>
+                {isLoading ? (
+                    <div className="text-center text-slate-400">Loading...</div>
                 ) : comments.length === 0 ? (
                     <div className="text-center text-slate-500 italic">
-                        Nema komentara
+                        No comments yet...
                     </div>
                 ) : (
                     <div className="flex flex-col gap-4">
                         {comments.map((c) => (
                             <CommentItem
                                 key={c.id}
-                                myUserId={myUserId}
                                 comment={c}
                                 user={c.commenter}
                                 onUpdate={updateComment}
                                 onDelete={deleteComment}
-                                onReact={(emoji, already) =>
-                                    react(c.id, emoji, already)
-                                }
+
                             />
                         ))}
                     </div>

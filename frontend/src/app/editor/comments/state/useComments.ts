@@ -5,21 +5,17 @@ import {cService} from "@/app/editor/comments/services/cService";
 export function useComments(fileId: string, userId: string) {
 
     const [comments, setComments] = useState<CommentView[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [newText, setNewText] = useState("");
 
     const fetchComments = async () => {
         if (!fileId) return;
 
-        setLoading(true);
-        const data = await cService.getComments(fileId);
-        setComments(data);
-        setLoading(false);
+        setIsLoading(true);
+        const commentViews = await cService.getComments(fileId);
+        setComments(commentViews);
+        setIsLoading(false);
     };
-
-    useEffect(() => {
-        fetchComments();
-    }, [fileId]);
 
     const addComment = async () => {
         if (!newText.trim() || !userId) return;
@@ -41,29 +37,19 @@ export function useComments(fileId: string, userId: string) {
         if (success) fetchComments();
     };
 
-    const react = async (commentId: string, emoji: string, alreadyReacted: boolean) => {
-        if (!userId) return;
+    useEffect(() => {
+        fetchComments();
+    }, [fileId]);
 
-        let success = false;
-
-        if (alreadyReacted) {
-            success = await cService.removeReaction(commentId, userId);
-        } else {
-            success = await cService.addOrUpdateReaction(commentId, emoji, userId);
-        }
-
-        if (success) fetchComments();
-    };
 
     return {
         comments,
-        loading,
+        isLoading,
         newText,
         setNewText,
         addComment,
         updateComment,
         deleteComment,
-        react,
         refresh: fetchComments
     };
 }

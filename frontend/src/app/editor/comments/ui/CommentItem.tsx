@@ -1,44 +1,33 @@
 import {emojisMap} from "@/app/core/types/ReactionType";
 import {useEffect, useState} from "react";
-import {UserView} from "@/app/core/types/UserView";
-import {CommentView} from "@/app/core/types/CommentView";
+import {TCommentItem} from "@/app/core/types/elementTypes/TCommentItem";
+import {useReactions} from "@/app/editor/comments/state/useReactions";
+import {bgBlue} from "next/dist/lib/picocolors";
 
-export function CommentItem({
-                         myUserId,
-                         comment,
-                         user,
-                         onUpdate,
-                         onDelete,
-                         onReact,
-                     }: {
-    myUserId: string,
-    comment: CommentView;
-    user: UserView;
-    onUpdate: (id: string, content: string) => void;
-    onDelete: (id: string) => void;
-    onReact: (emoji: string, alreadyReacted: boolean) => void;
-}) {
+export function CommentItem(
+    {
+        comment,
+        user,
+        onUpdate,
+        onDelete,
+    }: TCommentItem
+) {
     const [editing, setEditing] = useState(false);
     const [text, setText] = useState(comment.content);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    // const [hoveredReaction, setHoveredReaction] = useState<string | null>(null);
 
-    useEffect(() => setText(comment.content), [comment.content]);
+    useEffect(
+        () => setText(comment.content),
+        [comment.content]
+    );
 
-    let myReaction: string = '';
-    let firstEmoji: string = '';
-
-    for (const reaction of comment.reactions || []) {
-
-        if (reaction.reactor.id == myUserId) {
-            myReaction = reaction.reactionType;
-            break;
-        }
-
-        if (firstEmoji == '') {
-            firstEmoji = reaction.reactionType;
-        }
-    }
+    const {
+        emojiToDisplay,
+        alreadyReacted,
+        refresh,
+        reactToComment,
+        removeReaction,
+    } = useReactions(comment, user.id);
 
     return (
         <div
@@ -54,7 +43,7 @@ export function CommentItem({
                         className="text-[10px] opacity-50 px-1.5 py-0.5 rounded-full bg-slate-700">(edited)</span>}
                 </div>
 
-                {(user.id == myUserId) && (
+                {(user.id == comment.commenter.id) && (
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                             className="p-1.5 hover:bg-slate-700 rounded-lg text-yellow-500/70 hover:text-yellow-400 transition-colors"
@@ -82,11 +71,11 @@ export function CommentItem({
 
             {editing ? (
                 <div className="flex flex-col gap-2">
-          <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all min-h-20 resize-none"
-          />
+                    <textarea
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all min-h-20 resize-none"
+                    />
                     <div className="flex justify-end gap-2">
                         <button
                             className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-medium transition-colors"
@@ -111,34 +100,30 @@ export function CommentItem({
 
             {/* Reactions Section */}
             <div className="mt-4 flex flex-wrap gap-2 items-center relative">
-                {(comment.reactions || []).length > 0 && (<div
-                        key={myReaction}
+                {(comment.reactions.length > 0 && emojiToDisplay != '') && (<div
+                        // key={myReaction}
                         className="relative"
-                        // onMouseEnter={() => setHoveredReaction(myReaction)}
-                        // onMouseLeave={() => setHoveredReaction(null)}
                     >
                         <button
                             onClick={() => {
-                                console.log("clicked reaction");
-                                console.log(myReaction);
-                                if (myReaction != "") onReact(myReaction, true)
+                                setShowEmojiPicker(true);
                             }}
                             className={`flex items-center gap-1.5 px-2 py-1 rounded-full border text-xs transition-colors${
-                                myReaction != "" ?
+                                alreadyReacted ?
                                     "bg-blue-600/30 border-blue-500 text-white"
                                     : "bg-slate-900/50 border-slate-700 hover:border-slate-500"
                             }`}
                         >
                             <span
-                                className="text-lg leading-none">{emojisMap.get(myReaction) || emojisMap.get(firstEmoji) || emojisMap.get('thumbs_up')}</span>
-                            <span className="text-slate-400 font-bold">{comment.reactions?.length}</span>
+                                className="text-lg leading-none">{emojisMap.get(emojiToDisplay) || emojisMap.get('thumbs_up')}</span>
+                            <span className="text-slate-400 font-bold">{comment.reactions?.length || ""}</span>
                         </button>
                     </div>
                 )}
 
                 {/* Add Reaction Button */}
                 <div className="relative">
-                    <button
+                    {!alreadyReacted && <button
                         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                         className="p-1.5 rounded-full hover:bg-slate-700 text-slate-400 transition-colors"
                         title="Dodaj reakciju"
@@ -148,6 +133,7 @@ export function CommentItem({
                                   d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </button>
+                    }
 
                     {showEmojiPicker && (
                         <div
@@ -156,10 +142,13 @@ export function CommentItem({
                                 <button
                                     key={emoji}
                                     onClick={() => {
-                                        onReact(emoji, false);
                                         setShowEmojiPicker(false);
+                                        if (alreadyReacted && emojiToDisplay == emoji)
+                                            removeReaction();
+                                        else
+                                            reactToComment(emoji);
                                     }}
-                                    className="text-xl p-2 hover:bg-slate-700 rounded-xl transition-all hover:scale-125"
+                                    className={`text-xl p-2 ${alreadyReacted && emojiToDisplay == emoji ? "bg-blue-900 border-2 " : " "}hover:bg-slate-700 rounded-xl transition-all hover:scale-125`}
                                 >
                                     {emojisMap.get(emoji)}
                                 </button>

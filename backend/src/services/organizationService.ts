@@ -443,9 +443,9 @@ export async function deleteOrganization(organizationId: string, applicantId: st
 
     const org = await Organization.findById(organizationId)
         .populate(['projections', 'members'])
-        .exec() as Omit<IOrganization, "projections" | "members"> & {
+        .exec() as Omit<IOrganization, "projections"> & {
         projections: Array<IDirectory>,
-        members: Array<IUser>
+        // members: Array<IUser>
     } | null;
 
     const numberOfDeletions = new NumberOfDeletions();
@@ -453,8 +453,9 @@ export async function deleteOrganization(organizationId: string, applicantId: st
     if (org == null)
         return numberOfDeletions;
 
-    if (org.organizer.toHexString() !== applicantId)
-        return new Error('Only organizer can delete the organization.');
+    const memberMap = new Map<string, UserPrivileges>(org.members);
+    if (memberMap.get(applicantId) !== "admin")
+        return new Error('Only admin can delete the organization.');
 
     for (const c of org.children) {
         numberOfDeletions.accumulate(await deleteDirectory(c.toHexString()));
@@ -466,6 +467,8 @@ export async function deleteOrganization(organizationId: string, applicantId: st
         //     numberOfDeletions.accumulate( await deleteDirectory(p.id) );
         // }
     }
+
+    await Organization.findByIdAndDelete(organizationId);
 
     return numberOfDeletions;
 }

@@ -6,10 +6,10 @@ import {getRequestSingle} from "@/app/api/serverRequests/methods";
 import { OrganizationView } from "@/app/core/types/OrganizationView";
 import {useSession} from "next-auth/react";
 import {UserView} from "@/app/core/types/UserView";
-import OrganizationExplorer from "@/app/editor/fileSystem/organizationExplorer/OrganizationExplorer";
+import OrganizationExplorer from "@/app/editor/fileSystem/ui/OrganizationExplorer";
 import Sidebar from "@/app/editor/Sidebar";
-import CommentsPanel from "@/app/editor/comments/components/CommentsPanel";
-import {OrganizationMembers} from "@/app/editor/fileSystem/organizationMembers/OrganizationMembers";
+import CommentsPanel from "@/app/editor/comments/ui/CommentsPanel";
+import {OrganizationMembers} from "@/app/editor/fileSystem/ui/OrganizationMembers";
 import {X} from "lucide-react";
 
 export default function EditorPage() {
@@ -110,6 +110,7 @@ export default function EditorPage() {
                     </button>
                 </div>
                 <CommentsPanel
+                    userId={user.id}
                     fileId={selectedFileId}
                 />
             </aside>

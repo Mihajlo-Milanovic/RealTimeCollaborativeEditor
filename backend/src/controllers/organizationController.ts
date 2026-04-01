@@ -308,16 +308,17 @@ export async function deleteOrganization (req: Request, res: Response, next: Nex
     try {
         const data: { id: string, userId: string} = matchedData(req);
         const result = await os.deleteOrganization(data.id, data.userId);
-        if (result)
+        if (result instanceof Error)
+            res.status(404).json({
+            success: false,
+            message: "Can't delete organization. " + result.message,
+        });
+        else
             res.status(200).json({
                 success: true,
                 data: result,
             });
-        else
-            res.status(404).json({
-                success: false,
-                message: "Can't delete organization.",
-            });
+
     }
     catch (err) {
         next(err);

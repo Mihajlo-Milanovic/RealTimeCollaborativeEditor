@@ -31,7 +31,7 @@ export const prompts = {
 
     async deleteOrganization(organization: OrganizationView, userId: string, refresh: () => void) {
         if(!organization) return;
-        const confirmDelete = confirm(`Are you sure you want to delete ${organization.name}?`)
+        const confirmDelete = confirm(`Are you sure you want to delete organization ${organization.name}?`)
         if (!confirmDelete) return
         const success = await fsService.deleteOrganization(organization.id, userId);
         if (success) refresh();

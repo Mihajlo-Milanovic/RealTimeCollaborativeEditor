@@ -9,12 +9,12 @@ import {
     User,
 } from "lucide-react";
 import {OrganizationRole} from "@/app/core/types/OrganizationRole";
-import FileTree from "@/app/editor/fileSystem/fileTree/FileTree";
+import FileTree from "@/app/editor/fileSystem/ui/FileTree";
 import {ImExit} from "react-icons/im";
 import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
 import {TOrganizationExplorer} from "@/app/core/types/elementTypes/TOrganizationExplorer";
 import {prompts} from "@/app/editor/fileSystem/services/prompts";
-import {useOrganizationExplorer} from "@/app/editor/fileSystem/organizationExplorer/useOrganizationExplorer";
+import {useOrganizationExplorer} from "@/app/editor/fileSystem/state/useOrganizationExplorer";
 
 const roleClasses: Record<OrganizationRole, string> = {
     admin: "text-red-300 bg-red-500/10 border-red-500/30",

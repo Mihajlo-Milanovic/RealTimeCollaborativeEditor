@@ -3,7 +3,7 @@
 import React, {useState} from "react";
 import {Folder, FolderOpen, FileText, Trash2, FolderPlus, FilePlus} from "lucide-react";
 import {TFileItem} from "@/app/core/types/elementTypes/TFileItem";
-import {useFetchChildrenItems} from "@/app/editor/fileSystem/fileItem/useFetchChildrenItems";
+import {useFetchChildrenItems} from "@/app/editor/fileSystem/state/useFetchChildrenItems";
 import {prompts} from "@/app/editor/fileSystem/services/prompts";
 
 
