@@ -58,7 +58,8 @@ export const fsService = {
     },
 
     async getChildrenForDirectory(dirId: string): Promise<FileNode[]> {
-        const res = await getRequestSingle(`directories/${encodeURIComponent(dirId)}/children&files`);
+        if (!dirId) return [];
+        const res = await getRequestSingle(`directories/${dirId}/children&files`);
         if (!res.ok) return [];
         const payload = await res.json();
         const data = payload?.data ?? payload;

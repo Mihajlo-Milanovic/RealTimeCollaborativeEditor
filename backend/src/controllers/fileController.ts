@@ -122,10 +122,11 @@ export async function getFileState(req: Request, res: Response, next: NextFuncti
     try {
         const data: {id: string} = matchedData(req);
 
-        const result: Buffer | null = await fs.getStateForFileWithId(data.id);
+        const result: Buffer | Error = await fs.getStateForFileWithId(data.id);
 
-        if (result != null) {
+        if (!(result instanceof Error)) {
 
+            console.log('Sending file state', result);
             res.setHeader('Content-Type', 'application/octet-stream');
             res.setHeader('Content-Length', result.length);
 
@@ -134,7 +135,7 @@ export async function getFileState(req: Request, res: Response, next: NextFuncti
         else {
             res.status(404).json({
                 success: false,
-                message: "File not found.",
+                message: result.message,
             });
         }
     }

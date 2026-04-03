@@ -26,7 +26,7 @@ export default function FileItem(
         items,
         isLoading,
         refresh
-    } = useFetchChildrenItems(node.id)
+    } = useFetchChildrenItems(node)
 
     const handleOpenFolder = async () => {
         if (node.isDirectory) {

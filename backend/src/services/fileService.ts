@@ -79,9 +79,9 @@ export async function getStateForFileWithId(fileId: string) {
     const file = await File.findById(fileId).select("yDocState").exec() as IFile | null;
 
     if (file == null)
-        return null;
+        return new Error(`File with id ${fileId} couldn't be found!`);
     else
-        return file.yDocState
+        return file.yDocState as Buffer
 }
 
 export async function setStateForFileWithId(fileId: string, documentState: Buffer) {

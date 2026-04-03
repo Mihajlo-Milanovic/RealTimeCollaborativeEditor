@@ -1,3 +1,5 @@
+import {BodyInit} from "undici-types";
+
 const server_address = process.env.SERVER_ADDRESS || "http://localhost:5000"
 
 export async function getRequestSingle(
@@ -75,23 +77,27 @@ export async function deleteRequest(method_route: string, param?: string, param_
 
 }
 
-export async function getBinary(method_route: string) {
+export async function getBinary(method_route: string): Promise<Uint8Array> {
     method_route = method_route.trim().replace(/^\/+/, "");
     const url = `${server_address}/${method_route}`;
-    return fetch(url, {method: "GET"});
+
+    const response = await fetch(url, { method: "GET" });
+    if (!response.ok) throw new Error(`GET ${url} failed: ${response.status} ${response.statusText}`);
+
+    const buffer = await response.arrayBuffer();
+    return new Uint8Array(buffer);
 }
 
 export async function postBinary(method_route: string, bytes: Uint8Array) {
     method_route = method_route.trim().replace(/^\/+/, "");
     const url = `${server_address}/${method_route}`;
 
-    // napravi novi "čist" ArrayBuffer (ne ArrayBufferLike)
-    const copy = new Uint8Array(bytes); // kopija tačne dužine
+    const copy = new Uint8Array(bytes);
     const body: ArrayBuffer = copy.buffer;
 
     return fetch(url, {
         method: "POST",
         headers: {"Content-Type": "application/octet-stream"},
-        body, // sada je pravi ArrayBuffer
+        body,
     });
 }

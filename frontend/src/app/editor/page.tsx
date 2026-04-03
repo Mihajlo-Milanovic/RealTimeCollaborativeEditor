@@ -1,6 +1,6 @@
 'use client'
 
-import Editor from "@/editor/ui/Editor";
+import Editor from "@/app/editor/Editor";
 import {useEffect, useState} from "react";
 import {getRequestSingle} from "@/app/api/serverRequests/methods";
 import { OrganizationView } from "@/app/core/types/OrganizationView";
@@ -90,6 +90,7 @@ export default function EditorPage() {
 
         <main className="flex-1 flex flex-col min-w-0 bg-slate-950">
             <Editor
+                username={user.username}
             selectedFileId={selectedFileId}
             />
         </main>

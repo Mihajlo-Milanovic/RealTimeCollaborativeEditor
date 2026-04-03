@@ -17,7 +17,10 @@ const FileSchema: Schema<IFile> = new Schema({
         required: true
     },
     // FULL Y.js snapshot (binary)
-    yDocState: SchemaTypes.Buffer,
+    yDocState: {
+        type: SchemaTypes.Buffer,
+        default: Buffer.alloc(0),
+    },
     comments: [{
         type: SchemaTypes.ObjectId,
         ref: 'Comment',

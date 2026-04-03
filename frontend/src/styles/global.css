@@ -6,6 +6,7 @@
   :root {
     --background: #020617; /* slate-950 */
     --foreground: #f8fafc; /* slate-50 */
+    --cursor-color: #ff0000;
   }
 
   body {
@@ -33,6 +34,7 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #334155; /* slate-700 */
   }
+
 }
 
 @theme inline {
@@ -40,4 +42,51 @@
   --color-foreground: var(--foreground);
   /*--font-sans: var(--font-geist-sans);*/
   /*--font-mono: var(--font-geist-mono);*/
+}
+
+/* ============================================
+   COLLABORATION CURSORS
+   ============================================ */
+
+/* The blinking caret line for remote users */
+.collaboration-cursor__caret {
+  border-left: 2px solid;
+  border-color: var(--cursor-color);
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+/* Name label that floats above the cursor */
+.collaboration-cursor__label {
+  background-color: var(--cursor-color);
+  border-radius: 3px 3px 3px 0;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  font-style: normal;
+  left: -1px;
+  line-height: 1.4;
+  padding: 2px 6px;
+  position: absolute;
+  top: -1.6em;
+  user-select: none;
+  white-space: nowrap;
+
+  /* Hide label by default, show on hover */
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Always show label for a moment when cursor first appears */
+.collaboration-cursor__caret:hover .collaboration-cursor__label,
+.collaboration-cursor__caret--active .collaboration-cursor__label {
+  opacity: 1;
+}
+
+/* Selected text range of a remote user */
+.collaboration-cursor__selection {
+  opacity: 0.2;
 }
