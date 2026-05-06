@@ -8,7 +8,7 @@ import {Types} from "mongoose";
 
 
 export type DirectoryView = PlainResource<IDirectory, "parents" | "owner" | "children" | "files">
-    & { owner: UserView, children: Array<DirectoryView>, files: Array<FileView> };
+    & { owner: UserView, children: Array<DirectoryView>, files: Array<FileView> , type: "dir"};
 
 export function toDirectoryView(directory: IDirectory): DirectoryView {
 
@@ -28,7 +28,7 @@ export function toDirectoryView(directory: IDirectory): DirectoryView {
             f = directory.files;
     }
 
-    let o: UserView = {id: "", username: "", email: "", organizations: new Map};
+    let o: UserView = {id: "", username: "", email: "", organizations: new Map, verified: false};
     if (directory.owner != null) {
         if (!(directory.owner instanceof Types.ObjectId))
             o = toUserView(directory.owner as unknown as IUser);
@@ -43,5 +43,6 @@ export function toDirectoryView(directory: IDirectory): DirectoryView {
         //parents: directory.parents,
         children: c,
         files: f,
+        type: "dir"
     };
 }
