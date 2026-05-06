@@ -2,7 +2,7 @@
 
 import {CommentItem} from "@/app/editor/comments/ui/CommentItem";
 import {useComments} from "@/app/editor/comments/state/useComments";
-import {TCommentPanel} from "@/app/core/types/elementTypes/TCommentPanel";
+import {TCommentPanel} from "@/models/elementTypes/TCommentPanel";
 
 export default function CommentsPanel(
     {

@@ -1,10 +1,11 @@
 "use client";
 
 import React, {useState} from "react";
-import {Folder, FolderOpen, FileText, Trash2, FolderPlus, FilePlus} from "lucide-react";
-import {TFileItem} from "@/app/core/types/elementTypes/TFileItem";
+import {FilePlus, FileText, Folder, FolderOpen, FolderPlus, Trash2} from "lucide-react";
+import {TFileItem} from "@/models/elementTypes/TFileItem";
 import {useFetchChildrenItems} from "@/app/editor/fileSystem/state/useFetchChildrenItems";
 import {prompts} from "@/app/editor/fileSystem/services/prompts";
+import {NodeType} from "@/models/types/NodeType";
 
 
 export default function FileItem(
@@ -20,7 +21,7 @@ export default function FileItem(
     const [isOpen, setIsOpen] = useState(false);
     
     const [canEdit] = useState(organization == null || (organization.members.get(user.id) || "viewer") != "viewer");
-    const [showCreate] = useState(canEdit && node.isDirectory);
+    const [showCreate] = useState(canEdit && node.type == NodeType.DIR);
 
     const {
         items,
@@ -29,7 +30,7 @@ export default function FileItem(
     } = useFetchChildrenItems(node)
 
     const handleOpenFolder = async () => {
-        if (node.isDirectory) {
+        if (node.type == NodeType.DIR) {
             if (!isOpen) {
                 refresh()
             }
@@ -43,7 +44,7 @@ export default function FileItem(
         <div className="flex flex-col">
             <div
                 className={`flex items-center gap-2 py-1.5 px-2 rounded-lg cursor-pointer transition-colors group ${
-                    node.isDirectory ? "hover:bg-slate-800" : "hover:bg-blue-500/10"
+                    node.type == NodeType.DIR ? "hover:bg-slate-800" : "hover:bg-blue-500/10"
                 }`}
             >
                 <div
@@ -51,7 +52,7 @@ export default function FileItem(
                     onClick={handleOpenFolder}
                 >
                     <div className="text-slate-400 group-hover:text-blue-400 transition-colors">
-                        {node.isDirectory ? (
+                        {node.type == NodeType.DIR ? (
                             isOpen ? (
                                 <FolderOpen
                                     size={16}
@@ -100,7 +101,7 @@ export default function FileItem(
                             <FolderPlus size={14}/>
                         </button>
                     )}
-                    {canEdit && node.isDirectory && (
+                    {canEdit && node.type == NodeType.DIR && (
                         <button
                             onClick={() => prompts.addFileToFileNode(node, user.id, refresh)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-blue-400 transition-colors"

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {CommentView} from "@/app/core/types/CommentView";
+import {CommentView} from "@/models/types/views/CommentView";
 import {cService} from "@/app/editor/comments/services/cService";
 
 export function useComments(fileId: string, userId: string) {

@@ -1,5 +1,5 @@
 import {deleteRequest, getRequestSingle, postRequest, putRequest} from "@/app/api/serverRequests/methods";
-import {CommentView} from "@/app/core/types/CommentView";
+import {CommentView} from "@/models/types/views/CommentView";
 
 export const cService = {
 

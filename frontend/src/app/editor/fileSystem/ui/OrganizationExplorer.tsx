@@ -8,11 +8,11 @@ import {
     Trash2,
     User,
 } from "lucide-react";
-import {OrganizationRole} from "@/app/core/types/OrganizationRole";
+import {OrganizationRole} from "@/models/types/OrganizationRole";
 import FileTree from "@/app/editor/fileSystem/ui/FileTree";
 import {ImExit} from "react-icons/im";
 import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
-import {TOrganizationExplorer} from "@/app/core/types/elementTypes/TOrganizationExplorer";
+import {TOrganizationExplorer} from "@/models/elementTypes/TOrganizationExplorer";
 import {prompts} from "@/app/editor/fileSystem/services/prompts";
 import {useOrganizationExplorer} from "@/app/editor/fileSystem/state/useOrganizationExplorer";
 

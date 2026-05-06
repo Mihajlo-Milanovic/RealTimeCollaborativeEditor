@@ -1,7 +1,8 @@
 import {deleteRequest, getRequestSingle, postRequest, putRequest} from "@/app/api/serverRequests/methods";
-import {FileNode} from "@/app/core/types/FileNode";
-import {OrganizationView} from "@/app/core/types/OrganizationView";
-import {OrganizationRole} from "@/app/core/types/OrganizationRole";
+import {FileNode} from "@/models/interfaces/FileNode";
+import {OrganizationView} from "@/models/types/views/OrganizationView";
+import {OrganizationRole} from "@/models/types/OrganizationRole";
+import {NodeType} from "@/models/types/NodeType";
 
 export const fsService = {
 
@@ -15,7 +16,8 @@ export const fsService = {
         return {
             id: rootDir.id,
             name: rootDir.name,
-            isDirectory: true,
+            type: NodeType.DIR,
+            parentId: null
         };
     },
 

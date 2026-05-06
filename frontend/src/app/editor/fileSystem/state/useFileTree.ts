@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react"
-import { FileNode } from "@/app/core/types/FileNode"
+import {useEffect, useState} from "react"
+import {FileNode} from "@/models/interfaces/FileNode"
 import {fsService} from "@/app/editor/fileSystem/services/fsService";
-import {OrganizationView} from "@/app/core/types/OrganizationView";
-import {FSNode} from "@/collaboration/FSNode";
-import {fsTree} from "@/collaboration/y";
+import {OrganizationView} from "@/models/types/views/OrganizationView";
+import {NodeType} from "@/models/types/NodeType";
 
 export function useFileTree(userId: string, organization: OrganizationView | null) {
     const [root, setRoot] = useState<FileNode | null>(null)
@@ -18,7 +17,8 @@ export function useFileTree(userId: string, organization: OrganizationView | nul
             const rootNode: FileNode  = {
                 id: organization.id,
                 name: organization.name,
-                isDirectory: true
+                type: NodeType.ORG,
+                parentId: organization.id,
             }
             setRoot(rootNode)
             const children = await fsService.getChildrenForOrganization(organization.id)

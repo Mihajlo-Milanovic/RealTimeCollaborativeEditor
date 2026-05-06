@@ -8,7 +8,11 @@ export interface CollabProvider {
     provider: WebsocketProvider
 }
 
-// Color assigned to this user's cursor
+export interface CollabAwarenessLocalState {
+    username: string;
+    color: string;
+}
+
 function getRandomColor(seed: string): string {
 
     const colors = [
@@ -44,17 +48,15 @@ export function createCollabProvider(fileId: string, username: string): CollabPr
     provider.awareness.setLocalStateField("username", username);
     provider.awareness.setLocalStateField("color", getRandomColor(username));
     console.log("Local state set", provider.awareness.getLocalState());
-    // {
-    //     username: username,
-    //     color: getRandomColor(),
-    // })
 
     return {yDoc, provider}
 }
 
 export async function syncState(fileId: string, yDoc: Y.Doc) {
+    console.log("Syncing state for file: ", fileId);
     const state = await getBinary(`files/${fileId}/state`);
     if (state.byteLength > 0) {
         Y.applyUpdate(yDoc, state);
     }
 }
+

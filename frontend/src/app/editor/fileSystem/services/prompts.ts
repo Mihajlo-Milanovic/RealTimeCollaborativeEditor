@@ -1,15 +1,16 @@
 import {fsService} from "@/app/editor/fileSystem/services/fsService";
-import {FileNode} from "@/app/core/types/FileNode";
-import {OrganizationView} from "@/app/core/types/OrganizationView";
-import {postRequest} from "@/app/api/serverRequests/methods";
+import {FileNode} from "@/models/interfaces/FileNode";
+import {OrganizationView} from "@/models/types/views/OrganizationView";
+import {NodeType} from "@/models/types/NodeType";
+import {apiClient} from "@/lib/apiClient";
 
 export const prompts = {
 
     async deleteFileNode(node: FileNode, refresh: () => void) {
-        if (confirm(`Are you sure you want to delete ${node.isDirectory ? 'directory' : 'file'} "${node.name}"?`)) {
-            const success = await fsService.deleteNode(node.id, node.isDirectory);
+        if (confirm(`Are you sure you want to delete ${node.type == NodeType.DIR ? 'directory' : 'file'} "${node.name}"?`)) {
+            const success = await apiClient.deleteNode(node.id, node.type);
             if (success) refresh();
-            else alert(`Could not delete ${node.isDirectory ? 'directory' : 'file'} "${node.name}".`);
+            else alert(`Could not delete ${node.type == NodeType.DIR ? 'directory' : 'file'} "${node.name}".`);
         }
     },
 

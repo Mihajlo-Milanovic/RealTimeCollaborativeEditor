@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {OrganizationView} from "@/app/core/types/OrganizationView";
+import {OrganizationView} from "@/models/types/views/OrganizationView";
 import {fsService} from "@/app/editor/fileSystem/services/fsService";
 
 

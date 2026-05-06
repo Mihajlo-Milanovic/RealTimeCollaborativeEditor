@@ -1,4 +1,4 @@
-import {OrganizationMember} from "@/app/core/types/OrganizationMember";
+import {OrganizationMember} from "@/models/types/views/OrganizationMember";
 
 
 export type TMemberItem = {

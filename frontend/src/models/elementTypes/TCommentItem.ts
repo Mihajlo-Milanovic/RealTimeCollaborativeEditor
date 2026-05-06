@@ -1,5 +1,5 @@
-import {CommentView} from "@/app/core/types/CommentView";
-import {UserView} from "@/app/core/types/UserView";
+import {CommentView} from "@/models/types/views/CommentView";
+import {UserView} from "@/models/types/views/UserView";
 
 
 export type TCommentItem = {

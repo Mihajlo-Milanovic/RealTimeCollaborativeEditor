@@ -67,7 +67,7 @@ import * as Y from "yjs"
 import Collaboration from "@tiptap/extension-collaboration"
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor"
 import {WebsocketProvider} from "y-websocket"
-import {createCollabProvider, syncState} from "@/lib/yjsProvider";
+import {CollabAwarenessLocalState, createCollabProvider, syncState} from "@/lib/yjsProvider";
 import {useEffect, useRef, useState} from "react";
 
 
@@ -184,6 +184,7 @@ export function SimpleEditor(
 
     useEffect(() => {
 
+        if (!fileId) return;
         const collabProvider = createCollabProvider(fileId, username);
         setYDoc(collabProvider.yDoc);
         setProvider(collabProvider.provider);
@@ -196,6 +197,7 @@ export function SimpleEditor(
 
         return () => {
             // clearInterval(interval);
+            console.log("Deleting document for file: ", fileId);
             yDoc?.off("update", onUpdate);
             provider?.destroy();
             yDoc?.destroy();
@@ -290,8 +292,8 @@ function EditorInner(
             CollaborationCursor.configure({
                 provider,
                 user: {
-                    user: provider.awareness.states.get(1) /*as { username: string, color: string}).username*/ || "Anonymous",
-                    color: provider.awareness.states.get(2) /*as { username: string, color: string }).color*/ || '#ff0000',
+                    username: (provider.awareness.getLocalState() as CollabAwarenessLocalState).username || "Anonymous",
+                    color: (provider.awareness.getLocalState() as CollabAwarenessLocalState).color || '#ff0000',
                 },
             }),
         ],

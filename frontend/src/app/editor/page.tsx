@@ -3,9 +3,9 @@
 import Editor from "@/app/editor/Editor";
 import {useEffect, useState} from "react";
 import {getRequestSingle} from "@/app/api/serverRequests/methods";
-import { OrganizationView } from "@/app/core/types/OrganizationView";
+import { OrganizationView } from "@/models/types/views/OrganizationView";
 import {useSession} from "next-auth/react";
-import {UserView} from "@/app/core/types/UserView";
+import {UserView} from "@/models/types/views/UserView";
 import OrganizationExplorer from "@/app/editor/fileSystem/ui/OrganizationExplorer";
 import Sidebar from "@/app/editor/Sidebar";
 import CommentsPanel from "@/app/editor/comments/ui/CommentsPanel";

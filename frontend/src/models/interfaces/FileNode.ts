@@ -1,8 +1,11 @@
+import {NodeType} from "@/models/types/NodeType";
 
 
 export interface FileNode {
     id: string;
     name: string;
-    isDirectory: boolean;
-    // parentId: string | null;
+    type: NodeType;
+    parentId: string | null;   // null = root level
+    // createdAt: string;
+    // updatedAt: string;
 }
