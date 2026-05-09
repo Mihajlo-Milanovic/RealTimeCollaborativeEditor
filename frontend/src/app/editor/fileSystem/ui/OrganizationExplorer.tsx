@@ -1,6 +1,5 @@
 "use client"
 
-import {useState} from "react";
 import {
     Edit,
     Plus,
@@ -13,8 +12,9 @@ import FileTree from "@/app/editor/fileSystem/ui/FileTree";
 import {ImExit} from "react-icons/im";
 import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
 import {TOrganizationExplorer} from "@/models/elementTypes/TOrganizationExplorer";
-import {prompts} from "@/app/editor/fileSystem/services/prompts";
+import {prompts} from "@/app/editor/fileSystem/prompts";
 import {useOrganizationExplorer} from "@/app/editor/fileSystem/state/useOrganizationExplorer";
+import {HocuspocusProviderWebsocketComponent, HocuspocusRoom} from "@hocuspocus/provider-react";
 
 const roleClasses: Record<OrganizationRole, string> = {
     admin: "text-red-300 bg-red-500/10 border-red-500/30",
@@ -22,10 +22,13 @@ const roleClasses: Record<OrganizationRole, string> = {
     viewer: "text-slate-300 bg-slate-500/10 border-slate-500/30",
 }
 
+const WS_BASE_URL = "ws://localhost:3000";
+
 export default function OrganizationExplorer(
     {
         user,
         onSelectFileAction,
+        selectedFileId,
         onOpenMembersManagerAction,
         organizationsRefreshKey = 0,
     }: TOrganizationExplorer
@@ -175,15 +178,19 @@ export default function OrganizationExplorer(
                 )}
             </div>
 
-            <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/60 p-2">
-
-                <FileTree
-                    user={user}
-                    organization={selected}
-                    onSelectFile={onSelectFileAction}
-                    onCloseCurrentOrganizationFSAction={() => selectOrganization(null)}
-                />
-            </div>
+            <HocuspocusProviderWebsocketComponent url={`${WS_BASE_URL}/fileTree`}>
+                <HocuspocusRoom name={`${selected?.id || user.id}`}>
+                    <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/60 p-2">
+                        <FileTree
+                            user={user}
+                            organization={selected}
+                            onSelectFile={onSelectFileAction}
+                            selectedFileId={selectedFileId}
+                            onCloseCurrentOrganizationFSAction={() => selectOrganization(null)}
+                        />
+                    </div>
+                </HocuspocusRoom>
+            </HocuspocusProviderWebsocketComponent>
         </div>
     )
 }

@@ -2,7 +2,7 @@ import {emojisMap} from "@/models/types/ReactionType";
 import {useEffect, useState} from "react";
 import {TCommentItem} from "@/models/elementTypes/TCommentItem";
 import {useReactions} from "@/app/editor/comments/state/useReactions";
-import {bgBlue} from "next/dist/lib/picocolors";
+
 
 export function CommentItem(
     {

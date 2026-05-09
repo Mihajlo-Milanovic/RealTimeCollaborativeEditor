@@ -49,14 +49,11 @@ export const authOptions: AuthOptions = {
 
         const passPayload = await passwordHash.json();
 
-        console.log("BEFORE")
         if (!passPayload.success) return null;
         const pass = passPayload.data;
-        console.log("AFTER ", pass)
 
-        console.log(pass + " "+ password);
         const passwordsMatch = await bcrypt.compare(password, pass);
-        console.log("passwords matched: ", passwordsMatch)
+
         if (!passwordsMatch) return null;
 
         if (!user.verified) return null;

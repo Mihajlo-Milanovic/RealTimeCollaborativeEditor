@@ -4,8 +4,9 @@ import React, {useState} from "react";
 import {FilePlus, FileText, Folder, FolderOpen, FolderPlus, Trash2} from "lucide-react";
 import {TFileItem} from "@/models/elementTypes/TFileItem";
 import {useFetchChildrenItems} from "@/app/editor/fileSystem/state/useFetchChildrenItems";
-import {prompts} from "@/app/editor/fileSystem/services/prompts";
+import {prompts} from "@/app/editor/fileSystem/prompts";
 import {NodeType} from "@/models/types/NodeType";
+
 
 
 export default function FileItem(
@@ -14,6 +15,7 @@ export default function FileItem(
         user,
         node,
         onSelectFile,
+        selectedFileId,
         onRefreshAction,
     }: TFileItem
 ) {
@@ -27,7 +29,7 @@ export default function FileItem(
         items,
         isLoading,
         refresh
-    } = useFetchChildrenItems(node)
+    } = useFetchChildrenItems(node);
 
     const handleOpenFolder = async () => {
         if (node.type == NodeType.DIR) {
@@ -77,6 +79,10 @@ export default function FileItem(
                     >
                         {node.name}
                     </span>
+
+                    {/*{ selectedFileId == node.id && (*/}
+                    {/*   <UserCount/>*/}
+                    {/*)}*/}
                 </div>
 
                 <div
@@ -84,7 +90,7 @@ export default function FileItem(
                 >
                     {canEdit && (
                         <button
-                            onClick={() => prompts.deleteFileNode(node, onRefreshAction)}
+                            onClick={() => prompts.deleteFileNode(node, user.id, onRefreshAction)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
                             title="Delete"
                         >
@@ -122,6 +128,7 @@ export default function FileItem(
                             node={item}
                             user={user}
                             onSelectFile={onSelectFile}
+                            selectedFileId={selectedFileId}
                             onRefreshAction={refresh}
                         />
                     ))}

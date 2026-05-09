@@ -5,13 +5,15 @@ import {FilePlus, FolderPlus, X} from "lucide-react";
 import {TFileTree} from "@/models/elementTypes/TFileTree";
 import FileItem from "@/app/editor/fileSystem/ui/FileItem";
 import {useFileTree} from "@/app/editor/fileSystem/state/useFileTree";
-import {prompts} from "@/app/editor/fileSystem/services/prompts";
+import {prompts} from "@/app/editor/fileSystem/prompts";
+
 
 export default function FileTree(
     {
         user,
         organization,
         onSelectFile,
+        selectedFileId,
         onCloseCurrentOrganizationFSAction
     }: TFileTree
 ) {
@@ -46,12 +48,12 @@ export default function FileTree(
                         )}
 
                         <div className="flex items-center gap-1">
-                            {organization.members.get(user.id) != "viewer" && ( <span>
+                            {organization.members.get(user.id) != "viewer" && (<span>
 
                                     <button
                                         onClick={() => {
                                             if (root)
-                                                prompts.addFolderToFileNode(root, user.id, refresh, true)
+                                                prompts.addFolderToFileNode(root, user.id, refresh);
                                         }}
                                         className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                         title="New folder"
@@ -60,19 +62,19 @@ export default function FileTree(
                                         <FolderPlus size={14}/>
                                     </button>
 
-                                     {/*<button*/}
-                                     {/*    onClick={(e) => {*/}
-                                     {/*        console.log("ADD PROJECTIONS :::: NO IMPLEMENTATION");*/}
-                                     {/*    }}*/}
-                                     {/*    className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-cyan-400 transition-colors"*/}
-                                     {/*    title="Add projection from personal folders"*/}
-                                     {/*>*/}
-                                     {/*    <Folder />*/}
-                                     {/*</button>*/}
+                                    {/*<button*/}
+                                    {/*    onClick={(e) => {*/}
+                                    {/*        console.log("ADD PROJECTIONS :::: NO IMPLEMENTATION");*/}
+                                    {/*    }}*/}
+                                    {/*    className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-cyan-400 transition-colors"*/}
+                                    {/*    title="Add projection from personal folders"*/}
+                                    {/*>*/}
+                                    {/*    <Folder />*/}
+                                    {/*</button>*/}
                                 </span>
                             )}
                             <button
-                                onClick={() => onCloseCurrentOrganizationFSAction() }
+                                onClick={() => onCloseCurrentOrganizationFSAction()}
                                 className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                 title="Close organization explorer"
                                 aria-label="Close organization explorer"
@@ -124,16 +126,33 @@ export default function FileTree(
                     )}
 
                 {root && (<div className="space-y-1">
-                        {items.map((item) => (
-                            <FileItem
-                                organization={organization}
-                                user={user}
-                                key={item.id}
-                                node={item}
-                                onSelectFile={onSelectFile}
-                                onRefreshAction={refresh}
-                            />
-                        ))}
+                        {items.map((item) => {
+                            // if (item.id === selectedFileId) return (
+                            //     <HocuspocusRoom name={`${item.id}`}>
+                            //         <FileItem
+                            //             organization={organization}
+                            //             user={user}
+                            //             key={item.id}
+                            //             node={item}
+                            //             onSelectFile={onSelectFile}
+                            //             selectedFileId={selectedFileId}
+                            //             onRefreshAction={refresh}
+                            //         />
+                            //     </HocuspocusRoom>
+                            // )
+                            // else
+                                return (
+                                    <FileItem
+                                        organization={organization}
+                                        user={user}
+                                        key={item.id}
+                                        node={item}
+                                        onSelectFile={onSelectFile}
+                                        selectedFileId={selectedFileId}
+                                        onRefreshAction={refresh}
+                                    />
+                                )
+                        })}
                     </div>
                 )}
             </div>

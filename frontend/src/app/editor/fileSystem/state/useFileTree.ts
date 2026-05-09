@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react"
 import {FileNode} from "@/models/interfaces/FileNode"
-import {fsService} from "@/app/editor/fileSystem/services/fsService";
 import {OrganizationView} from "@/models/types/views/OrganizationView";
 import {NodeType} from "@/models/types/NodeType";
+import {apiClient} from "@/lib/apiClient";
 
 export function useFileTree(userId: string, organization: OrganizationView | null) {
     const [root, setRoot] = useState<FileNode | null>(null)
@@ -19,26 +19,26 @@ export function useFileTree(userId: string, organization: OrganizationView | nul
                 name: organization.name,
                 type: NodeType.ORG,
                 parentId: organization.id,
-            }
-            setRoot(rootNode)
-            const children = await fsService.getChildrenForOrganization(organization.id)
-            setItems(children)
+            };
+            setRoot(rootNode);
+            const children = await apiClient.explorer.getChildren(rootNode.id, rootNode.type);
+            setItems(children);
         }
         else {
-            const rootNode = await fsService.getRootDirectory(userId)
+            const rootNode = await apiClient.explorer.getRootDirectory(userId);
             if (rootNode) {
-                setRoot(rootNode)
-                const children = await fsService.getChildrenForDirectory(rootNode.id)
-                setItems(children)
+                setRoot(rootNode);
+                const children = await apiClient.explorer.getChildren(rootNode.id, rootNode.type);
+                setItems(children);
             }
         }
-        setIsLoading(false)
-    }
+        setIsLoading(false);
+    };
 
     useEffect(() => {
         if (userId)
             fetchRoot()
-    }, [userId, organization])
+    }, [userId, organization]);
 
-    return { root, items, isLoading, refresh: fetchRoot }
+    return { root, items, isLoading, refresh: fetchRoot };
 }

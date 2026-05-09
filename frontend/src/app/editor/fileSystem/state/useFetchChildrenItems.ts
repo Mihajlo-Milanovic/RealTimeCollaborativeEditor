@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import {FileNode} from "@/models/interfaces/FileNode"
-import {fsService} from "@/app/editor/fileSystem/services/fsService";
 import {NodeType} from "@/models/types/NodeType";
+import {apiClient} from "@/lib/apiClient";
 
 
 export function useFetchChildrenItems(node: FileNode) {
@@ -12,10 +12,9 @@ export function useFetchChildrenItems(node: FileNode) {
     const fetchChildren = async () => {
         if (node.type != NodeType.DIR) return;
 
-        console.log("Fetching children for directory: ", node.id);
-
         setIsLoading(true);
-        const children = await fsService.getChildrenForDirectory(node.id);
+        console.log("Fetching children for directory: ", node.id);
+        const children = await apiClient.explorer.getChildren(node.id, node.type);
         setItems(children);
         setIsLoading(false);
     }

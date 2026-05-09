@@ -3,7 +3,7 @@
 import Editor from "@/app/editor/Editor";
 import {useEffect, useState} from "react";
 import {getRequestSingle} from "@/app/api/serverRequests/methods";
-import { OrganizationView } from "@/models/types/views/OrganizationView";
+import {OrganizationView} from "@/models/types/views/OrganizationView";
 import {useSession} from "next-auth/react";
 import {UserView} from "@/models/types/views/UserView";
 import OrganizationExplorer from "@/app/editor/fileSystem/ui/OrganizationExplorer";
@@ -11,6 +11,12 @@ import Sidebar from "@/app/editor/Sidebar";
 import CommentsPanel from "@/app/editor/comments/ui/CommentsPanel";
 import {OrganizationMembers} from "@/app/editor/fileSystem/ui/OrganizationMembers";
 import {X} from "lucide-react";
+import {
+    HocuspocusProviderWebsocketComponent,
+    HocuspocusRoom
+} from "@hocuspocus/provider-react";
+
+const WS_BASE_URL = "ws://localhost:3000";
 
 export default function EditorPage() {
 
@@ -74,12 +80,13 @@ export default function EditorPage() {
                 <div className="flex-1">
                     <OrganizationExplorer
                         user={user}
-                        onSelectFileAction={ (fileId: string) =>{
+                        onSelectFileAction={(fileId: string) => {
                             if (selectedFileId != fileId)
                                 setSelectedFileId(fileId); //Open
                             else
                                 setSelectedFileId(null); //Close
                         }}
+                        selectedFileId={selectedFileId}
                         onOpenMembersManagerAction={setOrganizationForMemberList}
                         organizationsRefreshKey={organizationsRefreshKey}
                     />
@@ -89,10 +96,20 @@ export default function EditorPage() {
         </Sidebar>
 
         <main className="flex-1 flex flex-col min-w-0 bg-slate-950">
-            <Editor
-                username={user.username}
-            selectedFileId={selectedFileId}
-            />
+            <HocuspocusProviderWebsocketComponent url={`${WS_BASE_URL}/file`}>
+
+                {!selectedFileId && (
+                    <div className="p-4 text-sm text-gray-400">Collaborate with ease</div>
+                )}
+
+                {selectedFileId && (<HocuspocusRoom name={selectedFileId}>
+                    <Editor
+                        username={user.username}
+                        selectedFileId={selectedFileId}
+                    />
+                </HocuspocusRoom>)}
+            </HocuspocusProviderWebsocketComponent>
+
         </main>
 
         {showComments && selectedFileId && (

@@ -1,24 +1,18 @@
-import * as Y from 'yjs';
+import {Doc, applyUpdate} from 'yjs';
 import {WebsocketProvider} from 'y-websocket';
-import {getBinary} from "@/app/api/serverRequests/methods";
-
-
-export interface CollabProvider {
-    yDoc: Y.Doc
-    provider: WebsocketProvider
-}
+import {apiClient} from "@/lib/apiClient";
 
 export interface CollabAwarenessLocalState {
     username: string;
     color: string;
 }
 
-function getRandomColor(seed: string): string {
+export function getRandomColor(seed: string): string {
 
     const colors = [
-        '#F98181', '#FBBC88', '#FAF594',
-        '#94FADB', '#B9F18D', "#f97316",
-        "#22c55e", "#eab308", "#ef4444"
+        '#FF0000', '#00FF00', '#0FF0FF',
+        '#FFFA1B', '#FFAFAF', "#f97316",
+        "#A72FEF", "#FF72A1", "#91A101"
     ];
 
     let hash = 0;
@@ -29,34 +23,33 @@ function getRandomColor(seed: string): string {
     // return colors[Math.floor(Math.random() * colors.length)];
 }
 
-export function createCollabProvider(fileId: string, username: string): CollabProvider {
-    const yDoc = new Y.Doc()
+// export function createCollabProvider(fileId: string, username: string) {
+//     const yDoc = new Doc()
+//
+//     const wsBase = typeof window !== 'undefined' ?
+//         `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}` :
+//         'ws://localhost:3000';
+//
+//     try {
+//
+//     } catch (e) {
+//         console.error("Load state failed:", e);
+//     }
+//
+//     const provider = new WebsocketProvider(wsBase, `ws/${fileId}`, yDoc, {connect: true})
+//
+//     // Set local user awareness state — this is what drives cursor presence
+//
+//     console.log("Local state set", provider.awareness.getLocalState());
+//
+//     return provider
+// }
 
-    const wsBase = typeof window !== 'undefined' ?
-        `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}` :
-        'ws://localhost:3000';
-
-    try {
-
-    } catch (e) {
-        console.error("Load state failed:", e);
-    }
-
-    const provider = new WebsocketProvider(wsBase, `ws/${fileId}`, yDoc, {connect: true})
-
-    // Set local user awareness state — this is what drives cursor presence
-    provider.awareness.setLocalStateField("username", username);
-    provider.awareness.setLocalStateField("color", getRandomColor(username));
-    console.log("Local state set", provider.awareness.getLocalState());
-
-    return {yDoc, provider}
-}
-
-export async function syncState(fileId: string, yDoc: Y.Doc) {
+export async function syncState(fileId: string, yDoc: Doc) {
     console.log("Syncing state for file: ", fileId);
-    const state = await getBinary(`files/${fileId}/state`);
+    const state = await apiClient.file.getState(fileId);
     if (state.byteLength > 0) {
-        Y.applyUpdate(yDoc, state);
+        applyUpdate(yDoc, state);
     }
 }
 

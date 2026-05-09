@@ -8,5 +8,6 @@ export type TFileItem = {
     organization: OrganizationView | null;
     node: FileNode;
     onSelectFile?: (id: string) => void;
+    selectedFileId: string | null;
     onRefreshAction: () => void;
 }

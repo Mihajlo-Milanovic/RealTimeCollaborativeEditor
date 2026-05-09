@@ -6,6 +6,7 @@ export type TFileTree = {
     user: UserView;
     organization: OrganizationView | null;
     onSelectFile?: (id: string) => void;
+    selectedFileId: string | null;
     refreshKey?: number;
     onCloseCurrentOrganizationFSAction: () => void;
     // onCloseTreeAction: () => void;

@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {OrganizationView} from "@/models/types/views/OrganizationView";
-import {fsService} from "@/app/editor/fileSystem/services/fsService";
+import {apiClient} from "@/lib/apiClient";
 
 
 export function useOrganizationExplorer(userId: string) {
@@ -18,8 +18,8 @@ export function useOrganizationExplorer(userId: string) {
         if (!userId) return;
 
         setIsLoading(true);
-
-        const memberships = await fsService.getOrganizationsForUser(userId);
+        
+        const memberships = await apiClient.explorer.getOrganizationsForUser(userId);
 
         if (!memberships.size) {
             setOrganizations([]);
@@ -32,7 +32,7 @@ export function useOrganizationExplorer(userId: string) {
         // const names = filterOrganizations(memberships.keys().toArray());
         const names = memberships.keys().toArray();
 
-        const organizations = await fsService.getOrganizationsByNames(names);
+        const organizations = await apiClient.explorer.getOrganizationsByNames(names);
 
         const sortedOrganizations = organizations.sort((a, b) => a.name.localeCompare(b.name));
 
