@@ -177,9 +177,7 @@ export default function OrganizationExplorer(
                     </ul>
                 )}
             </div>
-
-            <HocuspocusProviderWebsocketComponent url={`${WS_BASE_URL}/fileTree`}>
-                <HocuspocusRoom name={`${selected?.id || user.id}`}>
+                {/*<HocuspocusRoom name={`fs/${selected?.id || user.id}`}>*/}
                     <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/60 p-2">
                         <FileTree
                             user={user}
@@ -189,8 +187,7 @@ export default function OrganizationExplorer(
                             onCloseCurrentOrganizationFSAction={() => selectOrganization(null)}
                         />
                     </div>
-                </HocuspocusRoom>
-            </HocuspocusProviderWebsocketComponent>
+                {/*</HocuspocusRoom>*/}
         </div>
     )
 }
