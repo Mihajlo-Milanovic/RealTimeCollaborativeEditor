@@ -4,7 +4,6 @@ import {checkForValidationErrors} from "../middlewares/validation/checkForValida
 import {matchedData} from "express-validator";
 import {Request, Response, NextFunction} from "express";
 import {CommentView} from "../data/types/CommentView";
-import * as Y from "yjs";
 import {setStateForFileWithId} from "../services/fileService";
 import {FileView} from "../data/types/FileView";
 
