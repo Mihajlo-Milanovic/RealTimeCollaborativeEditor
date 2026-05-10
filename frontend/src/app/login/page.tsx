@@ -38,7 +38,7 @@ export default function LoginPage() {
           setEmailToVerify(email);
           setShowSendEmailLink(true);
         } else {
-          console.log(res);
+          // console.log(res);
           setError("Invalid credentials. Please try again!");
           setShowSendEmailLink(false);
         }

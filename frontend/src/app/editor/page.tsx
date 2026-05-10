@@ -8,24 +8,17 @@ import {useSession} from "next-auth/react";
 import {UserView} from "@/models/types/views/UserView";
 import OrganizationExplorer from "@/app/editor/fileSystem/ui/OrganizationExplorer";
 import Sidebar from "@/app/editor/Sidebar";
-import CommentsPanel from "@/app/editor/comments/ui/CommentsPanel";
 import {OrganizationMembers} from "@/app/editor/fileSystem/ui/OrganizationMembers";
 import {X} from "lucide-react";
 import {
     HocuspocusProviderWebsocketComponent,
     HocuspocusRoom
 } from "@hocuspocus/provider-react";
-import {COLLABORATION_PATH, HOST, PORT, WS_PROTOCOL} from "@/config/config";
+import {HOST, WS_PORT, WS_PROTOCOL} from "@/config/config";
 
 export default function EditorPage() {
 
     const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
-    const [explorerCollapsed, setExplorerCollapsed] = useState(false);
-    const [explorerWidth, setExplorerWidth] = useState(320);
-    const [isResizingExplorer, setIsResizingExplorer] = useState(false);
-    const [showComments, setShowComments] = useState(false);
-    const [commentsWidth, setCommentsWidth] = useState(384);
-    const [isResizingComments, setIsResizingComments] = useState(false);
     const [organizationsRefreshKey, setOrganizationsRefreshKey] = useState(0);
     const [organizationForMemberList, setOrganizationForMemberList] = useState<OrganizationView | null>(null);
 
@@ -44,37 +37,15 @@ export default function EditorPage() {
         fetchUser();
     }, [status, session]);
 
-
-    const resize = (e: React.MouseEvent) => {
-        if (isResizingExplorer) {
-            setExplorerWidth(Math.max(200, Math.min(600, e.clientX)));
-        }
-        if (isResizingComments) {
-            const newWidth = window.innerWidth - e.clientX;
-            setCommentsWidth(Math.max(250, Math.min(800, newWidth)));
-        }
-    };
-
     if (!user) return <div className="flex items-center justify-center h-screen">Loading...</div>;
 
-    console.log("file/"+selectedFileId);
-    return <HocuspocusProviderWebsocketComponent url={`${WS_PROTOCOL}://${HOST}${COLLABORATION_PATH}`}>
+    console.log(`${WS_PROTOCOL}://${HOST}:${WS_PORT}`);
+    return <HocuspocusProviderWebsocketComponent url={`${WS_PROTOCOL}://${HOST}:${WS_PORT}`}>
         <div
             className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden select-none"
-            onMouseMove={resize}
-            onMouseUp={() => {
-                setIsResizingExplorer(false);
-                setIsResizingComments(false);
-            }}
         >
             <Sidebar
                 user={user}
-                collapsed={explorerCollapsed}
-                width={explorerWidth}
-                onToggleCollapse={() => setExplorerCollapsed(!explorerCollapsed)}
-                onResizeStart={() => setIsResizingExplorer(true)}
-                showComments={showComments}
-                onToggleComments={() => setShowComments(!showComments)}
                 selectedFileId={selectedFileId}
             >
                 <div className="overflow-y-auto flex flex-col">
@@ -103,37 +74,37 @@ export default function EditorPage() {
                     <div className="p-4 text-sm text-gray-400">Collaborate with ease</div>
                 )}
 
-                {selectedFileId && (<HocuspocusRoom name={"file/" + selectedFileId}>
-                    <Editor
-                        username={user.username}
-                        selectedFileId={selectedFileId}
-                    />
-                </HocuspocusRoom>)
-                }
+                {selectedFileId && (<HocuspocusRoom name={selectedFileId}>
+                        <Editor
+                            username={user.username}
+                            selectedFileId={selectedFileId}
+                        />
+                    </HocuspocusRoom>
+                )}
 
             </main>
 
-            {showComments && selectedFileId && (
-                <aside
-                    style={{width: commentsWidth}}
-                    className="border-l border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"
-                >
-                    <div
-                        onMouseDown={() => setIsResizingComments(true)}
-                        className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize"
-                    />
-                    <div className="p-4 border-b border-slate-800 flex justify-between">
-                        <h2 className="font-semibold">Comments</h2>
-                        <button onClick={() => setShowComments(false)}>
-                            <X/>
-                        </button>
-                    </div>
-                    <CommentsPanel
-                        userId={user.id}
-                        fileId={selectedFileId}
-                    />
-                </aside>
-            )}
+            {/*{showComments && selectedFileId && (*/}
+            {/*    <aside*/}
+            {/*        style={{width: commentsWidth}}*/}
+            {/*        className="border-l border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"*/}
+            {/*    >*/}
+            {/*        <div*/}
+            {/*            onMouseDown={() => setIsResizingComments(true)}*/}
+            {/*            className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize"*/}
+            {/*        />*/}
+            {/*        <div className="p-4 border-b border-slate-800 flex justify-between">*/}
+            {/*            <h2 className="font-semibold">Comments</h2>*/}
+            {/*            <button onClick={() => setShowComments(false)}>*/}
+            {/*                <X/>*/}
+            {/*            </button>*/}
+            {/*        </div>*/}
+            {/*        <CommentsPanel*/}
+            {/*            userId={user.id}*/}
+            {/*            fileId={selectedFileId}*/}
+            {/*        />*/}
+            {/*    </aside>*/}
+            {/*)}*/}
 
             {organizationForMemberList && (
                 <OrganizationMembers

@@ -41,7 +41,7 @@ export const authOptions: AuthOptions = {
 
         const payload = await userData.json();
         const user = payload?.data;
-        console.log(user)
+        // console.log(user);
 
         const passwordHash = await getRequestSingle(
             `users/${encodeURIComponent(user.id)}/password`

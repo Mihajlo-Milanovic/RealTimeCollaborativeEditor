@@ -5,6 +5,6 @@ export type FSNode = {
     type: 'folder' | 'file'
     name: string
     parentId: string | null
-    // children: Y.Array<string>   // ordered child IDs
+    // children: Y.Array<string> // ordered child IDs
     createdAt: number
 }

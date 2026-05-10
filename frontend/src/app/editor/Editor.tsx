@@ -34,8 +34,6 @@ export default function Editor(
 ) {
 
     const [isLoading, setIsLoading] = useState(true);
-    // const [isConnected, setIsConnected] = useState(false);
-    // const dirtyRef = useRef(false);
 
     const provider = useHocuspocusProvider();
 
@@ -82,55 +80,12 @@ export default function Editor(
         ],
     })
 
-    // useEffect(() => {
-    //
-    //     if (!selectedFileId) return;
-    //     // const collabProvider = createCollabProvider(fileId, username);
-    //     // setYDoc(collabProvider.yDoc);
-    //     // setProvider(collabProvider.provider);
-    //
-    //     const onUpdate = () => {
-    //         dirtyRef.current = true;
-    //     }
-    //
-    //     yDoc?.on("update", onUpdate);
-    //
-    //     // return () => {
-    //     //     // clearInterval(interval);
-    //     //     console.log("Deleting document for file: ", selectedFileId);
-    //     //     yDoc?.off("update", onUpdate);
-    //     //     provider?.destroy();
-    //     //     yDoc?.destroy();
-    //     //     dirtyRef.current = false;
-    //     // }
-    // }, [selectedFileId])
-
     useEffect(() => {
         setIsLoading(true);
         if (!selectedFileId || !provider.document) return;
         syncState(selectedFileId, provider.document).then(() => setIsLoading(false));
 
-    }, [provider.document]);
-
-    // Track WebSocket connection status
-    // useEffect(() => {
-    //
-    //     console.log("Provider: ", provider);
-    //
-    //     if (!provider || !provider.awareness) return;
-    //
-    //     provider.awareness.setLocalStateField("username", username);
-    //     provider.awareness.setLocalStateField("color", getRandomColor(username));
-    //     // const handleStatus = ({status}: { status: string }) => {
-    //     //     setIsConnected(status === 'connected');
-    //     // };
-    //     //
-    //     // provider.on('status', handleStatus);
-    //     //
-    //     // return () => {
-    //     //     provider.off('status', handleStatus);
-    //     // };
-    // }, [provider]);
+    }, [provider]);
 
     return (
         <div className="editor-wrapper">
