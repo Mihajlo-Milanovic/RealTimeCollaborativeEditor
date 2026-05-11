@@ -12,7 +12,7 @@ This document explains the `frontend/src` structure for this project, with empha
 - `lib/`: Utility helpers used across features.
 - `styles/`: Global styles, shared variables, and animation definitions.
 - `pages/`: Legacy Pages Router area (kept for compatibility/migration).
-- `middleware.ts`: Next.js request middleware entry point.
+- `proxy.ts`: Next.js request middleware entry point.
 
 ## `app/` (Primary Next.js Routing Folder)
 

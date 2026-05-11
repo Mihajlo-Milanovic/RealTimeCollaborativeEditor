@@ -4,10 +4,10 @@ import {FileNode} from "@/models/interfaces/FileNode";
 
 
 export type TFileItem = {
-    user: UserView;
+    userId: string;
     organization: OrganizationView | null;
     node: FileNode;
-    onSelectFile?: (id: string) => void;
-    selectedFileId: string | null;
+    // onSelectFile: (id: string) => void;
+    // selectedFileId: string | null;
     onRefreshAction: () => void;
 }

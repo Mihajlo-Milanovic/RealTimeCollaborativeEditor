@@ -2,6 +2,7 @@ import type {FileNode} from '@/models/interfaces/FileNode';
 import {NodeType} from "@/models/types/NodeType";
 import {OrganizationRole} from "@/models/types/OrganizationRole";
 import {OrganizationView} from "@/models/types/views/OrganizationView";
+import {UserView} from "@/models/types/views/UserView";
 
 const BASE_URL = process.env.BACKEND_URL ?? 'http://localhost:5000';
 
@@ -249,6 +250,22 @@ export const apiClient = {
                     body,
                 });
         },
+    },
+
+    user: {
+        async getByEmail(email: string){
+
+            const res = await request<UserView>(
+                `users/email/${encodeURIComponent(email)}`,
+                {method: 'GET'}
+            );
+
+            if (!res) return null;
+            
+            return {
+                ...res,
+            } as UserView;
+        }
     },
 
 }

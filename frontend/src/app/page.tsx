@@ -1,16 +1,17 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/authOptions";
+import {getServerSession} from "next-auth";
+import {redirect} from "next/navigation";
+import {authOptions} from "@/app/api/auth/authOptions";
+import {user} from "@/store/user";
+
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-  console.log(`Session: ${session}`)
-  if (session) {
-    console.log(`Session exists ${session}`)
-    redirect("/editor");
-  }
-   else{
-    console.log(`Session does not exist`)
-    redirect("/login");
-  }
+    const session = await getServerSession(authOptions);
+    console.log(`Session: ${session}`)
+    if (session) {
+        console.log(`Session exists ${session}`);
+        redirect("/editor");
+    } else {
+        console.log(`Session does not exist`)
+        redirect("/login");
+    }
 }

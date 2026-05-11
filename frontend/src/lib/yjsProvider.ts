@@ -1,11 +1,6 @@
 import {Doc, applyUpdate} from 'yjs';
 import {apiClient} from "@/lib/apiClient";
 
-export interface CollabAwarenessLocalState {
-    username: string;
-    color: string;
-}
-
 export function getRandomColor(seed: string): string {
 
     const colors = [

@@ -1,19 +1,21 @@
+'use client'
+
 import React, {useState} from 'react';
 import {LogOut, PanelLeftClose, PanelLeftOpen, MessageSquare} from "lucide-react";
 import {UserView} from "@/models/types/views/UserView";
 import {signOut} from "next-auth/react";
 import {useRouter} from "next/navigation";
+import {useSelectedFile} from "@/store/selectedFile";
+import {user} from "@/store/user"
 
 interface SidebarProps {
-    user: UserView;
-    selectedFileId: string | null;
+    // user: UserView;
+    // selectedFileId: string | null;
     children: React.ReactNode;
 }
 
 export const Sidebar: React.FC<SidebarProps> = (
     {
-        user,
-        selectedFileId,
         children
     }
 ) => {
@@ -24,6 +26,8 @@ export const Sidebar: React.FC<SidebarProps> = (
     const [showComments, setShowComments] = useState(false);
     const [commentsWidth, setCommentsWidth] = useState(384);
     const [isResizingComments, setIsResizingComments] = useState(false);
+
+    const {selectedFileId} = useSelectedFile();
 
     const resize = (e: React.MouseEvent) => {
         if (isResizingExplorer) {
@@ -39,7 +43,8 @@ export const Sidebar: React.FC<SidebarProps> = (
 
     const handleLogout = async () => {
         await signOut({redirect: false});
-        router.push("/login");
+        user.reset()
+        router.replace("/login");
     };
 
     return (<>

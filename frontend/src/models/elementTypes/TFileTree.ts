@@ -3,10 +3,10 @@ import {OrganizationView} from "@/models/types/views/OrganizationView";
 
 
 export type TFileTree = {
-    user: UserView;
+    userId: string;
     organization: OrganizationView | null;
-    onSelectFile?: (id: string) => void;
-    selectedFileId: string | null;
+    // onSelectFile: (id: string) => void;
+    // selectedFileId: string | null;
     refreshKey?: number;
     onCloseCurrentOrganizationFSAction: () => void;
     // onCloseTreeAction: () => void;

@@ -6,6 +6,8 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import {getRequestSingle} from "@/app/api/serverRequests/methods"
+import {user} from "@/store/user"
+import {session} from "next-auth/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
@@ -38,7 +40,7 @@ export default function LoginPage() {
           setEmailToVerify(email);
           setShowSendEmailLink(true);
         } else {
-          // console.log(res);
+          console.log(res);
           setError("Invalid credentials. Please try again!");
           setShowSendEmailLink(false);
         }
@@ -46,8 +48,6 @@ export default function LoginPage() {
         setIsLoading(false);
         return;
       }
-      const userRes = await getRequestSingle(`users/email/${encodeURIComponent(email)}`);
-      const userData = await userRes.json();
 
       router.replace("/editor");
     } catch (error) {

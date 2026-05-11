@@ -22,15 +22,11 @@ const roleClasses: Record<OrganizationRole, string> = {
     viewer: "text-slate-300 bg-slate-500/10 border-slate-500/30",
 }
 
-const WS_BASE_URL = "ws://localhost:3000";
-
 export default function OrganizationExplorer(
     {
-        user,
-        onSelectFileAction,
-        selectedFileId,
-        onOpenMembersManagerAction,
-        organizationsRefreshKey = 0,
+        userId
+        // onOpenMembersManagerAction,
+        // organizationsRefreshKey = 0,
     }: TOrganizationExplorer
 ) {
 
@@ -46,7 +42,7 @@ export default function OrganizationExplorer(
         selectOrganization,
         toggleOrganizationExplorer,
         refresh,
-    } = useOrganizationExplorer(user.id);
+    } = useOrganizationExplorer(userId);
 
     return (
         <div className="mt-4">
@@ -62,7 +58,7 @@ export default function OrganizationExplorer(
 
                 <div className="flex items-center gap-1">
                     <button
-                        onClick={() => prompts.createOrganization(user.id, refresh)}
+                        onClick={() => prompts.createOrganization(userId, refresh)}
                         className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                         title="Create organization"
                         aria-label="Create organization"
@@ -103,7 +99,7 @@ export default function OrganizationExplorer(
                 ) : (
                     <ul className="space-y-1 px-1">
                         {organizations.map((organization) => {
-                            const role = organization.members.get(user.id)
+                            const role = organization.members.get(userId)
                             return (
                                 <li
                                     key={organization.id}
@@ -124,7 +120,7 @@ export default function OrganizationExplorer(
                                         <div className="flex gap-1 ml-2">
                                             {role === "admin" && (<span>
                                                 <button
-                                                    onClick={() => prompts.editOrganization(user.id, refresh)}
+                                                    onClick={() => prompts.editOrganization(userId, refresh)}
                                                     className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-orange-400 transition-colors"
                                                     title="Edit organization"
                                                 >
@@ -132,7 +128,7 @@ export default function OrganizationExplorer(
                                                 </button>
 
                                                 <button
-                                                    onClick={() => prompts.deleteOrganization(organization, user.id, refresh)}
+                                                    onClick={() => prompts.deleteOrganization(organization, userId, refresh)}
                                                     className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-500 transition-colors"
                                                     title="Delete organization"
                                                 >
@@ -143,7 +139,7 @@ export default function OrganizationExplorer(
                                             )}
 
                                             <button
-                                                onClick={(e) => onOpenMembersManagerAction?.(organization)}
+                                                // onClick={(e) => onOpenMembersManagerAction?.(organization)}
                                                 className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-green-500 transition-colors"
                                                 title="Manage members"
                                             >
@@ -180,10 +176,10 @@ export default function OrganizationExplorer(
                 {/*<HocuspocusRoom name={`fs/${selected?.id || user.id}`}>*/}
                     <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/60 p-2">
                         <FileTree
-                            user={user}
+                            userId={userId}
                             organization={selected}
-                            onSelectFile={onSelectFileAction}
-                            selectedFileId={selectedFileId}
+                            // onSelectFile={onSelectFileAction}
+                            // selectedFileId={selectedFileId}
                             onCloseCurrentOrganizationFSAction={() => selectOrganization(null)}
                         />
                     </div>

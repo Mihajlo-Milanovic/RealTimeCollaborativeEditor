@@ -2,7 +2,8 @@
 
 export type UserView = {
     id: string;
-    email: string;
     username: string;
+    email: string;
+    verified: boolean;
     organizations: Map<string, string>;
 }

@@ -10,10 +10,8 @@ import {prompts} from "@/app/editor/fileSystem/prompts";
 
 export default function FileTree(
     {
-        user,
+        userId,
         organization,
-        onSelectFile,
-        selectedFileId,
         onCloseCurrentOrganizationFSAction
     }: TFileTree
 ) {
@@ -23,7 +21,7 @@ export default function FileTree(
         items,
         isLoading,
         refresh
-    } = useFileTree(user.id, organization)
+    } = useFileTree(userId, organization)
 
     const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,12 +46,12 @@ export default function FileTree(
                         )}
 
                         <div className="flex items-center gap-1">
-                            {organization.members.get(user.id) != "viewer" && (<span>
+                            {organization.members.get(userId) != "viewer" && (<span>
 
                                     <button
                                         onClick={() => {
                                             if (root)
-                                                prompts.addFolderToFileNode(root, user.id, refresh);
+                                                prompts.addFolderToFileNode(root, userId, refresh);
                                         }}
                                         className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                         title="New folder"
@@ -101,7 +99,7 @@ export default function FileTree(
                                 <button
                                     onClick={() => {
                                         if (root)
-                                            prompts.addFolderToFileNode(root, user.id, refresh)
+                                            prompts.addFolderToFileNode(root, userId, refresh)
                                     }}
                                     className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                     title="New folder"
@@ -113,7 +111,7 @@ export default function FileTree(
                                 <button
                                     onClick={() => {
                                         if (root)
-                                            prompts.addFileToFileNode(root, user.id, refresh)
+                                            prompts.addFileToFileNode(root, userId, refresh)
                                     }}
                                     className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                     title="New file"
@@ -144,11 +142,11 @@ export default function FileTree(
                                 return (
                                     <FileItem
                                         organization={organization}
-                                        user={user}
+                                        userId={userId}
                                         key={item.id}
                                         node={item}
-                                        onSelectFile={onSelectFile}
-                                        selectedFileId={selectedFileId}
+                                        // onSelectFile={onSelectFile}
+                                        // selectedFileId={selectedFileId}
                                         onRefreshAction={refresh}
                                     />
                                 )

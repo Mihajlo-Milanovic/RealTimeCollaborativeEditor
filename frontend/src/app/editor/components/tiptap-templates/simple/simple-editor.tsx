@@ -50,6 +50,25 @@ import {useWindowSize} from "@/hooks/use-window-size"
 import {useCursorVisibility} from "@/hooks/use-cursor-visibility"
 import {useEffect, useRef, useState} from "react";
 import {from} from "lib0/set";
+import {HocuspocusRoom, useHocuspocusProvider} from "@hocuspocus/provider-react";
+import {getRandomColor, syncState} from "@/lib/yjsProvider";
+import {useSelectedFile} from "@/store/selectedFile";
+
+
+import StarterKit from "@tiptap/starter-kit"
+import Image from "@tiptap/extension-image"
+import TaskItem from "@tiptap/extension-task-item"
+import TaskList from "@tiptap/extension-task-list"
+import TextAlign from "@tiptap/extension-text-align"
+import Typography from "@tiptap/extension-typography"
+import Highlight from "@tiptap/extension-highlight"
+import Subscript from "@tiptap/extension-subscript"
+import Superscript from "@tiptap/extension-superscript"
+import Underline from "@tiptap/extension-underline"
+import Link from "@tiptap/extension-link"
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import Collaboration from "@tiptap/extension-collaboration";
+
 
 
 
@@ -149,17 +168,67 @@ const MobileToolbarContent = (
 )
 
 export function EditorInner(
-    {
-        editor,
-    }: {
-        editor: Editor | null,
-    }
+    {username}: { username: string }
 ) {
 
     const isMobile = useMobile()
     const windowSize = useWindowSize()
     const [mobileView, setMobileView] = React.useState<"main" | "highlighter" | "link">("main")
     const toolbarRef = React.useRef<HTMLDivElement>(null)
+
+    const {selectedFileId} = useSelectedFile();
+    const provider = useHocuspocusProvider();
+
+    const [isLoading, setIsLoading] = useState(true);
+    const editor = useEditor({
+        immediatelyRender: false,
+        editable: true,
+        editorProps: {
+            attributes: {
+                autocomplete: "off",
+                autocorrect: "off",
+                autocapitalize: "off",
+                "aria-label": "Main content area, start typing to enter text.",
+                class: "simple-editor-content prose prose-invert max-w-none min-h-[400px] p-4 outline-none",
+            },
+        },
+        extensions: [
+            StarterKit.configure({
+                history: false,
+            }),
+            TextAlign.configure({types: ["heading", "paragraph"]}),
+            Underline,
+            TaskList,
+            TaskItem.configure({nested: true}),
+            Highlight.configure({multicolor: true}),
+            Image,
+            Typography,
+            Superscript,
+            Subscript,
+            Link.configure({
+                openOnClick: false,
+            }),
+            Collaboration.configure({
+                document: provider.document,
+
+            }),
+            CollaborationCursor.configure({
+                provider,
+                user: {
+                    name: username || 'Anonymous',
+                    color: getRandomColor(username) || '#ff0000',
+                },
+
+            }),
+        ],
+    })
+
+    useEffect(() => {
+        setIsLoading(true);
+        if (!selectedFileId || !provider.document) return;
+        syncState(selectedFileId, provider.document).then(() => setIsLoading(false));
+
+    }, [provider]);
 
     const bodyRect = useCursorVisibility({
         editor,
@@ -175,6 +244,9 @@ export function EditorInner(
     if (!editor) {
         return <div className="p-4 text-sm text-gray-400">Loading editor…</div>
     }
+
+    if (isLoading)
+        return <div className="p-4 text-sm text-gray-400">Loading document...</div>;
 
     return (
         <EditorContext.Provider value={{editor}}>
