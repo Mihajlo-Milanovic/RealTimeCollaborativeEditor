@@ -1,8 +1,8 @@
 "use client";
 
-import {CommentItem} from "@/app/editor/comments/ui/CommentItem";
-import {useComments} from "@/app/editor/comments/state/useComments";
-import {TCommentPanel} from "@/models/elementTypes/TCommentPanel";
+import {CommentItem} from "./CommentItem";
+import {useComments} from "../state/useComments";
+import {TCommentPanel} from "../../../../models/elementTypes/TCommentPanel";
 
 export default function CommentsPanel(
     {

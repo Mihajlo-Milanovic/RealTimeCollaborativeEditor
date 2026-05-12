@@ -1,13 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState, MouseEvent } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import {getRequestSingle} from "@/app/api/serverRequests/methods"
-import {user} from "@/store/user"
-import {session} from "next-auth/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
@@ -18,7 +15,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const [showSendEmailLink, setShowSendEmailLink] = useState<boolean>(false);
-  const [emailToVerify, setEmailToVerify] = useState<string>("");
+  // const [emailToVerify, setEmailToVerify] = useState<string>("");
 
 
   const router = useRouter();
@@ -37,7 +34,7 @@ export default function LoginPage() {
       if (res?.error) {
         if (res.error === "Email is not verified!") {
           setError("Account not verified. Check your email for the verification link.");
-          setEmailToVerify(email);
+          // setEmailToVerify(email);
           setShowSendEmailLink(true);
         } else {
           console.log(res);
@@ -56,13 +53,13 @@ export default function LoginPage() {
     }
   };
 
-  const handleResendVerification = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleResendVerification = () => {
     // TODO 
 
     //e.preventDefault();
    // const verificationTokenNew = crypto.randomBytes(32).toString("hex");
     // pozvati api poziv koji handluje ovo...
-    setEmailToVerify("");
+    // setEmailToVerify("");
     setShowSendEmailLink(false);
     setError("");
   };
@@ -143,7 +140,7 @@ export default function LoginPage() {
 
               <div className="text-sm text-center text-slate-400 mt-2">
                 <Link href="/register" prefetch={true} className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
-                  Don't have an account?
+                  Don&#39;t have an account?
                 </Link>
               </div>
             </form>

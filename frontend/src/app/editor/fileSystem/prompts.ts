@@ -1,7 +1,7 @@
-import {FileNode} from "@/models/interfaces/FileNode";
-import {OrganizationView} from "@/models/types/views/OrganizationView";
-import {NodeType} from "@/models/types/NodeType";
-import {apiClient} from "@/lib/apiClient";
+import {FileNode} from "../../../models/interfaces/FileNode";
+import {OrganizationView} from "../../../models/types/views/OrganizationView";
+import {NodeType} from "../../../models/types/NodeType";
+import {apiClient} from "../../../lib/apiClient";
 
 export const prompts = {
 

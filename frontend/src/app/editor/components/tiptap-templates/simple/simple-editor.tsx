@@ -1,60 +1,57 @@
 "use client"
 
 import * as React from "react";
-import {Editor, EditorContent, EditorContext, useEditor} from "@tiptap/react";
-import * as CustomToolbar from "@/app/editor/components/Toolbar"
+import {EditorContent, EditorContext, useEditor} from "@tiptap/react";
 
 // --- UI Primitives ---
-import {Button} from "@/app/editor/components/tiptap-ui-primitive/button"
-import {Spacer} from "@/app/editor/components/tiptap-ui-primitive/spacer"
+import {Button} from "../../tiptap-ui-primitive/button"
+import {Spacer} from "../../tiptap-ui-primitive/spacer"
 import {
     Toolbar,
     ToolbarGroup,
     ToolbarSeparator,
-} from "@/app/editor/components/tiptap-ui-primitive/toolbar"
+} from "../../tiptap-ui-primitive/toolbar"
 
 // --- Styles ---
-import "@/app/editor/components/tiptap-node/code-block-node/code-block-node.scss"
-import "@/app/editor/components/tiptap-node/list-node/list-node.scss"
-import "@/app/editor/components/tiptap-node/image-node/image-node.scss"
-import "@/app/editor/components/tiptap-node/paragraph-node/paragraph-node.scss"
-import "@/app/editor/components/tiptap-templates/simple/simple-editor.scss"
+import "../../tiptap-node/code-block-node/code-block-node.scss"
+import "../../tiptap-node/list-node/list-node.scss"
+import "../../tiptap-node/image-node/image-node.scss"
+import "../../tiptap-node/paragraph-node/paragraph-node.scss"
+import "../../tiptap-templates/simple/simple-editor.scss"
 
 // --- Tiptap UI ---
-import {HeadingDropdownMenu} from "@/app/editor/components/tiptap-ui/heading-dropdown-menu"
-import {ListDropdownMenu} from "@/app/editor/components/tiptap-ui/list-dropdown-menu"
-import {BlockquoteButton} from "@/app/editor/components/tiptap-ui/blockquote-button"
-import {CodeBlockButton} from "@/app/editor/components/tiptap-ui/code-block-button"
+import {HeadingDropdownMenu} from "../../tiptap-ui/heading-dropdown-menu"
+import {ListDropdownMenu} from "../../tiptap-ui/list-dropdown-menu"
+import {BlockquoteButton} from "../../tiptap-ui/blockquote-button"
+import {CodeBlockButton} from "../../tiptap-ui/code-block-button"
 import {
     ColorHighlightPopover,
     ColorHighlightPopoverContent,
     ColorHighlightPopoverButton,
-} from "@/app/editor/components/tiptap-ui/color-highlight-popover"
+} from "../../tiptap-ui/color-highlight-popover"
 import {
     LinkPopover,
     LinkContent,
     LinkButton,
-} from "@/app/editor/components/tiptap-ui/link-popover"
-import {MarkButton} from "@/app/editor/components/tiptap-ui/mark-button"
-import {TextAlignButton} from "@/app/editor/components/tiptap-ui/text-align-button"
-import {UndoRedoButton} from "@/app/editor/components/tiptap-ui/undo-redo-button"
+} from "../../tiptap-ui/link-popover"
+import {MarkButton} from "../../tiptap-ui/mark-button"
+import {TextAlignButton} from "../../tiptap-ui/text-align-button"
+import {UndoRedoButton} from "../../tiptap-ui/undo-redo-button"
 
 // --- Icons ---
-import {ArrowLeftIcon} from "@/app/editor/components/tiptap-icons/arrow-left-icon"
-import {HighlighterIcon} from "@/app/editor/components/tiptap-icons/highlighter-icon"
-import {LinkIcon} from "@/app/editor/components/tiptap-icons/link-icon"
+import {ArrowLeftIcon} from "../../tiptap-icons/arrow-left-icon"
+import {HighlighterIcon} from "../../tiptap-icons/highlighter-icon"
+import {LinkIcon} from "../../tiptap-icons/link-icon"
 
 // --- Hooks ---
-import {useMobile} from "@/hooks/use-mobile"
-import {useWindowSize} from "@/hooks/use-window-size"
-import {useCursorVisibility} from "@/hooks/use-cursor-visibility"
-import {useEffect, useRef, useState} from "react";
-import {from} from "lib0/set";
-import {HocuspocusRoom, useHocuspocusProvider} from "@hocuspocus/provider-react";
-import {getRandomColor, syncState} from "@/lib/yjsProvider";
-import {useSelectedFile} from "@/store/selectedFile";
+import {useMobile} from "../../../../../hooks/use-mobile"
+import {useWindowSize} from "../../../../../hooks/use-window-size"
+import {useCursorVisibility} from "../../../../../hooks/use-cursor-visibility"
+import {useEffect} from "react";
+import {useHocuspocusProvider} from "@hocuspocus/provider-react";
 
 
+// --- Tiptap ---
 import StarterKit from "@tiptap/starter-kit"
 import Image from "@tiptap/extension-image"
 import TaskItem from "@tiptap/extension-task-item"
@@ -68,7 +65,8 @@ import Underline from "@tiptap/extension-underline"
 import Link from "@tiptap/extension-link"
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import Collaboration from "@tiptap/extension-collaboration";
-
+import {useSelectedFile} from "../../../../../store/selectedFile"
+import {CollabUser} from "../../../../../models/interfaces/CollabUser";
 
 
 
@@ -167,19 +165,19 @@ const MobileToolbarContent = (
     </>
 )
 
-export function EditorInner(
-    {username}: { username: string }
-) {
+export function EditorInner() {
 
     const isMobile = useMobile()
     const windowSize = useWindowSize()
     const [mobileView, setMobileView] = React.useState<"main" | "highlighter" | "link">("main")
     const toolbarRef = React.useRef<HTMLDivElement>(null)
 
-    const {selectedFileId} = useSelectedFile();
     const provider = useHocuspocusProvider();
+    const userAwareness = provider.awareness.getLocalState() as CollabUser;
+    // const awareness = useHocuspocusAwareness();
+    const {selectedFileId} = useSelectedFile();
 
-    const [isLoading, setIsLoading] = useState(true);
+    // const [isLoading, setIsLoading] = useState(true);
     const editor = useEditor({
         immediatelyRender: false,
         editable: true,
@@ -215,8 +213,9 @@ export function EditorInner(
             CollaborationCursor.configure({
                 provider,
                 user: {
-                    name: username || 'Anonymous',
-                    color: getRandomColor(username) || '#ff0000',
+                    name: userAwareness.username ?? "Anonymous",
+                    username: userAwareness.username ?? "ZIKA",
+                    color: userAwareness.color ?? '#ffffff',
                 },
 
             }),
@@ -224,11 +223,11 @@ export function EditorInner(
     })
 
     useEffect(() => {
-        setIsLoading(true);
+        // setIsLoading(true);
         if (!selectedFileId || !provider.document) return;
-        syncState(selectedFileId, provider.document).then(() => setIsLoading(false));
+        // syncState(selectedFileId, provider.document).then(() => setIsLoading(false));
 
-    }, [provider]);
+    }, [provider, selectedFileId]);
 
     const bodyRect = useCursorVisibility({
         editor,
@@ -245,8 +244,8 @@ export function EditorInner(
         return <div className="p-4 text-sm text-gray-400">Loading editor…</div>
     }
 
-    if (isLoading)
-        return <div className="p-4 text-sm text-gray-400">Loading document...</div>;
+    // if (isLoading)
+    //     return <div className="p-4 text-sm text-gray-400">Loading document...</div>;
 
     return (
         <EditorContext.Provider value={{editor}}>

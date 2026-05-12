@@ -1,4 +1,4 @@
-import {FileNode} from "@/models/interfaces/FileNode";
+import {FileNode} from "../interfaces/FileNode";
 
 
 export type ExplorerEvent =

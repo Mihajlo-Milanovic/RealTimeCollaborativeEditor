@@ -7,14 +7,14 @@ import {
     Trash2,
     User,
 } from "lucide-react";
-import {OrganizationRole} from "@/models/types/OrganizationRole";
-import FileTree from "@/app/editor/fileSystem/ui/FileTree";
+import {OrganizationRole} from "../../../../models/types/OrganizationRole";
+import FileTree from "./FileTree";
 import {ImExit} from "react-icons/im";
 import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
-import {TOrganizationExplorer} from "@/models/elementTypes/TOrganizationExplorer";
-import {prompts} from "@/app/editor/fileSystem/prompts";
-import {useOrganizationExplorer} from "@/app/editor/fileSystem/state/useOrganizationExplorer";
-import {HocuspocusProviderWebsocketComponent, HocuspocusRoom} from "@hocuspocus/provider-react";
+import {prompts} from "../prompts";
+import {useOrganizationExplorer} from "../state/useOrganizationExplorer";
+// import {HocuspocusRoom} from "@hocuspocus/provider-react";
+import {user} from "../../../../store/user";
 
 const roleClasses: Record<OrganizationRole, string> = {
     admin: "text-red-300 bg-red-500/10 border-red-500/30",
@@ -22,13 +22,7 @@ const roleClasses: Record<OrganizationRole, string> = {
     viewer: "text-slate-300 bg-slate-500/10 border-slate-500/30",
 }
 
-export default function OrganizationExplorer(
-    {
-        userId
-        // onOpenMembersManagerAction,
-        // organizationsRefreshKey = 0,
-    }: TOrganizationExplorer
-) {
+export default function OrganizationExplorer() {
 
     const {
         organizationExplorerCollapsed,
@@ -36,13 +30,13 @@ export default function OrganizationExplorer(
         query,
         selected,
         isSearchOpen,
-        isLoading,
+        // isLoading,
         toggleSearch,
         queryOrganizations,
         selectOrganization,
         toggleOrganizationExplorer,
         refresh,
-    } = useOrganizationExplorer(userId);
+    } = useOrganizationExplorer(user.id);
 
     return (
         <div className="mt-4">
@@ -58,7 +52,7 @@ export default function OrganizationExplorer(
 
                 <div className="flex items-center gap-1">
                     <button
-                        onClick={() => prompts.createOrganization(userId, refresh)}
+                        onClick={() => prompts.createOrganization(user.id, refresh)}
                         className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                         title="Create organization"
                         aria-label="Create organization"
@@ -99,7 +93,7 @@ export default function OrganizationExplorer(
                 ) : (
                     <ul className="space-y-1 px-1">
                         {organizations.map((organization) => {
-                            const role = organization.members.get(userId)
+                            const role = organization.members.get(user.id)
                             return (
                                 <li
                                     key={organization.id}
@@ -120,7 +114,7 @@ export default function OrganizationExplorer(
                                         <div className="flex gap-1 ml-2">
                                             {role === "admin" && (<span>
                                                 <button
-                                                    onClick={() => prompts.editOrganization(userId, refresh)}
+                                                    onClick={() => prompts.editOrganization(user.id, refresh)}
                                                     className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-orange-400 transition-colors"
                                                     title="Edit organization"
                                                 >
@@ -128,7 +122,7 @@ export default function OrganizationExplorer(
                                                 </button>
 
                                                 <button
-                                                    onClick={() => prompts.deleteOrganization(organization, userId, refresh)}
+                                                    onClick={() => prompts.deleteOrganization(organization, user.id, refresh)}
                                                     className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-500 transition-colors"
                                                     title="Delete organization"
                                                 >
@@ -176,10 +170,7 @@ export default function OrganizationExplorer(
                 {/*<HocuspocusRoom name={`fs/${selected?.id || user.id}`}>*/}
                     <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/60 p-2">
                         <FileTree
-                            userId={userId}
                             organization={selected}
-                            // onSelectFile={onSelectFileAction}
-                            // selectedFileId={selectedFileId}
                             onCloseCurrentOrganizationFSAction={() => selectOrganization(null)}
                         />
                     </div>

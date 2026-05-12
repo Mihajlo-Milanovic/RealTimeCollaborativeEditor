@@ -1,8 +1,8 @@
-import type {FileNode} from '@/models/interfaces/FileNode';
-import {NodeType} from "@/models/types/NodeType";
-import {OrganizationRole} from "@/models/types/OrganizationRole";
-import {OrganizationView} from "@/models/types/views/OrganizationView";
-import {UserView} from "@/models/types/views/UserView";
+import type {FileNode} from '../models/interfaces/FileNode';
+import {NodeType} from "../models/types/NodeType";
+import {OrganizationRole} from "../models/types/OrganizationRole";
+import {OrganizationView} from "../models/types/views/OrganizationView";
+import {UserView} from "../models/types/views/UserView";
 
 const BASE_URL = process.env.BACKEND_URL ?? 'http://localhost:5000';
 

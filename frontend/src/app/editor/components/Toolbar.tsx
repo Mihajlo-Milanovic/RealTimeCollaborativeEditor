@@ -1,12 +1,12 @@
 import React from 'react';
-import { Spacer } from "@/app/editor/components/tiptap-ui-primitive/spacer";
-import { Toolbar as TiptapToolbar, ToolbarGroup, ToolbarSeparator } from "@/app/editor/components/tiptap-ui-primitive/toolbar";
-import { UndoRedoButton } from "@/app/editor/components/tiptap-ui/undo-redo-button";
-import { HeadingDropdownMenu } from "@/app/editor/components/tiptap-ui/heading-dropdown-menu";
-import { ListDropdownMenu } from "@/app/editor/components/tiptap-ui/list-dropdown-menu";
-import { BlockquoteButton } from "@/app/editor/components/tiptap-ui/blockquote-button";
-import { CodeBlockButton } from "@/app/editor/components/tiptap-ui/code-block-button";
-import { TextAlignButton } from "@/app/editor/components/tiptap-ui/text-align-button";
+import { Spacer } from "./tiptap-ui-primitive/spacer";
+import { Toolbar as TiptapToolbar, ToolbarGroup, ToolbarSeparator } from "./tiptap-ui-primitive/toolbar";
+import { UndoRedoButton } from "./tiptap-ui/undo-redo-button";
+import { HeadingDropdownMenu } from "./tiptap-ui/heading-dropdown-menu";
+import { ListDropdownMenu } from "./tiptap-ui/list-dropdown-menu";
+import { BlockquoteButton } from "./tiptap-ui/blockquote-button";
+import { CodeBlockButton } from "./tiptap-ui/code-block-button";
+import { TextAlignButton } from "./tiptap-ui/text-align-button";
 
 interface ToolbarProps {
     isMobile?: boolean;

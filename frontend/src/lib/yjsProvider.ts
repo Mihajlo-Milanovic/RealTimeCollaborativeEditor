@@ -1,5 +1,5 @@
-import {Doc, applyUpdate} from 'yjs';
-import {apiClient} from "@/lib/apiClient";
+// import {Doc, applyUpdate} from 'yjs';
+// import {apiClient} from "./apiClient";
 
 export function getRandomColor(seed: string): string {
 
@@ -17,11 +17,11 @@ export function getRandomColor(seed: string): string {
     // return colors[Math.floor(Math.random() * colors.length)];
 }
 
-export async function syncState(fileId: string, yDoc: Doc) {
-    console.log("Syncing state for file: ", fileId);
-    const state = await apiClient.file.getState(fileId);
-    if (state.byteLength > 0) {
-        applyUpdate(yDoc, state);
-    }
-}
+// export async function syncState(fileId: string, yDoc: Doc) {
+//     console.log("Syncing state for file: ", fileId);
+//     const state = await apiClient.file.getState(fileId);
+//     if (state.byteLength > 0) {
+//         applyUpdate(yDoc, state);
+//     }
+// }
 

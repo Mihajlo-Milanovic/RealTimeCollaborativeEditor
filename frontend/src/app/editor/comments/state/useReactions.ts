@@ -1,5 +1,5 @@
-import {CommentView} from "@/models/types/views/CommentView";
-import {cService} from "@/app/editor/comments/services/cService";
+import {CommentView} from "../../../../models/types/views/CommentView";
+import {cService} from "../services/cService";
 import {useEffect, useState} from "react";
 
 

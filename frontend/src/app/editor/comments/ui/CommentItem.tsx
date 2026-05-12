@@ -1,7 +1,7 @@
-import {emojisMap} from "@/models/types/ReactionType";
+import {emojisMap} from "../../../../models/types/ReactionType";
 import {useEffect, useState} from "react";
-import {TCommentItem} from "@/models/elementTypes/TCommentItem";
-import {useReactions} from "@/app/editor/comments/state/useReactions";
+import {TCommentItem} from "../../../../models/elementTypes/TCommentItem";
+import {useReactions} from "../state/useReactions";
 
 
 export function CommentItem(

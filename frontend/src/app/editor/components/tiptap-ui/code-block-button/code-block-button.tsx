@@ -4,17 +4,17 @@ import * as React from "react"
 import { isNodeSelection, type Editor } from "@tiptap/react"
 
 // --- Hooks ---
-import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
+import { useTiptapEditor } from "../../../../../hooks/use-tiptap-editor"
 
 // --- Icons ---
-import { CodeBlockIcon } from "@/app/editor/components/tiptap-icons/code-block-icon"
+import { CodeBlockIcon } from "../../tiptap-icons/code-block-icon"
 
 // --- Lib ---
-import { isNodeInSchema } from "@/lib/tiptap-utils"
+import { isNodeInSchema } from "../../../../../lib/tiptap-utils"
 
 // --- UI Primitives ---
-import type { ButtonProps } from "@/app/editor/components/tiptap-ui-primitive/button"
-import { Button } from "@/app/editor/components/tiptap-ui-primitive/button"
+import type { ButtonProps } from "../../tiptap-ui-primitive/button"
+import { Button } from "../../tiptap-ui-primitive/button/button"
 
 export interface CodeBlockButtonProps extends Omit<ButtonProps, "type"> {
   /**

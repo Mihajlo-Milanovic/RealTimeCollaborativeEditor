@@ -3,11 +3,11 @@
 import * as React from "react"
 
 // --- UI Primitives ---
-import { Button } from "@/app/editor/components/tiptap-ui-primitive/button"
+import { Button } from "../../tiptap-ui-primitive/button"
 
 // --- Icons ---
-import { MoonStarIcon } from "@/app/editor/components/tiptap-icons/moon-star-icon"
-import { SunIcon } from "@/app/editor/components/tiptap-icons/sun-icon"
+import { MoonStarIcon } from "../../tiptap-icons/moon-star-icon"
+import { SunIcon } from "../../tiptap-icons/sun-icon"
 
 export function ThemeToggle() {
   const [isDarkMode, setIsDarkMode] = React.useState<boolean>(true)
@@ -32,17 +32,17 @@ export function ThemeToggle() {
 
   const toggleDarkMode = () => setIsDarkMode((isDark) => !isDark)
 
-  // return (
-  //   <Button
-  //     onClick={toggleDarkMode}
-  //     aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-  //     data-style="ghost"
-  //   >
-  //     {isDarkMode ? (
-  //       <MoonStarIcon className="tiptap-button-icon" />
-  //     ) : (
-  //       <SunIcon className="tiptap-button-icon" />
-  //     )}
-  //   </Button>
-  // )
+  return (
+    <Button
+      onClick={toggleDarkMode}
+      aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+      data-style="ghost"
+    >
+      {isDarkMode ? (
+        <MoonStarIcon className="tiptap-button-icon" />
+      ) : (
+        <SunIcon className="tiptap-button-icon" />
+      )}
+    </Button>
+  )
 }

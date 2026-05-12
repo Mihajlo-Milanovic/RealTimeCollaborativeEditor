@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { parse } from 'node:url';
 import next from 'next';
-import { ENV, PORT, HOST } from '@/config/config';
+import { ENV, PORT, HOST } from '../config/config';
 
 export async function startNextServer() {
     const dev = ENV !== 'production';
@@ -10,7 +10,8 @@ export async function startNextServer() {
 
     await app.prepare();
 
-    const server = createServer((req, res) => {
+    const server = createServer(
+        (req, res) => {
         handle(req, res, parse(req.url ?? '/', true));
     });
 

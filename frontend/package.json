@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "tsx watch ./src/server/index.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "next build",
     "start": "NODE_ENV=production tsx ./src/server.ts",
     "yjs": "cross-env HOST=localhost PORT=1234 y-websocket",

@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
-import {FileNode} from "@/models/interfaces/FileNode"
-import {NodeType} from "@/models/types/NodeType";
-import {apiClient} from "@/lib/apiClient";
+import {FileNode} from "../../../../models/interfaces/FileNode"
+import {NodeType} from "../../../../models/types/NodeType";
+import {apiClient} from "../../../../lib/apiClient";
 
 
 export function useFetchChildrenItems(node: FileNode) {

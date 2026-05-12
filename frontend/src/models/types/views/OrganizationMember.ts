@@ -1,5 +1,5 @@
-import {OrganizationRole} from "@/models/types/OrganizationRole";
-import {UserView} from "@/models/types/views/UserView";
+import {OrganizationRole} from "../OrganizationRole";
+import {UserView} from "./UserView";
 
 
 export type OrganizationMember = UserView & {

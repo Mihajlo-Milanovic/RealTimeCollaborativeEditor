@@ -2,15 +2,15 @@
 
 import {useRef} from "react";
 import {FilePlus, FolderPlus, X} from "lucide-react";
-import {TFileTree} from "@/models/elementTypes/TFileTree";
-import FileItem from "@/app/editor/fileSystem/ui/FileItem";
-import {useFileTree} from "@/app/editor/fileSystem/state/useFileTree";
-import {prompts} from "@/app/editor/fileSystem/prompts";
+import {TFileTree} from "../../../../models/elementTypes/TFileTree";
+import FileItem from "./FileItem";
+import {useFileTree} from "../state/useFileTree";
+import {prompts} from "../prompts";
+import {user} from "../../../../store/user";
 
 
 export default function FileTree(
     {
-        userId,
         organization,
         onCloseCurrentOrganizationFSAction
     }: TFileTree
@@ -21,11 +21,11 @@ export default function FileTree(
         items,
         isLoading,
         refresh
-    } = useFileTree(userId, organization)
+    } = useFileTree(user.id, organization)
 
     const containerRef = useRef<HTMLDivElement | null>(null);
 
-    // if (isLoading) return <div>Loading...</div>
+    if (isLoading) return <div>Loading...</div>
 
     return (
         <div ref={containerRef} className="flex flex-col h-full">
@@ -46,12 +46,12 @@ export default function FileTree(
                         )}
 
                         <div className="flex items-center gap-1">
-                            {organization.members.get(userId) != "viewer" && (<span>
+                            {organization.members.get(user.id) != "viewer" && (<span>
 
                                     <button
                                         onClick={() => {
                                             if (root)
-                                                prompts.addFolderToFileNode(root, userId, refresh);
+                                                prompts.addFolderToFileNode(root, user.id, refresh);
                                         }}
                                         className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                         title="New folder"
@@ -99,7 +99,7 @@ export default function FileTree(
                                 <button
                                     onClick={() => {
                                         if (root)
-                                            prompts.addFolderToFileNode(root, userId, refresh)
+                                            prompts.addFolderToFileNode(root, user.id, refresh)
                                     }}
                                     className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                     title="New folder"
@@ -111,7 +111,7 @@ export default function FileTree(
                                 <button
                                     onClick={() => {
                                         if (root)
-                                            prompts.addFileToFileNode(root, userId, refresh)
+                                            prompts.addFileToFileNode(root, user.id, refresh)
                                     }}
                                     className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                     title="New file"
@@ -141,12 +141,9 @@ export default function FileTree(
                             // else
                                 return (
                                     <FileItem
-                                        organization={organization}
-                                        userId={userId}
                                         key={item.id}
+                                        organization={organization}
                                         node={item}
-                                        // onSelectFile={onSelectFile}
-                                        // selectedFileId={selectedFileId}
                                         onRefreshAction={refresh}
                                     />
                                 )

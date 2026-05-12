@@ -1,8 +1,8 @@
 // import {configDotenv} from "dotenv";
 
 // configDotenv();
-export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
-export const WS_PORT = process.env.WS_PORT ? parseInt(process.env.WS_PORT) : 1236;
+export const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+export const WS_PORT = process.env.WS_PORT ? Number(process.env.WS_PORT) : 1236;
 
 export const COLLABORATION_PATH = process.env.COLLABORATION_PATH || "/collaboration";
 export const ENV = process.env.ENV || "dev";

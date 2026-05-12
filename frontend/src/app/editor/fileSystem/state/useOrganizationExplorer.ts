@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
-import {OrganizationView} from "@/models/types/views/OrganizationView";
-import {apiClient} from "@/lib/apiClient";
+import {OrganizationView} from "../../../../models/types/views/OrganizationView";
+import {apiClient} from "../../../../lib/apiClient";
 
 
 export function useOrganizationExplorer(userId: string) {

@@ -7,6 +7,10 @@ export default function VerifySuccessPage() {
 
   return <p className="flex flex-col items-center justify-center h-screen">
       Your account is verified.
-      <a href="/" className="text-blue-500 hover:underline">Log in</a>
+      <span className="text-blue-500 hover:underline"
+        onClick={() => router.replace("/login")}
+      >
+          Log in
+      </span>
     </p>
 }

@@ -3,8 +3,8 @@
 import * as React from "react"
 import type { NodeViewProps } from "@tiptap/react"
 import { NodeViewWrapper } from "@tiptap/react"
-import { CloseIcon } from "@/app/editor/components/tiptap-icons/close-icon"
-import "@/app/editor/components/tiptap-node/image-upload-node/image-upload-node.scss"
+import { CloseIcon } from "../../tiptap-icons/close-icon"
+import "../../tiptap-node/image-upload-node/image-upload-node.scss"
 
 export interface FileItem {
   id: string

@@ -1,6 +1,6 @@
-import {UserView} from "@/models/types/views/UserView";
+import {UserView} from "../models/types/views/UserView";
 import {Session} from "next-auth";
-import {apiClient} from "@/lib/apiClient";
+import {apiClient} from "../lib/apiClient";
 
 export class User {
     private static instance: User;

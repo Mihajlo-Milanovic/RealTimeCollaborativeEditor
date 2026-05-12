@@ -1,4 +1,4 @@
-import {NodeType} from "@/models/types/NodeType";
+import {NodeType} from "../types/NodeType";
 
 
 export interface FileNode {

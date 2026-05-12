@@ -1,32 +1,42 @@
 'use client';
 
-import {EditorInner} from "@/app/editor/components/tiptap-templates/simple/simple-editor";
-import {HocuspocusRoom} from "@hocuspocus/provider-react";
+import {EditorInner} from "./components/tiptap-templates/simple/simple-editor";
+import {useHocuspocusProvider,} from "@hocuspocus/provider-react";
+import {useEffect} from "react";
+import {OnlineUsers} from "./components/OnlineUsers";
+import {user} from "../../store/user";
+import {getRandomColor} from "../../lib/yjsProvider";
 
+function Editor() {
 
-//Tiptap
+    const provider = useHocuspocusProvider();
 
-import {useSelectedFile} from "@/store/selectedFile";
+    useEffect(() => {
 
-export default function Editor(
-    {username}: { username: string }
-) {
+        provider.document.autoLoad = true;
 
-    const {selectedFileId} = useSelectedFile();
+        if (provider.awareness) {
+            provider.awareness.setLocalState({
+                username: user.username,
+                color: getRandomColor(user.username),
+            });
+
+        }
+        console.log("PROVIDER: ", provider);
+    }, [provider]);
 
     return (<>
 
-            {!selectedFileId && (
-                <div className="p-4 text-sm text-gray-400">Collaborate with ease</div>
-            )}
+            <div className="editor-wrapper">
+                <OnlineUsers/>
+                <EditorInner/>
+            </div>
 
-            {selectedFileId && (
-                <HocuspocusRoom name={selectedFileId}>
-                    <div className="editor-wrapper">
-                        <EditorInner username={username}/>
-                    </div>
-                </HocuspocusRoom>
-            )}
         </>
     );
 }
+
+export default Editor;
+
+
+

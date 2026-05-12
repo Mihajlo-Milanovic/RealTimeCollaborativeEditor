@@ -2,11 +2,11 @@
 
 import React, {useState} from 'react';
 import {LogOut, PanelLeftClose, PanelLeftOpen, MessageSquare} from "lucide-react";
-import {UserView} from "@/models/types/views/UserView";
+import {UserView} from "../../models/types/views/UserView";
 import {signOut} from "next-auth/react";
 import {useRouter} from "next/navigation";
-import {useSelectedFile} from "@/store/selectedFile";
-import {user} from "@/store/user"
+import {useSelectedFile} from "../../store/selectedFile";
+import {user} from "../../store/user"
 
 interface SidebarProps {
     // user: UserView;

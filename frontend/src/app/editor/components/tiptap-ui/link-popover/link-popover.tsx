@@ -4,29 +4,29 @@ import * as React from "react"
 import { isNodeSelection, type Editor } from "@tiptap/react"
 
 // --- Hooks ---
-import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
+import { useTiptapEditor } from "../../../../../hooks/use-tiptap-editor"
 
 // --- Icons ---
-import { CornerDownLeftIcon } from "@/app/editor/components/tiptap-icons/corner-down-left-icon"
-import { ExternalLinkIcon } from "@/app/editor/components/tiptap-icons/external-link-icon"
-import { LinkIcon } from "@/app/editor/components/tiptap-icons/link-icon"
-import { TrashIcon } from "@/app/editor/components/tiptap-icons/trash-icon"
+import { CornerDownLeftIcon } from "../../tiptap-icons/corner-down-left-icon"
+import { ExternalLinkIcon } from "../../tiptap-icons/external-link-icon"
+import { LinkIcon } from "../../tiptap-icons/link-icon"
+import { TrashIcon } from "../../tiptap-icons/trash-icon"
 
 // --- Lib ---
-import { isMarkInSchema, sanitizeUrl } from "@/lib/tiptap-utils"
+import { isMarkInSchema, sanitizeUrl } from "../../../../../lib/tiptap-utils"
 
 // --- UI Primitives ---
-import type { ButtonProps } from "@/app/editor/components/tiptap-ui-primitive/button"
-import { Button } from "@/app/editor/components/tiptap-ui-primitive/button"
+import type { ButtonProps } from "../../tiptap-ui-primitive/button"
+import { Button } from "../../tiptap-ui-primitive/button/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/app/editor/components/tiptap-ui-primitive/popover"
-import { Separator } from "@/app/editor/components/tiptap-ui-primitive/separator"
+} from "../../tiptap-ui-primitive/popover"
+import { Separator } from "../../tiptap-ui-primitive/separator"
 
 // --- Styles ---
-import "@/app/editor/components/tiptap-ui/link-popover/link-popover.scss"
+import "../../../../../app/editor/components/tiptap-ui/link-popover/link-popover.scss"
 
 export interface LinkHandlerProps {
   editor: Editor | null

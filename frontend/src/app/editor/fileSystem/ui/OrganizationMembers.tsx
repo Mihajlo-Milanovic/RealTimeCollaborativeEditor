@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { X, UserPlus } from 'lucide-react';
 import { MemberItem } from './MemberItem';
-import {useOrganizationMembers} from "@/app/editor/fileSystem/state/useOrganizationMembers";
-import {OrganizationView} from "@/models/types/views/OrganizationView";
-import {OrganizationMember} from "@/models/types/views/OrganizationMember";
-import {OrganizationRole} from "@/models/types/OrganizationRole";
+import {useOrganizationMembers} from "../state/useOrganizationMembers";
+import {OrganizationView} from "../../../../models/types/views/OrganizationView";
+import {OrganizationMember} from "../../../../models/types/views/OrganizationMember";
+import {OrganizationRole} from "../../../../models/types/OrganizationRole";
 
 interface OrganizationMembersProps {
     organization: OrganizationView;

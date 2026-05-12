@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {postRequest} from "@/app/api/serverRequests/methods"
+import {postRequest} from "../api/serverRequests/methods"
 import {Eye, EyeClosed} from "lucide-react";
 
 
@@ -15,9 +15,9 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  // const [showConfirm, setShowConfirm] = useState(false);
 
-  const router = useRouter();
+  // const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

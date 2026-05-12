@@ -1,5 +1,5 @@
-import {OrganizationRole} from "@/models/types/OrganizationRole";
-import {TMemberItem} from "@/models/elementTypes/TMemberItem";
+import {OrganizationRole} from "../../../../models/types/OrganizationRole";
+import {TMemberItem} from "../../../../models/elementTypes/TMemberItem";
 
 const roleClasses: Record<OrganizationRole, string> = {
     admin: "text-red-300 bg-red-500/10 border-red-500/30",

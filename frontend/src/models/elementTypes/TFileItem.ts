@@ -1,10 +1,10 @@
-import {OrganizationView} from "@/models/types/views/OrganizationView";
-import {UserView} from "@/models/types/views/UserView";
-import {FileNode} from "@/models/interfaces/FileNode";
+import {OrganizationView} from "../types/views/OrganizationView";
+// import {UserView} from "../types/views/UserView";
+import {FileNode} from "../interfaces/FileNode";
 
 
 export type TFileItem = {
-    userId: string;
+    // userId: string;
     organization: OrganizationView | null;
     node: FileNode;
     // onSelectFile: (id: string) => void;

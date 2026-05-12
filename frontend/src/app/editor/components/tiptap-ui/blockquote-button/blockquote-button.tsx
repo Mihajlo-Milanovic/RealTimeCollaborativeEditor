@@ -4,17 +4,17 @@ import * as React from "react"
 import { isNodeSelection, type Editor } from "@tiptap/react"
 
 // --- Hooks ---
-import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
+import { useTiptapEditor } from "../../../../../hooks/use-tiptap-editor"
 
 // --- Icons ---
-import { BlockQuoteIcon } from "@/app/editor/components/tiptap-icons/block-quote-icon"
+import { BlockQuoteIcon } from "../../tiptap-icons/block-quote-icon"
 
 // --- Lib ---
-import { isNodeInSchema } from "@/lib/tiptap-utils"
+import { isNodeInSchema } from "../../../../../lib/tiptap-utils"
 
 // --- UI Primitives ---
-import type { ButtonProps } from "@/app/editor/components/tiptap-ui-primitive/button"
-import { Button } from "@/app/editor/components/tiptap-ui-primitive/button"
+import type { ButtonProps } from "../../tiptap-ui-primitive/button"
+import { Button } from "../../tiptap-ui-primitive/button/button"
 
 export interface BlockquoteButtonProps extends Omit<ButtonProps, "type"> {
   /**

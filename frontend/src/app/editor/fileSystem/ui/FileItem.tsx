@@ -2,24 +2,24 @@
 
 import React, {useState} from "react";
 import {FilePlus, FileText, Folder, FolderOpen, FolderPlus, Trash2} from "lucide-react";
-import {TFileItem} from "@/models/elementTypes/TFileItem";
-import {useFetchChildrenItems} from "@/app/editor/fileSystem/state/useFetchChildrenItems";
-import {prompts} from "@/app/editor/fileSystem/prompts";
-import {NodeType} from "@/models/types/NodeType";
-import {useSelectedFile} from "@/store/selectedFile";
+import {TFileItem} from "../../../../models/elementTypes/TFileItem";
+import {useFetchChildrenItems} from "../state/useFetchChildrenItems";
+import {prompts} from "../prompts";
+import {NodeType} from "../../../../models/types/NodeType";
+import {useSelectedFile} from "../../../../store/selectedFile";
+import {user} from "../../../../store/user";
 
 
 export default function FileItem(
     {
         organization,
-        userId,
         node,
         onRefreshAction,
     }: TFileItem
 ) {
 
     const [isOpen, setIsOpen] = useState(false);
-    const [canEdit] = useState(organization == null || (organization.members.get(userId) || "viewer") != "viewer");
+    const [canEdit] = useState(organization == null || (organization.members.get(user.id) || "viewer") != "viewer");
     const [showCreate] = useState(canEdit && node.type == NodeType.DIR);
 
     const {
@@ -30,7 +30,7 @@ export default function FileItem(
 
     const {
         items,
-        isLoading,
+        // isLoading,
         refresh
     } = useFetchChildrenItems(node);
 
@@ -97,7 +97,7 @@ export default function FileItem(
                 >
                     {canEdit && (
                         <button
-                            onClick={() => prompts.deleteFileNode(node, userId, onRefreshAction)}
+                            onClick={() => prompts.deleteFileNode(node, user.id, onRefreshAction)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
                             title="Delete"
                         >
@@ -107,7 +107,7 @@ export default function FileItem(
 
                     {showCreate && (
                         <button
-                            onClick={() => prompts.addFolderToFileNode(node, userId, refresh)}
+                            onClick={() => prompts.addFolderToFileNode(node, user.id, refresh)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-green-400 transition-colors"
                             title="New Folder"
                         >
@@ -116,7 +116,7 @@ export default function FileItem(
                     )}
                     {canEdit && node.type == NodeType.DIR && (
                         <button
-                            onClick={() => prompts.addFileToFileNode(node, userId, refresh)}
+                            onClick={() => prompts.addFileToFileNode(node, user.id, refresh)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-blue-400 transition-colors"
                             title="New File"
                         >
@@ -133,7 +133,6 @@ export default function FileItem(
                             organization={organization}
                             key={item.id}
                             node={item}
-                            userId={userId}
                             onRefreshAction={refresh}
                         />
                     ))}

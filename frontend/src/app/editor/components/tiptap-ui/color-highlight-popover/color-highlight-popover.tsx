@@ -4,34 +4,34 @@ import * as React from "react"
 import { isNodeSelection, type Editor } from "@tiptap/react"
 
 // --- Hooks ---
-import { useMenuNavigation } from "@/hooks/use-menu-navigation"
-import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
+import { useMenuNavigation } from "../../../../../hooks/use-menu-navigation"
+import { useTiptapEditor } from "../../../../../hooks/use-tiptap-editor"
 
 // --- Icons ---
-import { BanIcon } from "@/app/editor/components/tiptap-icons/ban-icon"
-import { HighlighterIcon } from "@/app/editor/components/tiptap-icons/highlighter-icon"
+import { BanIcon } from "../../tiptap-icons/ban-icon"
+import { HighlighterIcon } from "../../tiptap-icons/highlighter-icon"
 
 // --- Lib ---
-import { isMarkInSchema } from "@/lib/tiptap-utils"
+import { isMarkInSchema } from "../../../../../lib/tiptap-utils"
 
 // --- UI Primitives ---
-import type { ButtonProps } from "@/app/editor/components/tiptap-ui-primitive/button"
-import { Button } from "@/app/editor/components/tiptap-ui-primitive/button"
+import type { ButtonProps } from "../../tiptap-ui-primitive/button"
+import { Button } from "../../tiptap-ui-primitive/button/button"
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/app/editor/components/tiptap-ui-primitive/popover"
-import { Separator } from "@/app/editor/components/tiptap-ui-primitive/separator"
+} from "../../tiptap-ui-primitive/popover"
+import { Separator } from "../../tiptap-ui-primitive/separator"
 
 // --- Tiptap UI ---
 import {
   ColorHighlightButton,
   canToggleHighlight,
-} from "@/app/editor/components/tiptap-ui/color-highlight-button"
+} from "../color-highlight-button/color-highlight-button"
 
 // --- Styles ---
-import "@/app/editor/components/tiptap-ui/color-highlight-popover/color-highlight-popover.scss"
+import "../../../../../app/editor/components/tiptap-ui/color-highlight-popover/color-highlight-popover.scss"
 
 export interface ColorHighlightPopoverColor {
   label: string

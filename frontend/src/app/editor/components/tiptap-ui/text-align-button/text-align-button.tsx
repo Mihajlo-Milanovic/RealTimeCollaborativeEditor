@@ -4,17 +4,17 @@ import * as React from "react"
 import { type Editor, type ChainedCommands } from "@tiptap/react"
 
 // --- Hooks ---
-import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
+import { useTiptapEditor } from "../../../../../hooks/use-tiptap-editor"
 
 // --- Icons ---
-import { AlignCenterIcon } from "@/app/editor/components/tiptap-icons/align-center-icon"
-import { AlignJustifyIcon } from "@/app/editor/components/tiptap-icons/align-justify-icon"
-import { AlignLeftIcon } from "@/app/editor/components/tiptap-icons/align-left-icon"
-import { AlignRightIcon } from "@/app/editor/components/tiptap-icons/align-right-icon"
+import { AlignCenterIcon } from "../../tiptap-icons/align-center-icon"
+import { AlignJustifyIcon } from "../../tiptap-icons/align-justify-icon"
+import { AlignLeftIcon } from "../../tiptap-icons/align-left-icon"
+import { AlignRightIcon } from "../../tiptap-icons/align-right-icon"
 
 // --- UI Primitives ---
-import type { ButtonProps } from "@/app/editor/components/tiptap-ui-primitive/button"
-import { Button } from "@/app/editor/components/tiptap-ui-primitive/button"
+import type { ButtonProps } from "../../tiptap-ui-primitive/button"
+import { Button } from "../../tiptap-ui-primitive/button/button"
 
 export type TextAlign = "left" | "center" | "right" | "justify"
 

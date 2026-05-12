@@ -5,21 +5,21 @@ import { isNodeSelection, type Editor } from "@tiptap/react"
 import type { Node } from "@tiptap/pm/model"
 
 // --- Hooks ---
-import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
+import { useTiptapEditor } from "../../../../../hooks/use-tiptap-editor"
 
 // --- Lib ---
 import {
   findNodePosition,
   isEmptyNode,
   isMarkInSchema,
-} from "@/lib/tiptap-utils"
+} from "../../../../../lib/tiptap-utils"
 
 // --- UI Primitives ---
-import type { ButtonProps } from "@/app/editor/components/tiptap-ui-primitive/button"
-import { Button } from "@/app/editor/components/tiptap-ui-primitive/button"
+import type { ButtonProps } from "../../tiptap-ui-primitive/button"
+import { Button } from "../../tiptap-ui-primitive/button/button"
 
 // --- Styles ---
-import "@/app/editor/components/tiptap-ui/color-highlight-button/color-highlight-button.scss"
+import "../../../../../app/editor/components/tiptap-ui/color-highlight-button/color-highlight-button.scss"
 
 export const HIGHLIGHT_COLORS = [
   {
@@ -98,7 +98,7 @@ export interface ColorHighlightButtonProps extends Omit<ButtonProps, "type"> {
   text?: string
   /**
    * Whether the button should hide when the mark is not available.
-   * @default false
+   * ../../../../..default false
    */
   hideWhenUnavailable?: boolean
   /**

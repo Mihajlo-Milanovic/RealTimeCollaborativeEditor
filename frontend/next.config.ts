@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { fileURLToPath } from 'node:url';
+// import { fileURLToPath } from 'node:url';
 
 // const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -12,6 +12,8 @@ export const nextConfig: NextConfig = {
   //   config.resolve.alias['yjs'] = path.resolve(__dirname, 'node_modules/yjs');
   //   return config;
   // },
+  turbopack: {},
+
   webpack(config) {
     config.resolve.alias = {
       ...config.resolve.alias,

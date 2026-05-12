@@ -1,5 +1,5 @@
-import {ReactionType} from "@/models/types/ReactionType";
-import {UserView} from "@/models/types/views/UserView";
+import {ReactionType} from "../ReactionType";
+import {UserView} from "./UserView";
 
 
 export type ReactionView = {

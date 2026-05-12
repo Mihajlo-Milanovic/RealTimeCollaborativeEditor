@@ -1,13 +1,13 @@
 import {useEffect, useState} from "react"
-import {FileNode} from "@/models/interfaces/FileNode"
-import {OrganizationView} from "@/models/types/views/OrganizationView";
-import {NodeType} from "@/models/types/NodeType";
-import {apiClient} from "@/lib/apiClient";
+import {FileNode} from "../../../../models/interfaces/FileNode"
+import {OrganizationView} from "../../../../models/types/views/OrganizationView";
+import {NodeType} from "../../../../models/types/NodeType";
+import {apiClient} from "../../../../lib/apiClient";
 
 export function useFileTree(userId: string, organization: OrganizationView | null) {
     const [root, setRoot] = useState<FileNode | null>(null)
     const [items, setItems] = useState<FileNode[]>([])
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchRoot = async () => {
 
@@ -37,7 +37,7 @@ export function useFileTree(userId: string, organization: OrganizationView | nul
 
     useEffect(() => {
         if (userId)
-            fetchRoot()
+            fetchRoot();
     }, [userId, organization]);
 
     return { root, items, isLoading, refresh: fetchRoot };
