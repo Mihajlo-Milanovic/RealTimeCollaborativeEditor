@@ -9,19 +9,34 @@ export function useFetchChildrenItems(node: FileNode) {
     const [items, setItems] = useState<FileNode[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const fetchChildren = async () => {
+    async function fetchChildren() {
         if (node.type != NodeType.DIR) return;
 
         setIsLoading(true);
-        console.log("Fetching children for directory: ", node.id);
+        console.log("Fetching children for directory: ", node.name);
         const children = await apiClient.explorer.getChildren(node.id, node.type);
-        setItems(children);
-        setIsLoading(false);
+        // setItems(children);
+
     }
 
     useEffect(() => {
-            fetchChildren();
-    }, [node.id]);
+        fetchChildren().then(() => {
+            if (node) {
+                // setItems(fileNodeChildren(node.id));
+                setIsLoading(false);
+            }
+        });
+    }, [node]);
 
-    return {items, isLoading, refresh: fetchChildren};
+
+    return {
+        items,
+        isLoading,
+        refresh: () => {
+
+            setIsLoading(true);
+            // setItems(fileNodeChildren(node.id));
+            setIsLoading(false);
+        }
+    };
 }

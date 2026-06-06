@@ -1,5 +1,4 @@
-// import {Doc, applyUpdate} from 'yjs';
-// import {apiClient} from "./apiClient";
+
 
 export function getRandomColor(seed: string): string {
 
@@ -16,6 +15,7 @@ export function getRandomColor(seed: string): string {
     return colors[Math.abs(hash) % colors.length];
     // return colors[Math.floor(Math.random() * colors.length)];
 }
+
 
 // export async function syncState(fileId: string, yDoc: Doc) {
 //     console.log("Syncing state for file: ", fileId);

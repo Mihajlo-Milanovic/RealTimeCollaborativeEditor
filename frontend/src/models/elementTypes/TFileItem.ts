@@ -9,5 +9,5 @@ export type TFileItem = {
     node: FileNode;
     // onSelectFile: (id: string) => void;
     // selectedFileId: string | null;
-    onRefreshAction: () => void;
+    // onRefreshAction: () => void;
 }

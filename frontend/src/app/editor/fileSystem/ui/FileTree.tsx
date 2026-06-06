@@ -18,10 +18,12 @@ export default function FileTree(
 
     const {
         root,
-        items,
+        children,
         isLoading,
-        refresh
-    } = useFileTree(user.id, organization)
+    } = useFileTree(user.id, organization);
+
+
+
 
     const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -50,8 +52,7 @@ export default function FileTree(
 
                                     <button
                                         onClick={() => {
-                                            if (root)
-                                                prompts.addFolderToFileNode(root, user.id, refresh);
+                                            prompts.addFolderToFileNode(root, user.id);
                                         }}
                                         className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                         title="New folder"
@@ -99,7 +100,7 @@ export default function FileTree(
                                 <button
                                     onClick={() => {
                                         if (root)
-                                            prompts.addFolderToFileNode(root, user.id, refresh)
+                                            prompts.addFolderToFileNode(root, user.id);
                                     }}
                                     className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                     title="New folder"
@@ -111,7 +112,7 @@ export default function FileTree(
                                 <button
                                     onClick={() => {
                                         if (root)
-                                            prompts.addFileToFileNode(root, user.id, refresh)
+                                            prompts.addFileToFileNode(root, user.id);
                                     }}
                                     className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                     title="New file"
@@ -123,33 +124,21 @@ export default function FileTree(
                         </div>
                     )}
 
-                {root && (<div className="space-y-1">
-                        {items.map((item) => {
-                            // if (item.id === selectedFileId) return (
-                            //     <HocuspocusRoom name={`${item.id}`}>
-                            //         <FileItem
-                            //             organization={organization}
-                            //             user={user}
-                            //             key={item.id}
-                            //             node={item}
-                            //             onSelectFile={onSelectFile}
-                            //             selectedFileId={selectedFileId}
-                            //             onRefreshAction={refresh}
-                            //         />
-                            //     </HocuspocusRoom>
-                            // )
-                            // else
-                                return (
-                                    <FileItem
-                                        key={item.id}
-                                        organization={organization}
-                                        node={item}
-                                        onRefreshAction={refresh}
-                                    />
-                                )
+                {children && (<div className="space-y-1">
+                        {children.map((item) => {
+                            return (
+                                <FileItem
+                                    key={item.id}
+                                    organization={organization}
+                                    node={item}
+                                />
+                            );
                         })}
                     </div>
                 )}
+
+                {!children && (<div className="text-center text-slate-500 italic">Empty</div>)}
+
             </div>
         </div>
     );

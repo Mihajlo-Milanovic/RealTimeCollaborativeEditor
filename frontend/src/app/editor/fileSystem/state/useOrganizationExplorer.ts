@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {OrganizationView} from "../../../../models/types/views/OrganizationView";
 import {apiClient} from "../../../../lib/apiClient";
+import {user} from "../../../../store/user";
 
 
 export function useOrganizationExplorer(userId: string) {
@@ -12,6 +13,7 @@ export function useOrganizationExplorer(userId: string) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [queryString, setQueryString] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [fsRoom, setFsRoom] = useState<string>(user.id);
 
 
     const fetchOrganizations = async () => {
@@ -57,8 +59,12 @@ export function useOrganizationExplorer(userId: string) {
     }
 
     const selectOrganization= async (organization: OrganizationView | null) => {
-        if (organization == null || selectedOrganization?.id == organization.id) setSelectedOrganization(null);
-        else setSelectedOrganization(organization);
+        if (organization == null || selectedOrganization?.id == organization.id) {
+            setSelectedOrganization(null);
+        }
+        else {
+            setSelectedOrganization(organization);
+        }
     }
 
     const toggleOrganizationExplorer = async () => {
@@ -74,6 +80,15 @@ export function useOrganizationExplorer(userId: string) {
     }, [userId])
 
     useEffect(() => {
+        if (selectedOrganization)
+            setFsRoom(selectedOrganization.id);
+        else
+            setFsRoom(user.id);
+
+        console.log("ROOM_NAME ::>>", fsRoom);
+    }, [selectedOrganization])
+
+    useEffect(() => {
         if (isSearchOpen) setVisibleOrganizations(filterOrganizations(organizations));
     }, [queryString, isSearchOpen]);
 
@@ -85,6 +100,7 @@ export function useOrganizationExplorer(userId: string) {
         selected: selectedOrganization,
         isSearchOpen,
         isLoading,
+        fsRoom,
         toggleSearch,
         queryOrganizations: (query: string) => setQueryString(query),
         selectOrganization,

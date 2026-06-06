@@ -5,7 +5,7 @@ import {useHocuspocusProvider,} from "@hocuspocus/provider-react";
 import {useEffect} from "react";
 import {OnlineUsers} from "./components/OnlineUsers";
 import {user} from "../../store/user";
-import {getRandomColor} from "../../lib/yjsProvider";
+import {getRandomColor} from "../../lib/awarenessColors";
 
 function Editor() {
 

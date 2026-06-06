@@ -3,6 +3,8 @@ import {NodeType} from "../models/types/NodeType";
 import {OrganizationRole} from "../models/types/OrganizationRole";
 import {OrganizationView} from "../models/types/views/OrganizationView";
 import {UserView} from "../models/types/views/UserView";
+import {fileSystemStore} from "../store/fileSystem";
+import {user} from "../store/user";
 
 const BASE_URL = process.env.BACKEND_URL ?? 'http://localhost:5000';
 
@@ -18,7 +20,7 @@ async function request<T>(
 
     if (!res.ok) {
         const error = await res.text();
-        throw new Error(`API error ${res.status}: ${error}`);
+        throw new Error(`API [${BASE_URL}/${path}] error ${res.status}: ${error}`);
     }
 
     // 204 No Content — return null cast to T
@@ -44,6 +46,8 @@ export const apiClient = {
             parentType: NodeType = NodeType.DIR,
         ) {
 
+            let fileNode: FileNode;
+
             switch (type) {
                 case NodeType.FILE:
                     const file = await request<FileNode>('files', {
@@ -54,10 +58,11 @@ export const apiClient = {
                             parent: parentId
                         }),
                     });
-                    return {
+                    fileNode = {
                         ...file,
                         type: NodeType.FILE,
                     } as FileNode;
+                    break;
 
                 case NodeType.DIR:
                     const dir = await request<FileNode>('directories', {
@@ -80,10 +85,11 @@ export const apiClient = {
                         );
                     }
 
-                    return {
+                    fileNode = {
                         ...dir,
                         type: NodeType.DIR
                     } as FileNode;
+                    break;
 
                 case NodeType.ORG:
                     const org = await request<FileNode>("organizations",
@@ -95,11 +101,13 @@ export const apiClient = {
                             })
                         }
                     )
-                    return {
+                    fileNode = {
                         ...org,
                         type: NodeType.ORG
                     } as FileNode;
+                    break;
             }
+            fileSystemStore.fsMap.set(fileNode.id, fileNode);
         },
 
         async deleteNode(
@@ -123,21 +131,15 @@ export const apiClient = {
                     throw new Error("Invalid node type");
             }
 
-            const res = (await request<FileNode>(endpoint, {method: 'DELETE'}))
+            const res = (await request<FileNode>(endpoint, {method: 'DELETE'}));
 
-            if (res)
-                return {
-                    ...res,
-                    type: type
-                } as FileNode;
-            else
-                return null;
+            fileSystemStore.fsMap.delete(id);
         },
 
-        async getRootDirectory(userId: string) {
+        async getRootDirectory() {
 
             const res = await request<FileNode>(
-                `directories/${encodeURIComponent(userId)}/root`,
+                `directories/${encodeURIComponent(user.id)}/root`,
                 {method: 'GET'}
             );
             if (!res) return null;
@@ -159,26 +161,28 @@ export const apiClient = {
 
         async getChildren(nodeId: string, nodeType: NodeType) {
 
-            let children: FileNode[];
+            let children: FileNode[] = [];
 
             switch (nodeType) {
                 case NodeType.FILE:
-                    return [];
+                    return children;
                 case NodeType.DIR:
                     const dir = await request<{ children: FileNode[], files: FileNode[] }>(
                         `directories/${encodeURIComponent(nodeId)}/children&files`,
                         {method: "GET"}
                     );
 
-                    const dirFolders: FileNode[] = (dir.children || []).map((child: any) => ({
+                    const dirFolders: FileNode[] = (dir.children || []).map(child => ({
                             ...child,
-                            type: NodeType.DIR
+                            type: NodeType.DIR,
+                            parentId: nodeId
                         } as FileNode
                     ));
 
-                    const dirFiles: FileNode[] = (dir.files || []).map((file: any) => ({
+                    const dirFiles: FileNode[] = (dir.files || []).map(file => ({
                             ...file,
                             type: NodeType.FILE,
+                            parentId: nodeId
                         } as FileNode
                     ));
 
@@ -191,21 +195,27 @@ export const apiClient = {
                         {method: "GET"}
                     );
 
-                    const orgFolders: FileNode[] = (org.children || []).map((child: any) => ({
+                    const orgFolders: FileNode[] = (org.children || []).map(child => ({
                             ...child,
-                            type: NodeType.DIR
+                            type: NodeType.DIR,
+                            parentId: nodeId
                         } as FileNode
                     ));
 
-                    const orgProjections: FileNode[] = (org.projections || []).map((proj: any) => ({
+                    const orgProjections: FileNode[] = (org.projections || []).map(proj => ({
                             ...proj,
                             type: NodeType.DIR,
+                            parentId: nodeId
                         } as FileNode
                     ));
 
                     children = [...orgFolders, ...orgProjections];
                     break;
             }
+
+            // console.log("CHILDREN :::::: >>>>>", children)
+            children.forEach(c => fileSystemStore.fsMap.set(c.id, c));
+            // console.log("FS_MAP_VALUES ::::: >>>>>", [...fileSystemStore.fsMap.values()])
 
             return children.sort((a, b) => a.name.localeCompare(b.name));
         },
@@ -253,7 +263,7 @@ export const apiClient = {
     },
 
     user: {
-        async getByEmail(email: string){
+        async getByEmail(email: string) {
 
             const res = await request<UserView>(
                 `users/email/${encodeURIComponent(email)}`,
@@ -261,7 +271,7 @@ export const apiClient = {
             );
 
             if (!res) return null;
-            
+
             return {
                 ...res,
             } as UserView;

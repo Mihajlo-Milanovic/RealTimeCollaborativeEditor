@@ -1,9 +1,8 @@
-import {UserView} from "@/models/types/views/UserView";
-import {OrganizationView} from "@/models/types/views/OrganizationView";
+import {OrganizationView} from "../types/views/OrganizationView";
 
 
 export type TFileTree = {
-    userId: string;
+    // userId: string;
     organization: OrganizationView | null;
     // onSelectFile: (id: string) => void;
     // selectedFileId: string | null;
