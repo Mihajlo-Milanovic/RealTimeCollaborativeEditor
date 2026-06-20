@@ -22,9 +22,6 @@ export default function FileTree(
         isLoading,
     } = useFileTree(user.id, organization);
 
-
-
-
     const containerRef = useRef<HTMLDivElement | null>(null);
 
     if (isLoading) return <div>Loading...</div>

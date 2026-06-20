@@ -171,7 +171,6 @@ export default function OrganizationExplorer() {
                     </ul>
                 )}
             </div>
-            {/*<HocuspocusProviderWebsocketComponent url={`${WS_PROTOCOL}://${HOST}:${WS_PORT}`}>*/}
                 <HocuspocusRoom
                     name={fsRoom}
                 >
@@ -182,7 +181,6 @@ export default function OrganizationExplorer() {
                         />
                     </div>
                 </HocuspocusRoom>
-            {/*</HocuspocusProviderWebsocketComponent>*/}
         </div>
     )
 }

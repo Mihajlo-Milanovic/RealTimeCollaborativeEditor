@@ -7,10 +7,6 @@ class FileSystemStore {
     private _doc: Y.Doc | null;
     private _map: Y.Map<FileNode> | null;
 
-    // private constructor() {
-    //     this._doc = new Y.Doc();
-    // }
-
     static getInstance(): FileSystemStore {
         if (!FileSystemStore.instance) {
             FileSystemStore.instance = new FileSystemStore();
@@ -66,7 +62,7 @@ class FileSystemStore {
     //         }
     //     });
     // }
-    //
+
     // test(){
     //     this._map.observe(this.testObserver);
     //

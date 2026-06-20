@@ -208,7 +208,6 @@ export function EditorInner() {
             }),
             Collaboration.configure({
                 document: provider.document,
-
             }),
             CollaborationCursor.configure({
                 provider,
