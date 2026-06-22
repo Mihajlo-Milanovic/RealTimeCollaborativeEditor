@@ -1,19 +1,21 @@
 "use client";
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {FilePlus, FileText, Folder, FolderOpen, FolderPlus, Trash2} from "lucide-react";
 import {TFileItem} from "../../../../models/elementTypes/TFileItem";
 import {prompts} from "../prompts";
 import {NodeType} from "../../../../models/types/NodeType";
 import {useSelectedFile} from "../../../../store/selectedFile";
 import {user} from "../../../../store/user";
-import {useFileSystem} from "../state/useFileSystem";
+import {useChildrenItems} from "../state/useChildrenItems";
+import {apiClient} from "../../../../lib/apiClient";
 
 
 export default function FileItem(
     {
         organization,
         node,
+        refreshParentAction,
     }: TFileItem
 ) {
 
@@ -27,13 +29,17 @@ export default function FileItem(
         clearSelectedFileId
     } = useSelectedFile();
 
-    // const {
-    //     // items,
-    //     // isLoading,
-    //     // refresh
-    // } = useFetchChildrenItems(node);
+    const {
+        children,
+        // loading,
+        refresh
+    } = useChildrenItems(node, false);
 
-    const {children} = useFileSystem(node.id, NodeType.DIR);
+    useEffect(() => {
+        if (!node) return;
+
+        apiClient.explorer.getChildren(node.id, node.type);
+    }, [node]);
 
     const handleOpenFolder = async () => {
         if (node.type == NodeType.DIR) {
@@ -83,10 +89,6 @@ export default function FileItem(
                     >
                         {node.name}
                     </span>
-
-                    {/*{ selectedFileId == node.id && (*/}
-                    {/*   <OnlineUsers/>*/}
-                    {/*)}*/}
                 </div>
 
                 <div
@@ -94,7 +96,12 @@ export default function FileItem(
                 >
                     {canEdit && (
                         <button
-                            onClick={() => prompts.deleteFileNode(node, user.id)}
+                            onClick={() => {
+                                if (node.type == NodeType.FILE && node.id == selectedFileId){
+                                    clearSelectedFileId();
+                                }
+                                prompts.deleteFileNode(node, user.id, refreshParentAction)
+                            }}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
                             title="Delete"
                         >
@@ -104,7 +111,7 @@ export default function FileItem(
 
                     {showCreate && (
                         <button
-                            onClick={() => prompts.addFolderToFileNode(node, user.id)}
+                            onClick={() => prompts.addFolderToFileNode(node, user.id, refresh)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-green-400 transition-colors"
                             title="New Folder"
                         >
@@ -113,7 +120,7 @@ export default function FileItem(
                     )}
                     {canEdit && node.type == NodeType.DIR && (
                         <button
-                            onClick={() => prompts.addFileToFileNode(node, user.id)}
+                            onClick={() => prompts.addFileToFileNode(node, user.id, refresh)}
                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-blue-400 transition-colors"
                             title="New File"
                         >
@@ -130,6 +137,7 @@ export default function FileItem(
                             organization={organization}
                             key={child.id}
                             node={child}
+                            refreshParentAction={refresh}
                         />
                     ))}
                 </div>

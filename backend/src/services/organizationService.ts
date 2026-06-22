@@ -2,7 +2,6 @@ import {IOrganization, INewOrganization} from "../data/interfaces/IOrganization"
 import Organization from "../data/dao/OrganizationSchema";
 import User from "../data/dao/UserSchema";
 import {Types} from "mongoose";
-import {deleteFile} from "./fileService"
 import {createDirectory, deleteDirectory} from "./directoryService";
 import {IDirectory} from "../data/interfaces/IDirectory";
 import Directory from "../data/dao/DirectorySchema";
@@ -458,7 +457,11 @@ export async function deleteOrganization(organizationId: string, applicantId: st
         return new Error('Only admin can delete the organization.');
 
     for (const c of org.children) {
-        numberOfDeletions.accumulate(await deleteDirectory(c.toHexString()));
+        const res = await deleteDirectory(c.toHexString());
+        numberOfDeletions.accumulate(new NumberOfDeletions(
+            res.directoriesDeleted,
+            res.filesDeleted
+        ));
     }
 
     for (const p of org.projections) {

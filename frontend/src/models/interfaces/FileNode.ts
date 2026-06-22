@@ -5,7 +5,7 @@ export interface FileNode {
     id: string;
     name: string;
     type: NodeType;
-    parentId: string | null;   // null = root level
+    parents: string | string[];   // null = root level
     // createdAt: string;
     // updatedAt: string;
 }

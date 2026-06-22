@@ -27,27 +27,37 @@ export async function createDirectory (directory: INewDirectory) {
 
     newDirectory.populate(["files", "children", "owner"]);
 
+    console.log(newDirectory)
+    console.log(toDirectoryView(newDirectory))
     return toDirectoryView(newDirectory);
 }
 
 export async function deleteDirectory (directoryId: string) {
 
-    const dir: IDirectory | null = await Directory.findById(directoryId).populate(['children', 'parents']).exec();
+    const dir: IDirectory | null = await Directory.findById(directoryId).populate(['children']).exec();
 
     const numberOfDeletions = new NumberOfDeletions();
 
     if (dir == null)
-        return numberOfDeletions;
+        return {...numberOfDeletions, deleted: null};
 
+    console.log(dir)
+    const parents = [...dir.parents]
+    console.log("PARENTS:", parents);
+
+    console.log(1)
     if(dir.parents.length > 0){
-
+        await dir.populate("parents");
         for(const p of dir.parents){
             const parentDir = p as unknown as IDirectory;
 
             parentDir.children = parentDir.children.filter(child => child.toHexString() != dir.id);
             await parentDir.save();
         }
+        dir.depopulate("parents");
     }
+
+    console.log(2)
 
     if (dir.populated('children')) {
 
@@ -77,7 +87,17 @@ export async function deleteDirectory (directoryId: string) {
         }
     }
 
-    return numberOfDeletions;
+    console.log(3)
+    const deletedDir = toDirectoryView({
+        _id: dir._id,
+        name: dir.name,
+        owner: dir.owner,
+        children: dir.children,
+        files: dir.files,
+        parents: parents
+    } as IDirectory);
+    console.log(deletedDir);
+    return {...numberOfDeletions, deleted: deletedDir};
 }
 
 export async function getDirectoriesByOwnerId (ownerId: string) {

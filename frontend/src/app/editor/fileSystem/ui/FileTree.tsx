@@ -1,12 +1,15 @@
 "use client";
 
-import {useRef} from "react";
+import {useEffect, useRef} from "react";
 import {FilePlus, FolderPlus, X} from "lucide-react";
 import {TFileTree} from "../../../../models/elementTypes/TFileTree";
 import FileItem from "./FileItem";
-import {useFileTree} from "../state/useFileTree";
+import {useFileTreeRoot} from "../state/useFileTreeRoot";
 import {prompts} from "../prompts";
 import {user} from "../../../../store/user";
+import {useChildrenItems} from "../state/useChildrenItems";
+import {apiClient} from "../../../../lib/apiClient";
+
 
 
 export default function FileTree(
@@ -18,9 +21,22 @@ export default function FileTree(
 
     const {
         root,
-        children,
         isLoading,
-    } = useFileTree(user.id, organization);
+    } = useFileTreeRoot(user.id, organization);
+
+    const {
+        children,
+        loadingChildren,
+        refresh,
+    } = useChildrenItems(root, isLoading);
+
+    useEffect(() => {
+        if (!root || isLoading) return;
+
+        apiClient.explorer.getChildren(root.id, root.type);
+    }, [isLoading, root]);
+
+
 
     const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -36,7 +52,7 @@ export default function FileTree(
                             {organization.name}
                         </div>
 
-                        {isLoading && (<span
+                        {loadingChildren && (<span
                                 className="text-xs font-semibold text-slate-800 tracking-wider"
                                 title="Loading..."
                             >
@@ -49,7 +65,7 @@ export default function FileTree(
 
                                     <button
                                         onClick={() => {
-                                            prompts.addFolderToFileNode(root, user.id);
+                                            prompts.addFolderToFileNode(root, user.id, refresh);
                                         }}
                                         className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                         title="New folder"
@@ -97,7 +113,7 @@ export default function FileTree(
                                 <button
                                     onClick={() => {
                                         if (root)
-                                            prompts.addFolderToFileNode(root, user.id);
+                                            prompts.addFolderToFileNode(root, user.id, refresh);
                                     }}
                                     className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                     title="New folder"
@@ -109,7 +125,7 @@ export default function FileTree(
                                 <button
                                     onClick={() => {
                                         if (root)
-                                            prompts.addFileToFileNode(root, user.id);
+                                            prompts.addFileToFileNode(root, user.id, refresh);
                                     }}
                                     className="rounded-md p-1.5 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                                     title="New file"
@@ -128,6 +144,7 @@ export default function FileTree(
                                     key={item.id}
                                     organization={organization}
                                     node={item}
+                                    refreshParentAction={refresh}
                                 />
                             );
                         })}

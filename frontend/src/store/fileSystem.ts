@@ -1,11 +1,13 @@
 import * as Y from "yjs";
 import {FileNode} from "../models/interfaces/FileNode";
+import {YMapEvent} from "yjs";
 
 class FileSystemStore {
     private static instance: FileSystemStore;
 
     private _doc: Y.Doc | null;
-    private _map: Y.Map<FileNode> | null;
+    private _map: Y.Map<FileNode[]> | null;
+    private _observers = new Map<() => void, (event: YMapEvent<FileNode[]>) => void>()
 
     static getInstance(): FileSystemStore {
         if (!FileSystemStore.instance) {
@@ -40,50 +42,27 @@ class FileSystemStore {
         return this._map;
     }
 
+    subscribe(nodeId: string, observer: () => void) {
+        this._observers.set(observer, (event: YMapEvent<FileNode[]>) => {
+            event.keys.forEach((_, key) => {
+                if (key == nodeId)
+                    observer()
+            });
+        });
+        this._map.observe(this._observers.get(observer));
+    }
 
-    // testObserver(event : Y.YMapEvent<FileNode>){
-    //     if (event.target !== this._map) return;
-    //     // => true
-    //
-    //     // Find out what changed:
-    //     // Option 1: A set of keys that changed
-    //     // event.keysChanged // => Set<strings>
-    //     // Option 2: Compute the differences
-    //     //event.changes.keys // => Map<string, { action: 'add'|'update'|'delete', oldValue: any}>
-    //
-    //     // sample code.
-    //     event.changes.keys.forEach((change, key) => {
-    //         if (change.action === 'add') {
-    //             console.log(`Property "${key}" was added. Initial value: "${this._map.get(key)}".`);
-    //         } else if (change.action === 'update') {
-    //             console.log(`Property "${key}" was updated. New value: "${this._map.get(key)}". Previous value: "${change.oldValue}".`);
-    //         } else if (change.action === 'delete') {
-    //             console.log(`Property "${key}" was deleted. New value: undefined. Previous value: "${change.oldValue}".`);
-    //         }
-    //     });
-    // }
+    unsubscribe(observer: () => void) {
+        const o = this._observers.get(observer);
+        if (o) {
+            this._map.unobserve(o);
+            this._observers.delete(observer);
+        }
+    }
 
-    // test(){
-    //     this._map.observe(this.testObserver);
-    //
-    //     this._map.set('key', {
-    //         id: "testId",
-    //         type: "dir",
-    //         parentId: null,
-    //         name: "TEST"
-    //     } as FileNode) // => Property "key" was added. Initial value: "value".
-    //
-    //     this._map.set('key',  {
-    //         id: "newID",
-    //         type: "org",
-    //         parentId: null,
-    //         name: "NOTHING_HERE"
-    //     } as FileNode) // => Property "key" was updated. New value: "new". Previous value: "value".
-    //
-    //     this._map.delete('key') // => Property "key" was deleted. New value: undefined. Previous Value: "new".
-    //
-    //     this._map.unobserve(this.testObserver);
-    // }
+    notifyObservers() {
+        // this._observers.keys().forEach(o => o())
+    }
 }
 
 export const fileSystemStore = FileSystemStore.getInstance();

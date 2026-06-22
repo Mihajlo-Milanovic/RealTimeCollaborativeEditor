@@ -5,37 +5,37 @@ import {apiClient} from "../../../lib/apiClient";
 
 export const prompts = {
 
-    async deleteFileNode(node: FileNode, userId: string) {
+    async deleteFileNode(node: FileNode, userId: string, refresh: () => void) {
         if (confirm(`Are you sure you want to delete ${node.type == NodeType.DIR ? 'directory' : 'file'} "${node.name}"?`)) {
             const success = await apiClient.explorer.deleteNode(node.id, node.type, userId);
-            // if (!success) refresh();
-            // else alert(`Could not delete ${node.type == NodeType.DIR ? 'directory' : 'file'} "${node.name}".`);
+            if (success) refresh();
+            else alert(`Could not delete ${node.type == NodeType.DIR ? 'directory' : 'file'} "${node.name}".`);
         }
     },
 
-    async addFolderToFileNode(parentNode: FileNode, userId: string) {
+    async addFolderToFileNode(parentNode: FileNode, userId: string, refresh: () => void) {
         const folderName = (prompt("Enter folder name:") || "")?.trim();
         if (!folderName) return;
         const success = await apiClient.explorer.createNode(userId, folderName, NodeType.DIR, parentNode.id, parentNode.type);
-        // if (success) refresh();
-        // else alert("Could not create folder.");
+        if (success) refresh();
+        else alert("Could not create folder.");
     },
 
-    async addFileToFileNode(parentNode: FileNode, userId: string) {
+    async addFileToFileNode(parentNode: FileNode, userId: string, refresh: () => void) {
         const fileName = (prompt("Enter file name:") || "")?.trim();
         if (!fileName) return;
         const success = await apiClient.explorer.createNode(userId, fileName, NodeType.FILE, parentNode.id, NodeType.DIR);
-        // if (success) refresh();
-        // else alert("Could not create file.");
+        if (success) refresh();
+        else alert("Could not create file.");
     },
 
-    async deleteOrganization(organization: OrganizationView, userId: string) {
+    async deleteOrganization(organization: OrganizationView, userId: string, refresh: () => void) {
         if(!organization) return;
         const confirmDelete = confirm(`Are you sure you want to delete organization ${organization.name}?`)
         if (!confirmDelete) return
         const success = await apiClient.explorer.deleteNode(organization.id, NodeType.ORG, userId);
-        // if (success) refresh();
-        // else alert("Could not delete organization.");
+        if (success) refresh();
+        else alert("Could not delete organization.");
 
     },
 
@@ -44,8 +44,8 @@ export const prompts = {
         const name = prompt("Enter organization name:")?.trim() || "";
         if (!name) return;
         const success = await apiClient.explorer.createNode(userId, name, NodeType.ORG);
-        refresh();
-        //else alert("Could not create organization.");
+        if (success) refresh();
+        else alert("Could not create organization.");
     },
 
     async editOrganization(userId: string) {

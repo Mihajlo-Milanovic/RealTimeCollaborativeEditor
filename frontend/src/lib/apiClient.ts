@@ -5,6 +5,7 @@ import {OrganizationView} from "../models/types/views/OrganizationView";
 import {UserView} from "../models/types/views/UserView";
 import {fileSystemStore} from "../store/fileSystem";
 import {user} from "../store/user";
+import {useSelectedFile} from "../store/selectedFile";
 
 const BASE_URL = process.env.BACKEND_URL ?? 'http://localhost:5000';
 
@@ -60,6 +61,7 @@ export const apiClient = {
                     });
                     fileNode = {
                         ...file,
+                        parents: parentId,
                         type: NodeType.FILE,
                     } as FileNode;
                     break;
@@ -87,6 +89,7 @@ export const apiClient = {
 
                     fileNode = {
                         ...dir,
+                        parents: parentId,
                         type: NodeType.DIR
                     } as FileNode;
                     break;
@@ -107,7 +110,25 @@ export const apiClient = {
                     } as FileNode;
                     break;
             }
-            fileSystemStore.fsMap.set(fileNode.id, fileNode);
+
+            if (Array.isArray(fileNode.parents))
+                fileNode.parents.forEach(parent => {
+                    const childrenArray = fileSystemStore.fsMap.get(parent);
+                    if (childrenArray)
+                        fileSystemStore.fsMap.set(parent, [...childrenArray, fileNode]);
+                    else {
+                        fileSystemStore.fsMap.set(parent, [fileNode]);
+                    }
+                });
+            else {
+                const childrenArray = fileSystemStore.fsMap.get(fileNode.parents);
+                if (childrenArray)
+                    fileSystemStore.fsMap.set(fileNode.parents, [...childrenArray, fileNode]);
+                else {
+                    fileSystemStore.fsMap.set(fileNode.parents, [fileNode]);
+                }
+            }
+            return true;
         },
 
         async deleteNode(
@@ -120,20 +141,53 @@ export const apiClient = {
             switch (type) {
                 case NodeType.DIR:
                     endpoint = `directories/${encodeURIComponent(id)}`;
+
+                    const resDir = (await request<{
+                        deleted: FileNode & { parents: string[] }
+                        directoriesDeleted: number
+                        filesDeleted: number
+                    }>(endpoint, {method: 'DELETE'}));
+
+                    const deletedDir = resDir.deleted
+
+                    if (deletedDir) {
+
+                        deletedDir.parents.forEach(parent => {
+                            const childrenArray = fileSystemStore.fsMap.get(parent);
+                            if (childrenArray)
+                                fileSystemStore.fsMap.set(parent, [...childrenArray.filter(c => c.id !== id)]);
+                        });
+
+                        return true;
+                    }
                     break;
+
                 case NodeType.FILE:
                     endpoint = `files/${encodeURIComponent(id)}`;
+                    const resFile = (await request<FileNode>(endpoint, {method: 'DELETE'}));
+                    console.log("deleted file: ", resFile)
+
+                    if (resFile) {
+                        const childrenArray = fileSystemStore.fsMap.get(resFile.parents as string);
+                        if (childrenArray)
+                            fileSystemStore.fsMap.set(resFile.parents as string, childrenArray.filter(c => c.id !== id));
+                        return true;
+                    }
                     break;
                 case NodeType.ORG:
                     endpoint = `organizations/${encodeURIComponent(id)}/${encodeURIComponent(userId)}`;
+                    const resOrg = (await request<FileNode>(endpoint, {method: 'DELETE'}));
+                    console.log("deleted file: ", resOrg)
+
+                    if (resOrg) {
+                        return true
+                    }
                     break;
                 default:
                     throw new Error("Invalid node type");
             }
 
-            const res = (await request<FileNode>(endpoint, {method: 'DELETE'}));
-
-            fileSystemStore.fsMap.delete(id);
+            return false
         },
 
         async getRootDirectory() {
@@ -165,7 +219,7 @@ export const apiClient = {
 
             switch (nodeType) {
                 case NodeType.FILE:
-                    return children;
+                    return;
                 case NodeType.DIR:
                     const dir = await request<{ children: FileNode[], files: FileNode[] }>(
                         `directories/${encodeURIComponent(nodeId)}/children&files`,
@@ -175,14 +229,14 @@ export const apiClient = {
                     const dirFolders: FileNode[] = (dir.children || []).map(child => ({
                             ...child,
                             type: NodeType.DIR,
-                            parentId: nodeId
+                            parents: nodeId
                         } as FileNode
                     ));
 
                     const dirFiles: FileNode[] = (dir.files || []).map(file => ({
                             ...file,
                             type: NodeType.FILE,
-                            parentId: nodeId
+                            parents: nodeId
                         } as FileNode
                     ));
 
@@ -198,14 +252,14 @@ export const apiClient = {
                     const orgFolders: FileNode[] = (org.children || []).map(child => ({
                             ...child,
                             type: NodeType.DIR,
-                            parentId: nodeId
+                            parents: nodeId
                         } as FileNode
                     ));
 
                     const orgProjections: FileNode[] = (org.projections || []).map(proj => ({
                             ...proj,
                             type: NodeType.DIR,
-                            parentId: nodeId
+                            parents: nodeId
                         } as FileNode
                     ));
 
@@ -214,10 +268,13 @@ export const apiClient = {
             }
 
             // console.log("CHILDREN :::::: >>>>>", children)
-            children.forEach(c => fileSystemStore.fsMap.set(c.id, c));
-            // console.log("FS_MAP_VALUES ::::: >>>>>", [...fileSystemStore.fsMap.values()])
 
-            return children.sort((a, b) => a.name.localeCompare(b.name));
+            // const childrenArray = fileSystemStore.fsMap.get(nodeId)
+            const sorted = children.sort((a, b) => a.name.localeCompare(b.name));
+
+            fileSystemStore.fsMap.set(nodeId, sorted)
+
+            //fileSystemStore.notifyObservers()
         },
 
         async getOrganizationsByNames(names: string[]) {

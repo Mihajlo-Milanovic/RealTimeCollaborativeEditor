@@ -3,14 +3,13 @@ import {IFile} from "../interfaces/IFile";
 import {toUserView, UserView} from "./UserView";
 import {IUser} from "../interfaces/IUser";
 import {Types} from "mongoose";
-import {IDirectory} from "../interfaces/IDirectory";
 import {CommentView, toCommentView} from "./CommentView";
 import {IComment} from "../interfaces/IComment";
 import {UserPrivileges} from "./UserPrivileges";
 
 
 export type FileView = PlainResource<IFile, "parent" | "owner" | "comments">
-    & { owner: UserView, comments: Array<CommentView> };
+    & { owner: UserView, comments: Array<CommentView>, parentId: string };
 
 export function toFileView(file: IFile): FileView {
 
@@ -22,7 +21,7 @@ export function toFileView(file: IFile): FileView {
             c = file.comments;
     }
 
-    let o: UserView = {id: "", username: "", email: "", organizations: new Map<string, UserPrivileges>()};
+    let o: UserView = {id: "", username: "", email: "", organizations: new Map<string, UserPrivileges>(), verified: false};
     if (file.owner != null) {
         if (!((file.owner as any) instanceof Types.ObjectId))
             o = toUserView(file.owner as unknown as IUser);
@@ -34,6 +33,7 @@ export function toFileView(file: IFile): FileView {
         id: file._id.toHexString(),
         name: file.name,
         owner: o,
+        parentId: file.parent.toHexString(),
         yDocState: file.yDocState,
         version: file.version,
         comments: c,

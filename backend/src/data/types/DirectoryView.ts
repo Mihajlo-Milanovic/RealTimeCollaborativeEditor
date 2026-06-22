@@ -7,10 +7,12 @@ import {IFile} from "../interfaces/IFile";
 import {Types} from "mongoose";
 
 
-export type DirectoryView = PlainResource<IDirectory, "parents" | "owner" | "children" | "files">
+export type DirectoryView = PlainResource<IDirectory, /*"parents" |*/ "owner" | "children" | "files">
     & { owner: UserView, children: Array<DirectoryView>, files: Array<FileView> , type: "dir"};
 
 export function toDirectoryView(directory: IDirectory): DirectoryView {
+
+    console.log(directory)
 
     let c: any = [];
     if (directory.children.length > 0) {
@@ -28,6 +30,14 @@ export function toDirectoryView(directory: IDirectory): DirectoryView {
             f = directory.files;
     }
 
+    let p: any = [];
+    if (directory.parents.length > 0) {
+        if (!(directory.parents[0] instanceof Types.ObjectId))
+            p = directory.parents.map(p => toDirectoryView(p as unknown as IDirectory));
+        else
+            p = directory.parents;
+    }
+
     let o: UserView = {id: "", username: "", email: "", organizations: new Map, verified: false};
     if (directory.owner != null) {
         if (!(directory.owner instanceof Types.ObjectId))
@@ -40,7 +50,7 @@ export function toDirectoryView(directory: IDirectory): DirectoryView {
         id: directory._id.toHexString(),
         name: directory.name,
         owner: o,
-        //parents: directory.parents,
+        parents: p,
         children: c,
         files: f,
         type: "dir"
