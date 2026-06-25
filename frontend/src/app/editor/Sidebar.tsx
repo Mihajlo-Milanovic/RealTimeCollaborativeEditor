@@ -11,30 +11,27 @@ interface SidebarProps {
     // user: UserView;
     // selectedFileId: string | null;
     children: React.ReactNode;
+    showComments: boolean;
+    onToggleComments: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = (
     {
-        children
+        children,
+        showComments,
+        onToggleComments
     }
 ) => {
 
     const [explorerCollapsed, setExplorerCollapsed] = useState(false);
     const [explorerWidth, setExplorerWidth] = useState(320);
     const [isResizingExplorer, setIsResizingExplorer] = useState(false);
-    const [showComments, setShowComments] = useState(false);
-    const [commentsWidth, setCommentsWidth] = useState(384);
-    const [isResizingComments, setIsResizingComments] = useState(false);
 
     const {selectedFileId} = useSelectedFile();
 
     const resize = (e: React.MouseEvent) => {
         if (isResizingExplorer) {
             setExplorerWidth(Math.max(200, Math.min(600, e.clientX)));
-        }
-        if (isResizingComments) {
-            const newWidth = window.innerWidth - e.clientX;
-            setCommentsWidth(Math.max(250, Math.min(800, newWidth)));
         }
     };
 
@@ -66,9 +63,9 @@ export const Sidebar: React.FC<SidebarProps> = (
                 </button>
 
                 <button
-                    onClick={() => setShowComments(!showComments)}
+                    onClick={onToggleComments}
                     disabled={!selectedFileId}
-                    className="p-2 hover:bg-slate-800 rounded text-slate-400 disabled:opacity-40"
+                    className={`p-2 hover:bg-slate-800 rounded disabled:opacity-40 ${showComments ? "text-blue-400" : "text-slate-400"}`}
                     title="Comments"
                 >
                     <MessageSquare size={20}/>
@@ -112,9 +109,9 @@ export const Sidebar: React.FC<SidebarProps> = (
 
                 <div className="p-4 border-t border-slate-800 space-y-2">
                     <button
-                        onClick={() => setShowComments(!showComments)}
+                        onClick={onToggleComments}
                         disabled={!selectedFileId}
-                        className="w-full px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-50"
+                        className={`w-full px-3 py-2 rounded-lg hover:bg-slate-700 disabled:opacity-50 ${showComments ? "bg-blue-600" : "bg-slate-800"}`}
                     >
                         Comments
                     </button>

@@ -3,9 +3,12 @@
 import {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
 import {HocuspocusProviderWebsocketComponent, HocuspocusRoom} from "@hocuspocus/provider-react";
+import {X} from "lucide-react";
 import Editor from "./Editor";
 import Sidebar from "./Sidebar";
 import OrganizationExplorer from "./fileSystem/ui/OrganizationExplorer";
+import CommentsPanel from "./comments/ui/CommentsPanel";
+import {useCommentsResize} from "./comments/hooks/useCommentsResize";
 import {HOST, WS_PORT, WS_PROTOCOL} from "../../config/config";
 import {user} from "../../store/user";
 import {useSelectedFile} from "../../store/selectedFile";
@@ -14,8 +17,12 @@ export default function EditorPage() {
 
     const [isLoading, setIsLoading] = useState(true);
     const [roomName, setRoomName] = useState<string | null>(null);
+    const [showComments, setShowComments] = useState(false);
     const session = useSession();
     const {selectedFileId} = useSelectedFile();
+
+    // sva logika za promenu širine panela je izdvojena u hook
+    const {width: commentsWidth, startResize} = useCommentsResize();
 
     useEffect(() => {
 
@@ -58,7 +65,8 @@ export default function EditorPage() {
                     className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden select-none"
                 >
                     <Sidebar
-                        // user={user}
+                        showComments={showComments}
+                        onToggleComments={() => setShowComments((prev) => !prev)}
                     >
                         <div className="overflow-y-auto flex flex-col">
                             <div className="flex-1">
@@ -85,27 +93,31 @@ export default function EditorPage() {
                         )}
                     </main>
 
-                    {/*{showComments && selectedFileId && (*/}
-                    {/*    <aside*/}
-                    {/*        style={{width: commentsWidth}}*/}
-                    {/*        className="border-l border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"*/}
-                    {/*    >*/}
-                    {/*        <div*/}
-                    {/*            onMouseDown={() => setIsResizingComments(true)}*/}
-                    {/*            className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize"*/}
-                    {/*        />*/}
-                    {/*        <div className="p-4 border-b border-slate-800 flex justify-between">*/}
-                    {/*            <h2 className="font-semibold">Comments</h2>*/}
-                    {/*            <button onClick={() => setShowComments(false)}>*/}
-                    {/*                <X/>*/}
-                    {/*            </button>*/}
-                    {/*        </div>*/}
-                    {/*        <CommentsPanel*/}
-                    {/*            userId={user.id}*/}
-                    {/*            fileId={selectedFileId}*/}
-                    {/*        />*/}
-                    {/*    </aside>*/}
-                    {/*)}*/}
+                    {showComments && selectedFileId && (
+                        <aside
+                            style={{width: commentsWidth}}
+                            className="border-l border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"
+                        >
+                            <div
+                                onMouseDown={startResize}
+                                className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                            />
+                            <div className="p-4 border-b border-slate-800 flex justify-between items-center">
+                                <h2 className="font-semibold">Comments</h2>
+                                <button
+                                    onClick={() => setShowComments(false)}
+                                    className="p-1 hover:bg-slate-800 rounded text-slate-400"
+                                    title="Close comments"
+                                >
+                                    <X size={18}/>
+                                </button>
+                            </div>
+                            <CommentsPanel
+                                userId={user.id}
+                                fileId={selectedFileId}
+                            />
+                        </aside>
+                    )}
 
                     {/*{organizationForMemberList && (*/}
                     {/*    <OrganizationMembers*/}
