@@ -67,6 +67,8 @@ import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import Collaboration from "@tiptap/extension-collaboration";
 import {useSelectedFile} from "../../../../../store/selectedFile"
 import {CollabUser} from "../../../../../models/interfaces/CollabUser";
+import {user} from "../../../../../store/user";
+import {getRandomColor} from "../../../../../lib/awarenessColors";
 
 
 
@@ -173,9 +175,17 @@ export function EditorInner() {
     const toolbarRef = React.useRef<HTMLDivElement>(null)
 
     const provider = useHocuspocusProvider();
-    const userAwareness = provider.awareness.getLocalState() as CollabUser;
+    const userAwareness = provider.awareness?.getLocalState() as CollabUser | null;
     // const awareness = useHocuspocusAwareness();
     const {selectedFileId} = useSelectedFile();
+
+    // Ista boja i username koji se već koriste u OnlineUsers.tsx:
+    // - prvo uzmemo vrednost iz awareness-a (mehanizam koji već postoji),
+    // - ako awareness još nije postavljen, deterministički je izvedemo istom
+    //   funkcijom getRandomColor(username) kao i u Editor.tsx, pa je boja
+    //   zagarantovano identična svuda (lista korisnika, kursor, selekcija).
+    const cursorUsername = userAwareness?.username ?? user.username ?? "Anonymous";
+    const cursorColor = userAwareness?.color ?? getRandomColor(cursorUsername);
 
     // const [isLoading, setIsLoading] = useState(true);
     const editor = useEditor({
@@ -212,11 +222,34 @@ export function EditorInner() {
             CollaborationCursor.configure({
                 provider,
                 user: {
-                    name: userAwareness.username ?? "Anonymous",
-                    username: userAwareness.username ?? "ZIKA",
-                    color: userAwareness.color ?? '#ffffff',
+                    name: cursorUsername,
+                    username: cursorUsername,
+                    color: cursorColor,
                 },
+                // Eksplicitno crtamo kursor udaljenih korisnika:
+                // - vertikalna linija u boji korisnika,
+                // - label sa username-om, pozadina = boja korisnika, beo tekst.
+                // Boja NIJE hardkodovana – uzima se iz renderedUser.color koji
+                // dolazi iz awareness "user" polja (isti izvor kao OnlineUsers).
+                render: (renderedUser: { name?: string; color: string }) => {
+                    const cursor = document.createElement("span");
+                    cursor.classList.add("collaboration-cursor__caret");
+                    cursor.setAttribute("style", `border-color: ${renderedUser.color}`);
 
+                    const label = document.createElement("div");
+                    label.classList.add("collaboration-cursor__label");
+                    label.setAttribute(
+                        "style",
+                        `background-color: ${renderedUser.color}; color: #ffffff;`
+                    );
+                    label.insertBefore(
+                        document.createTextNode(renderedUser.name ?? "Anonymous"),
+                        null
+                    );
+
+                    cursor.insertBefore(label, null);
+                    return cursor;
+                },
             }),
         ],
     })

@@ -59,9 +59,10 @@
   word-break: normal;
 }
 
-/* Name label that floats above the cursor */
+/* Name label that floats above the cursor.
+   Boja pozadine se postavlja inline iz render() funkcije (boja korisnika),
+   ovde definišemo samo čitljiv beli tekst i da je label uvek vidljiv. */
 .collaboration-cursor__label {
-  background-color: var(--cursor-color);
   border-radius: 3px 3px 3px 0;
   color: #fff;
   font-size: 11px;
@@ -75,14 +76,7 @@
   user-select: none;
   white-space: nowrap;
 
-  /* Hide label by default, show on hover */
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-/* Always show label for a moment when cursor first appears */
-.collaboration-cursor__caret:hover .collaboration-cursor__label,
-.collaboration-cursor__caret--active .collaboration-cursor__label {
+  /* Username je uvek vidljiv pored kursora */
   opacity: 1;
 }
 
