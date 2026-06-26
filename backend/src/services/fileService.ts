@@ -1,8 +1,10 @@
 import File from "../data/dao/FileSchema"
 import Directory from "../data/dao/DirectorySchema";
+import Reaction from "../data/dao/ReactionSchema";
 import {IFile, IFilePopulated, INewFile} from "../data/interfaces/IFile";
 import {IDirectory} from "../data/interfaces/IDirectory";
 import {IComment} from "../data/interfaces/IComment";
+import {IReaction} from "../data/interfaces/IReaction";
 import {toFileView} from "../data/types/FileView";
 import {toCommentView} from "../data/types/CommentView";
 
@@ -60,18 +62,34 @@ export async function getCommentsForFile(fileId: string) {
 
     const file = await File.findById(fileId)
         .select('comments')
-        .populate({
-            path: "comments",
-            populate: {
-                path: "reactions commenter"
-            }
-        })
+        .populate({path: "comments", populate: {path: "commenter"}})
         .exec();
 
     if (file == null)
         return null;
-    else
-        return file.comments.map(c => toCommentView(c as unknown as IComment));
+
+    const comments = file.comments as unknown as IComment[];
+    const commentIds = comments.map(c => c._id);
+
+    // Reakcije čitamo DIREKTNO iz Reaction kolekcije (autoritativni izvor),
+    // a ne iz denormalizovanog comment.reactions niza koji je mogao da izgubi
+    // reference zbog ranijih konkurentnih upisa. Jedan upit za sve komentare.
+    const reactions = await Reaction.find({comment: {$in: commentIds}})
+        .populate("reactor")
+        .exec() as unknown as IReaction[];
+
+    const byComment = new Map<string, IReaction[]>();
+    for (const r of reactions) {
+        const key = r.comment.toString();
+        if (!byComment.has(key)) byComment.set(key, []);
+        byComment.get(key)!.push(r);
+    }
+
+    return comments.map(c => {
+        // ubaci stvarne reakcije pre mapiranja u view
+        (c as any).reactions = byComment.get(c._id.toString()) ?? [];
+        return toCommentView(c);
+    });
 }
 
 export async function getStateForFileWithId(fileId: string) {

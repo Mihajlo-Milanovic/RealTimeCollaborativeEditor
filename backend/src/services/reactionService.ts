@@ -1,7 +1,6 @@
 import {INewReaction, IReaction} from "../data/interfaces/IReaction";
 import Reaction from "../data/dao/ReactionSchema";
 import Comment from "../data/dao/CommentSchema";
-import {IComment} from "../data/interfaces/IComment";
 import {toReactionVew} from "../data/types/ReactionView";
 
 
@@ -41,13 +40,16 @@ export async function createOrUpdateReaction(reaction: INewReaction) {
 export async function createNewReaction(reaction: INewReaction) {
 
     const newReaction: IReaction = await Reaction.create(reaction);
-    await newReaction.populate('comment');
-    if(newReaction.populated('comment')) {
-        const comment = newReaction.comment as unknown as IComment;
-        comment.reactions.push(newReaction._id);
-        await comment.save();
-    }
-    newReaction.depopulate('comment');
+
+    // Atomično dodaj referencu u comment.reactions. NE radimo load-push-save
+    // (čitanje celog niza pa prepisivanje) jer kod konkurentnih reakcija dva
+    // korisnika učitaju stari niz i drugi pregazi referencu prvog (lost update).
+    // $addToSet je atomičan na nivou baze i ne gubi konkurentne dodatke.
+    await Comment.updateOne(
+        {_id: reaction.comment},
+        {$addToSet: {reactions: newReaction._id}}
+    ).exec();
+
     return toReactionVew(newReaction);
 }
 
@@ -68,6 +70,13 @@ export async function deleteReaction(reactionId: string) {
 
     if (reaction == null)
         return null;
-    else
-        return toReactionVew(reaction);
+
+    // Ukloni referencu iz comment.reactions (inače ostaje orphan ObjectId koji
+    // se kasnije populira u null i ruši prikaz komentara).
+    await Comment.updateOne(
+        {_id: reaction.comment},
+        {$pull: {reactions: reaction._id}}
+    ).exec();
+
+    return toReactionVew(reaction);
 }

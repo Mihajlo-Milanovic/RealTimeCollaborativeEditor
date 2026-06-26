@@ -19,12 +19,15 @@ export function toCommentView(comment: IComment): CommentView {
     let r: any = [];
     if (comment.reactions.length > 0) {
         if (!(comment.reactions[0] instanceof Types.ObjectId))
-            r = comment.reactions.map(r => toReactionVew(r as unknown as IReaction));
+            // filtriramo null (orphan reference na obrisane reakcije) pre mapiranja
+            r = comment.reactions
+                .filter((x: any) => x != null)
+                .map(reaction => toReactionVew(reaction as unknown as IReaction));
         else
             r = comment.reactions
     }
 
-    let o: UserView = {id: "", username: "", email: "", organizations: new Map<string, UserPrivileges>()};
+    let o: UserView = {id: "", username: "", email: "", verified: false, organizations: new Map<string, UserPrivileges>()};
     if (comment.commenter != null) {
         if (!((comment.commenter as any) instanceof Types.ObjectId))
             o = toUserView(comment.commenter as unknown as IUser);

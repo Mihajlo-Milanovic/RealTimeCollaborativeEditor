@@ -19,6 +19,7 @@ export default function CommentsPanel(
         addComment,
         updateComment,
         deleteComment,
+        refresh,
     } = useComments(fileId, userId);
 
     return (
@@ -53,9 +54,10 @@ export default function CommentsPanel(
                                 key={c.id}
                                 comment={c}
                                 user={c.commenter}
+                                currentUserId={userId}
                                 onUpdate={updateComment}
                                 onDelete={deleteComment}
-
+                                onReactionChange={refresh}
                             />
                         ))}
                     </div>

@@ -11,7 +11,7 @@ export type ReactionView = PlainResource<IReaction, "comment" | "reactor">
 
 export function toReactionVew(reaction: IReaction): ReactionView{
 
-    let r: UserView = { id: "", username: "", email: "", organizations: new Map<string, UserPrivileges>()};
+    let r: UserView = { id: "", username: "", email: "", verified: false, organizations: new Map<string, UserPrivileges>()};
     if (reaction.reactor != null) {
         if (!((reaction.reactor as any) instanceof Types.ObjectId))
             r = toUserView(reaction.reactor as unknown as IUser);

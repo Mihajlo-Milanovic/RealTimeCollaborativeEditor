@@ -4,8 +4,10 @@ import {UserView} from "@/models/types/views/UserView";
 
 export type TCommentItem = {
     comment: CommentView;
-    user: UserView;
+    user: UserView;              // autor komentara (za prikaz imena/avatara)
+    currentUserId: string;       // ulogovani korisnik (za reakcije i vlasništvo)
     onUpdate: (id: string, content: string) => void;
     onDelete: (id: string) => void;
-    // onReact: (emoji: string, alreadyReacted: boolean) => void;
+    // Propagira promenu reakcije kroz shared Yjs doc (re-fetch + setComments).
+    onReactionChange: () => void | Promise<void>;
 }

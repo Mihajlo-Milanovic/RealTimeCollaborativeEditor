@@ -1,4 +1,4 @@
-import {emojisMap} from "../../../../models/types/ReactionType";
+import {emojisMap, ReactionType} from "../../../../models/types/ReactionType";
 import {useEffect, useState} from "react";
 import {TCommentItem} from "../../../../models/elementTypes/TCommentItem";
 import {useReactions} from "../state/useReactions";
@@ -8,8 +8,10 @@ export function CommentItem(
     {
         comment,
         user,
+        currentUserId,
         onUpdate,
         onDelete,
+        onReactionChange,
     }: TCommentItem
 ) {
     const [editing, setEditing] = useState(false);
@@ -22,12 +24,10 @@ export function CommentItem(
     );
 
     const {
-        emojiToDisplay,
-        alreadyReacted,
-        refresh,
-        reactToComment,
-        removeReaction,
-    } = useReactions(comment, user.id);
+        groupedReactions,
+        myReactionType,
+        toggleReaction,
+    } = useReactions(comment, currentUserId, onReactionChange);
 
     return (
         <div
@@ -43,7 +43,7 @@ export function CommentItem(
                         className="text-[10px] opacity-50 px-1.5 py-0.5 rounded-full bg-slate-700">(edited)</span>}
                 </div>
 
-                {(user.id == comment.commenter.id) && (
+                {(currentUserId == comment.commenter.id) && (
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                             className="p-1.5 hover:bg-slate-700 rounded-lg text-yellow-500/70 hover:text-yellow-400 transition-colors"
@@ -100,30 +100,28 @@ export function CommentItem(
 
             {/* Reactions Section */}
             <div className="mt-4 flex flex-wrap gap-2 items-center relative">
-                {(comment.reactions.length > 0 && emojiToDisplay != '') && (<div
-                        // key={myReaction}
-                        className="relative"
+                {/* Po jedan pill za svaki distinct emoji (grupisano po tipu) */}
+                {groupedReactions.map(({type, count, mine}) => (
+                    <button
+                        key={type}
+                        onClick={() => toggleReaction(type)}
+                        title={mine ? "Ukloni reakciju" : "Reaguj"}
+                        className={`flex items-center gap-1.5 px-2 py-1 rounded-full border text-xs transition-colors ${
+                            mine
+                                ? "bg-blue-600/30 border-blue-500 text-white"
+                                : "bg-slate-900/50 border-slate-700 hover:border-slate-500"
+                        }`}
                     >
-                        <button
-                            onClick={() => {
-                                setShowEmojiPicker(true);
-                            }}
-                            className={`flex items-center gap-1.5 px-2 py-1 rounded-full border text-xs transition-colors${
-                                alreadyReacted ?
-                                    "bg-blue-600/30 border-blue-500 text-white"
-                                    : "bg-slate-900/50 border-slate-700 hover:border-slate-500"
-                            }`}
-                        >
-                            <span
-                                className="text-lg leading-none">{emojisMap.get(emojiToDisplay) || emojisMap.get('thumbs_up')}</span>
-                            <span className="text-slate-400 font-bold">{comment.reactions?.length || ""}</span>
-                        </button>
-                    </div>
-                )}
+                        <span className="text-lg leading-none">
+                            {emojisMap.get(type) || emojisMap.get('thumbs_up')}
+                        </span>
+                        <span className="text-slate-400 font-bold">{count}</span>
+                    </button>
+                ))}
 
                 {/* Add Reaction Button */}
                 <div className="relative">
-                    {!alreadyReacted && <button
+                    <button
                         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                         className="p-1.5 rounded-full hover:bg-slate-700 text-slate-400 transition-colors"
                         title="Dodaj reakciju"
@@ -133,26 +131,22 @@ export function CommentItem(
                                   d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </button>
-                    }
 
                     {showEmojiPicker && (
                         <div
                             className="absolute bottom-full mb-2 left-0 z-50 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-2 flex gap-1 animate-in fade-in slide-in-from-bottom-2">
-                            {[...emojisMap.keys().map(emoji => (
+                            {[...emojisMap.keys()].map(emoji => (
                                 <button
                                     key={emoji}
                                     onClick={() => {
                                         setShowEmojiPicker(false);
-                                        if (alreadyReacted && emojiToDisplay == emoji)
-                                            removeReaction();
-                                        else
-                                            reactToComment(emoji);
+                                        toggleReaction(emoji as ReactionType);
                                     }}
-                                    className={`text-xl p-2 ${alreadyReacted && emojiToDisplay == emoji ? "bg-blue-900 border-2 " : " "}hover:bg-slate-700 rounded-xl transition-all hover:scale-125`}
+                                    className={`text-xl p-2 ${myReactionType == emoji ? "bg-blue-900 border-2 " : " "}hover:bg-slate-700 rounded-xl transition-all hover:scale-125`}
                                 >
                                     {emojisMap.get(emoji)}
                                 </button>
-                            ))]}
+                            ))}
                         </div>
                     )}
                 </div>

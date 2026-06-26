@@ -36,7 +36,7 @@ export function toOrganizationView(organization: IOrganization): OrganizationVie
             p = organization.projections;
     }
 
-    let o: UserView = { id: "", username: "", email: "", organizations: new Map<string, UserPrivileges>};
+    let o: UserView = { id: "", username: "", email: "", verified: false, organizations: new Map<string, UserPrivileges>};
     if (organization.organizer != null) {
         if (!(organization.organizer instanceof Types.ObjectId))
             o = toUserView(organization.organizer as unknown as IUser);
