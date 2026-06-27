@@ -178,7 +178,7 @@ export const OrganizationMembers: React.FC<OrganizationMembersProps> = ({
 
                         <div className="space-y-2">
                             <div className="text-xs text-slate-400">Role</div>
-                            {(["admin", "editor", "viewer"] as OrganizationRole[]).map((roleOption) => (
+                            {(["editor", "viewer"] as OrganizationRole[]).map((roleOption) => (
                                 <label key={roleOption} className="flex items-center gap-2 text-sm text-slate-200 cursor-pointer">
                                     <input
                                         type="radio"

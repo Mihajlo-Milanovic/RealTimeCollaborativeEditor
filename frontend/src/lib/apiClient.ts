@@ -291,6 +291,22 @@ export const apiClient = {
                     members: new Map(Object.entries(o.members ?? {})),
                 } as OrganizationView
             ));
+        },
+
+        async removeMember(orgId: string, memberId: string, applicantId: string): Promise<boolean> {
+            try {
+                await request(`organizations/${encodeURIComponent(orgId)}/removeMembers`, {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        members: [memberId],
+                        applicantId,
+                    }),
+                });
+                return true;
+            } catch (e) {
+                console.error("removeMember failed:", e);
+                return false;
+            }
         }
     },
 

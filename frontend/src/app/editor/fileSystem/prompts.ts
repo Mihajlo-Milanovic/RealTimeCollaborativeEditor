@@ -39,6 +39,25 @@ export const prompts = {
 
     },
 
+    async leaveOrganization(organization: OrganizationView, userId: string, refresh: () => void) {
+        if (!organization || !userId) return;
+
+        const role = organization.members.get(userId);
+
+        // Admin koji napušta organizaciju => organizacija se briše
+        // (reuse postojeće delete logike umesto dupliranja koda).
+        if (role === "admin") {
+            await this.deleteOrganization(organization, userId, refresh);
+            return;
+        }
+
+        // Običan član => uklanja samo sebe iz organizacije.
+        if (!confirm(`Leave organization "${organization.name}"?`)) return;
+        const success = await apiClient.explorer.removeMember(organization.id, userId, userId);
+        if (success) refresh();
+        else alert("Could not leave organization.");
+    },
+
     async createOrganization(userId: string, refresh: () => void) {
         if (!userId) return;
         const name = prompt("Enter organization name:")?.trim() || "";

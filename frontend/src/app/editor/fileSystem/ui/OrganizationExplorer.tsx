@@ -7,8 +7,11 @@ import {
     Trash2,
     User,
 } from "lucide-react";
+import {useState} from "react";
 import {OrganizationRole} from "../../../../models/types/OrganizationRole";
+import {OrganizationView} from "../../../../models/types/views/OrganizationView";
 import FileTree from "./FileTree";
+import {OrganizationMembers} from "./OrganizationMembers";
 import {ImExit} from "react-icons/im";
 import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
 import {prompts} from "../prompts";
@@ -39,6 +42,9 @@ export default function OrganizationExplorer() {
         toggleOrganizationExplorer,
         refresh,
     } = useOrganizationExplorer(user.id);
+
+    // organizacija čiji je "Manage members" dijalog trenutno otvoren
+    const [membersOrg, setMembersOrg] = useState<OrganizationView | null>(null);
 
     return (
         <div className="mt-4">
@@ -135,7 +141,7 @@ export default function OrganizationExplorer() {
                                             )}
 
                                             <button
-                                                // onClick={(e) => onOpenMembersManagerAction?.(organization)}
+                                                onClick={() => setMembersOrg(organization)}
                                                 className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-green-500 transition-colors"
                                                 title="Manage members"
                                             >
@@ -154,9 +160,7 @@ export default function OrganizationExplorer() {
                                         </span>
 
                                         <button
-                                            onClick={() => {
-                                                // TODO: handleLeaveOrganization();
-                                            }}
+                                            onClick={() => prompts.leaveOrganization(organization, user.id, refresh)}
                                             className="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-colors"
                                             title="Leave organization"
                                         >
@@ -179,6 +183,15 @@ export default function OrganizationExplorer() {
                     />
                 </div>
             </HocuspocusRoom>
+
+            {membersOrg && (
+                <OrganizationMembers
+                    organization={membersOrg}
+                    currentUserId={user.id}
+                    onClose={() => setMembersOrg(null)}
+                    onRefreshOrganizations={refresh}
+                />
+            )}
         </div>
     )
 }
