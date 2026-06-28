@@ -70,6 +70,7 @@ import {CollabUser} from "../../../../../models/interfaces/CollabUser";
 import {user} from "../../../../../store/user";
 import {getRandomColor} from "../../../../../lib/awarenessColors";
 import {useCanAccess} from "../../../../../lib/access/useCanAccess";
+import {ExportMenu} from "../../../ExportMenu";
 
 
 
@@ -131,6 +132,12 @@ const MainToolbarContent = (
                 <TextAlignButton align="center"/>
                 <TextAlignButton align="right"/>
                 <TextAlignButton align="justify"/>
+            </ToolbarGroup>
+
+            <ToolbarSeparator/>
+
+            <ToolbarGroup>
+                <ExportMenu/>
             </ToolbarGroup>
 
             <Spacer/>
