@@ -5,6 +5,7 @@ import {checkForValidationErrors} from "../middlewares/validation/checkForValida
 import {matchedData} from "express-validator";
 import {CommentView} from "../data/types/CommentView";
 import {ReactionView} from "../data/types/ReactionView";
+import {getUserRoleForFile, canPerform} from "../access/authorize";
 
 
 export async function createComment (req: Request, res: Response, next: NextFunction) {
@@ -14,6 +15,16 @@ export async function createComment (req: Request, res: Response, next: NextFunc
 
     try {
         const bodyObj = matchedData(req) as INewComment;
+
+        // Backend autoritet: uloga se razrešava iz resursa (fajla), ne od klijenta.
+        const role = await getUserRoleForFile(bodyObj.file, bodyObj.commenter);
+        if (!canPerform(role, "comment:add")) {
+            res.status(403).json({
+                success: false,
+                message: "Forbidden: insufficient privileges to comment.",
+            });
+            return;
+        }
 
         const result: CommentView | Error = await cs.createComment(bodyObj);
 

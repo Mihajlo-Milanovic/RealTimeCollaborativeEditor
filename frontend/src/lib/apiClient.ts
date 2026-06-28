@@ -164,13 +164,15 @@ export const apiClient = {
 
                 case NodeType.FILE:
                     endpoint = `files/${encodeURIComponent(id)}`;
-                    const resFile = (await request<FileNode>(endpoint, {method: 'DELETE'}));
+                    // Backend (toFileView) vraća roditelja kao "parentId", ne "parents".
+                    const resFile = (await request<FileNode & { parentId: string }>(endpoint, {method: 'DELETE'}));
                     console.log("deleted file: ", resFile)
 
                     if (resFile) {
-                        const childrenArray = fileSystemStore.fsMap.get(resFile.parents as string);
+                        const parentId = resFile.parentId;
+                        const childrenArray = fileSystemStore.fsMap.get(parentId);
                         if (childrenArray)
-                            fileSystemStore.fsMap.set(resFile.parents as string, childrenArray.filter(c => c.id !== id));
+                            fileSystemStore.fsMap.set(parentId, childrenArray.filter(c => c.id !== id));
                         return true;
                     }
                     break;

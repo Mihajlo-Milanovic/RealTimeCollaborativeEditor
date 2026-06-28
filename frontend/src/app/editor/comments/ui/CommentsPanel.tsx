@@ -2,6 +2,7 @@
 
 import {CommentItem} from "./CommentItem";
 import {useComments} from "../state/useComments";
+import {useCanAccess} from "../../../../lib/access/useCanAccess";
 import {TCommentPanel} from "../../../../models/elementTypes/TCommentPanel";
 
 export default function CommentsPanel(
@@ -22,6 +23,9 @@ export default function CommentsPanel(
         refresh,
     } = useComments(fileId, userId);
 
+    // UI ograničenje (UX) — stvarnu odluku ionako donosi Proxy + backend.
+    const canComment = useCanAccess("comment:add");
+
     return (
         <div className="w-full h-full flex flex-col p-4 bg-slate-900/50 text-white overflow-hidden">
 
@@ -29,12 +33,14 @@ export default function CommentsPanel(
                 <input
                     value={newText}
                     onChange={(e) => setNewText(e.target.value)}
-                    placeholder="Napiši komentar..."
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    disabled={!canComment}
+                    placeholder={canComment ? "Napiši komentar..." : "Nemate dozvolu za komentarisanje"}
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                     onClick={addComment}
-                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500"
+                    disabled={!canComment}
+                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     Add
                 </button>

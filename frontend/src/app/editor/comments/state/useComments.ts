@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {useHocuspocusProvider} from "@hocuspocus/provider-react";
 import {CommentView} from "../../../../models/types/views/CommentView";
 import {cService} from "../services/cService";
+import {accessProxy} from "../../../../lib/access/accessProxy";
 import {commentsStore} from "../../../../store/comments";
 
 export function useComments(fileId: string, userId: string) {
@@ -52,7 +53,8 @@ export function useComments(fileId: string, userId: string) {
     const addComment = async () => {
         if (!newText.trim() || !userId) return;
 
-        const success = await cService.createComment(newText.trim(), fileId, userId);
+        // Mutacija ide kroz Proxy (kontrola pristupa), ne direktno kroz cService.
+        const success = await accessProxy.createComment(newText.trim(), fileId, userId);
         if (success) {
             setNewText("");
             // Persist je prošao → povuci pun niz i upiši u shared mapu → svi vide.
@@ -61,12 +63,12 @@ export function useComments(fileId: string, userId: string) {
     };
 
     const updateComment = async (id: string, content: string) => {
-        const success = await cService.updateComment(id, content);
+        const success = await accessProxy.updateComment(id, content);
         if (success) await fetchComments();
     };
 
     const deleteComment = async (id: string) => {
-        const success = await cService.deleteComment(id);
+        const success = await accessProxy.deleteComment(id);
         if (success) await fetchComments();
     };
 

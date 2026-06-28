@@ -2,6 +2,7 @@ import {emojisMap, ReactionType} from "../../../../models/types/ReactionType";
 import {useEffect, useState} from "react";
 import {TCommentItem} from "../../../../models/elementTypes/TCommentItem";
 import {useReactions} from "../state/useReactions";
+import {useCanAccess} from "../../../../lib/access/useCanAccess";
 
 
 export function CommentItem(
@@ -29,6 +30,11 @@ export function CommentItem(
         toggleReaction,
     } = useReactions(comment, currentUserId, onReactionChange);
 
+    // Dozvole (UX) — odluku ionako donosi Proxy + backend.
+    const canReact = useCanAccess("reaction:add");
+    const canEditComment = useCanAccess("comment:edit");
+    const canDeleteComment = useCanAccess("comment:delete");
+
     return (
         <div
             className="group rounded-2xl border border-slate-800 bg-slate-800/40 p-4 hover:bg-slate-800/60 transition-all">
@@ -43,8 +49,9 @@ export function CommentItem(
                         className="text-[10px] opacity-50 px-1.5 py-0.5 rounded-full bg-slate-700">(edited)</span>}
                 </div>
 
-                {(currentUserId == comment.commenter.id) && (
+                {(currentUserId == comment.commenter.id && (canEditComment || canDeleteComment)) && (
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {canEditComment && (
                         <button
                             className="p-1.5 hover:bg-slate-700 rounded-lg text-yellow-500/70 hover:text-yellow-400 transition-colors"
                             onClick={() => setEditing((p) => !p)}
@@ -55,6 +62,8 @@ export function CommentItem(
                                       d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                             </svg>
                         </button>
+                        )}
+                        {canDeleteComment && (
                         <button
                             className="p-1.5 hover:bg-slate-700 rounded-lg text-red-500/70 hover:text-red-400 transition-colors"
                             onClick={() => onDelete(comment.id)}
@@ -65,6 +74,7 @@ export function CommentItem(
                                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
                         </button>
+                        )}
                     </div>
                 )}
             </div>
@@ -104,13 +114,14 @@ export function CommentItem(
                 {groupedReactions.map(({type, count, mine}) => (
                     <button
                         key={type}
-                        onClick={() => toggleReaction(type)}
-                        title={mine ? "Ukloni reakciju" : "Reaguj"}
+                        onClick={() => canReact && toggleReaction(type)}
+                        disabled={!canReact}
+                        title={!canReact ? "Nemate dozvolu za reakcije" : (mine ? "Ukloni reakciju" : "Reaguj")}
                         className={`flex items-center gap-1.5 px-2 py-1 rounded-full border text-xs transition-colors ${
                             mine
                                 ? "bg-blue-600/30 border-blue-500 text-white"
                                 : "bg-slate-900/50 border-slate-700 hover:border-slate-500"
-                        }`}
+                        } ${!canReact ? "cursor-default opacity-80" : ""}`}
                     >
                         <span className="text-lg leading-none">
                             {emojisMap.get(type) || emojisMap.get('thumbs_up')}
@@ -119,7 +130,8 @@ export function CommentItem(
                     </button>
                 ))}
 
-                {/* Add Reaction Button */}
+                {/* Add Reaction Button — sakriven kada korisnik ne sme da reaguje */}
+                {canReact && (
                 <div className="relative">
                     <button
                         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
@@ -150,6 +162,7 @@ export function CommentItem(
                         </div>
                     )}
                 </div>
+                )}
             </div>
         </div>
     )

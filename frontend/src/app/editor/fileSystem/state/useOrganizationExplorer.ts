@@ -2,6 +2,8 @@ import {useEffect, useState} from "react";
 import {OrganizationView} from "../../../../models/types/views/OrganizationView";
 import {apiClient} from "../../../../lib/apiClient";
 import {user} from "../../../../store/user";
+import {useAccessStore} from "../../../../lib/access/accessStore";
+import {OrganizationRole} from "../../../../models/types/OrganizationRole";
 
 
 export function useOrganizationExplorer(userId: string) {
@@ -80,10 +82,17 @@ export function useOrganizationExplorer(userId: string) {
     }, [userId])
 
     useEffect(() => {
-        if (selectedOrganization)
+        if (selectedOrganization) {
             setFsRoom(selectedOrganization.id);
-        else
+            // Jedino mesto upisa uloge: uloga korisnika u izabranoj organizaciji.
+            useAccessStore.getState().setRole(
+                (selectedOrganization.members.get(user.id) as OrganizationRole) ?? null
+            );
+        } else {
             setFsRoom(user.id);
+            // Lični prostor (van organizacije): vlasnik ima pun pristup.
+            useAccessStore.getState().setRole("admin");
+        }
 
         console.log("ROOM_NAME ::>>", fsRoom);
     }, [selectedOrganization])

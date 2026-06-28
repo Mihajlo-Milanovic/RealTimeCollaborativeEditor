@@ -1,6 +1,6 @@
 import {CommentView} from "../../../../models/types/views/CommentView";
 import {ReactionType} from "../../../../models/types/ReactionType";
-import {cService} from "../services/cService";
+import {accessProxy} from "../../../../lib/access/accessProxy";
 
 export type GroupedReaction = {
     type: ReactionType;
@@ -47,9 +47,10 @@ export const useReactions = (
     const toggleReaction = async (emoji: ReactionType) => {
         if (!userId) return;
 
+        // Mutacija reakcije ide kroz Proxy (kontrola pristupa).
         const ok = myReactionType === emoji
-            ? await cService.removeReaction(comment.id, userId)
-            : await cService.addOrUpdateReaction(comment.id, emoji, userId);
+            ? await accessProxy.removeReaction(comment.id, userId)
+            : await accessProxy.addOrUpdateReaction(comment.id, emoji, userId);
 
         if (ok) await onReactionChange();
     };

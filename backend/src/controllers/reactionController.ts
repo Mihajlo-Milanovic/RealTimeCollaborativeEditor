@@ -4,6 +4,7 @@ import {matchedData} from "express-validator";
 import * as rs from "../services/reactionService";
 import {INewReaction} from "../data/interfaces/IReaction";
 import {ReactionView} from "../data/types/ReactionView";
+import {getUserRoleForComment, canPerform} from "../access/authorize";
 
 
 export async function createOrUpdateReaction(req: Request, res: Response, next: NextFunction) {
@@ -13,6 +14,16 @@ export async function createOrUpdateReaction(req: Request, res: Response, next: 
 
     try {
         const data = matchedData(req) as INewReaction;
+
+        // Backend autoritet: uloga se razrešava iz resursa (komentar -> fajl -> org).
+        const role = await getUserRoleForComment(data.comment, data.reactor);
+        if (!canPerform(role, "reaction:add")) {
+            res.status(403).json({
+                success: false,
+                message: "Forbidden: insufficient privileges to react.",
+            });
+            return;
+        }
 
         const result: {updated: boolean, reaction: ReactionView | null} = await rs.createOrUpdateReaction(data);
 

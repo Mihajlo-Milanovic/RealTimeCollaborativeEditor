@@ -69,6 +69,7 @@ import {useSelectedFile} from "../../../../../store/selectedFile"
 import {CollabUser} from "../../../../../models/interfaces/CollabUser";
 import {user} from "../../../../../store/user";
 import {getRandomColor} from "../../../../../lib/awarenessColors";
+import {useCanAccess} from "../../../../../lib/access/useCanAccess";
 
 
 
@@ -187,10 +188,14 @@ export function EditorInner() {
     const cursorUsername = userAwareness?.username ?? user.username ?? "Anonymous";
     const cursorColor = userAwareness?.color ?? getRandomColor(cursorUsername);
 
+    // Odluku o pravu na izmenu dokumenta donosi Proxy (kontrola pristupa).
+    // Viewer dobija read-only editor (lokalne Yjs transakcije se ne kreiraju).
+    const canEdit = useCanAccess("document:edit");
+
     // const [isLoading, setIsLoading] = useState(true);
     const editor = useEditor({
         immediatelyRender: false,
-        editable: true,
+        editable: canEdit,
         editorProps: {
             attributes: {
                 autocomplete: "off",
@@ -253,6 +258,11 @@ export function EditorInner() {
             }),
         ],
     })
+
+    // Ako se uloga promeni dok je editor otvoren, ažuriraj read-only stanje.
+    useEffect(() => {
+        editor?.setEditable(canEdit);
+    }, [editor, canEdit]);
 
     useEffect(() => {
         // setIsLoading(true);
