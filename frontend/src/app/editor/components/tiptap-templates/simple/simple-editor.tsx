@@ -71,6 +71,7 @@ import {user} from "../../../../../store/user";
 import {getRandomColor} from "../../../../../lib/awarenessColors";
 import {useCanAccess} from "../../../../../lib/access/useCanAccess";
 import {ExportMenu} from "../../../ExportMenu";
+import {LiveAnalyticsPanel} from "../../../LiveAnalyticsPanel";
 
 
 
@@ -328,6 +329,8 @@ export function EditorInner() {
             <div className="content-wrapper">
                 <EditorContent editor={editor} role="presentation" className="simple-editor-content"/>
             </div>
+
+            <LiveAnalyticsPanel/>
         </EditorContext.Provider>
     )
 }
