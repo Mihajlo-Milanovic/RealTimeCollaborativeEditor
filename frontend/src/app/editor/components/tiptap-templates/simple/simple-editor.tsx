@@ -272,12 +272,12 @@ export function EditorInner() {
         editor?.setEditable(canEdit);
     }, [editor, canEdit]);
 
-    useEffect(() => {
-        // setIsLoading(true);
-        if (!selectedFileId || !provider.document) return;
-        // syncState(selectedFileId, provider.document).then(() => setIsLoading(false));
-
-    }, [provider, selectedFileId]);
+    // useEffect(() => {
+    //     // setIsLoading(true);
+    //     if (!selectedFileId || !provider.document) return;
+    //     // syncState(selectedFileId, provider.document).then(() => setIsLoading(false));
+    //
+    // }, [provider, selectedFileId]);
 
     const bodyRect = useCursorVisibility({
         editor,

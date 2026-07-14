@@ -64,6 +64,9 @@ export const apiClient = {
                         parents: parentId,
                         type: NodeType.FILE,
                     } as FileNode;
+
+                    fileSystemStore.fsMap.set(fileNode.id, []);
+
                     break;
 
                 case NodeType.DIR:
@@ -169,6 +172,7 @@ export const apiClient = {
                     console.log("deleted file: ", resFile)
 
                     if (resFile) {
+                        fileSystemStore.fsMap.delete(id);
                         const parentId = resFile.parentId;
                         const childrenArray = fileSystemStore.fsMap.get(parentId);
                         if (childrenArray)
@@ -241,6 +245,11 @@ export const apiClient = {
                             parents: nodeId
                         } as FileNode
                     ));
+
+                   dirFiles.forEach(file => {
+                       if (!fileSystemStore.fsMap.has(file.id))
+                           fileSystemStore.fsMap.set(file.id, []);
+                   });
 
                     children = [...dirFolders, ...dirFiles];
                     break;

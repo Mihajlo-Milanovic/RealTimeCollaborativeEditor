@@ -7,8 +7,7 @@ class FileSystemStore {
 
     private _doc: Y.Doc | null;
     private _map: Y.Map<FileNode[]> | null;
-    private _observers = new Map<() => void, (event: YMapEvent<FileNode[]>) => void>()
-
+    private _observers = new Map<() => void, (event: YMapEvent<FileNode[]>) => void>();
     static getInstance(): FileSystemStore {
         if (!FileSystemStore.instance) {
             FileSystemStore.instance = new FileSystemStore();

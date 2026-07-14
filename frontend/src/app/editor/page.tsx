@@ -12,17 +12,19 @@ import {useCommentsResize} from "./comments/hooks/useCommentsResize";
 import {HOST, WS_PORT, WS_PROTOCOL} from "../../config/config";
 import {user} from "../../store/user";
 import {useSelectedFile} from "../../store/selectedFile";
+import {useFileSystemMap} from "./fileSystem/state/useFileSystemMap";
 
 export default function EditorPage() {
 
     const [isLoading, setIsLoading] = useState(true);
-    const [roomName, setRoomName] = useState<string | null>(null);
+    // const [roomName, setRoomName] = useState<string | null>(null);
     const [showComments, setShowComments] = useState(false);
     const session = useSession();
     const {selectedFileId} = useSelectedFile();
 
     // sva logika za promenu širine panela je izdvojena u hook
     const {width: commentsWidth, startResize} = useCommentsResize();
+    const {currentFile} = useFileSystemMap(selectedFileId)
 
     useEffect(() => {
 
@@ -51,9 +53,10 @@ export default function EditorPage() {
     }, [session, session.status]);
 
 
-    useEffect(() => {
-        setRoomName(selectedFileId);
-    }, [selectedFileId]);
+    // useEffect(() => {
+    //     console.log(currentFile)
+    //    setRoomName(currentFile)
+    // }, [currentFile]);
 
 
     return <>
@@ -76,7 +79,7 @@ export default function EditorPage() {
 
                     </Sidebar>
 
-                    {!roomName && (
+                    {!currentFile && (
                         <main className="flex-1 flex flex-col min-w-0 bg-slate-950">
                             <div className="p-4 text-sm text-gray-400">Collaborate with ease</div>
                         </main>
@@ -86,9 +89,9 @@ export default function EditorPage() {
                         provider.document), pa komentari koriste isti realtime sync
                         kao file system. HocuspocusRoom ne dodaje DOM wrapper, pa
                         <main> i <aside> ostaju flex susedi i layout je netaknut. */}
-                    {roomName && (
+                    {currentFile && (
                         <HocuspocusRoom
-                            name={roomName}
+                            name={currentFile}
                         >
                             <main className="flex-1 flex flex-col min-w-0 bg-slate-950">
                                 <Editor/>
