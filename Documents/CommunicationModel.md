@@ -32,25 +32,24 @@ Na najvišem nivou, komunikacija u sistemu izgleda ovako:
            │  WebSocket (ws://host:1236)              │  WebSocket
            └──────────────┐            ┌──────────────┘
                           ▼            ▼
-                   ┌─────────────────────────┐
-                   │    Hocuspocus server    │   ◄── centralna tačka
-                   │  (Node.js, port 1236)   │       komunikacije
-                   │                         │
-                   │   Y.Doc po dokumentu    │
-                   │  ┌───────────────────┐  │
-                   │  │ sadržaj dokumenta │  │
-                   │  │ komentari (Y.Map) │  │
-                   │  │ fajl-sistem (Y.Map)│ │
-                   │  │ awareness (kursori)│ │
-                   │  └───────────────────┘  │
-                   └───────────┬─────────────┘
+                   ┌──────────────────────────┐
+                   │    Hocuspocus server     │   ◄── centralna tačka
+                   │  (Node.js, port 1236)    │       komunikacije
+                   │                          │
+                   │   Y.Doc po dokumentu     │
+                   │  ┌─────────────────────┐ │
+                   │  │ sadržaj dokumenta   │ │
+                   │  │ komentari (Y.Map)   │ │
+                   │  │ fajl-sistem (Y.Map) │ │
+                   │  │ awareness (kursori) │ │
+                   │  └─────────────────────┘ │
+                   └───────────┬──────────────┘
                                │  HTTP (REST)
                                ▼
-                   ┌─────────────────────────┐
-                   │   Backend (Express)     │
-                   │   + MongoDB             │   ◄── trajno čuvanje
-                   │   GET/POST /files/:id/state │
-                   └─────────────────────────┘
+               ┌─────────────────────────────────┐
+               │   Backend (Express) + MongoDB   │   ◄── trajno čuvanje
+               │    GET/POST /files/:id/state    │
+               └─────────────────────────────────┘
 ```
 
 Ključna ideja: **svaka izmena bilo kog korisnika prvo stiže do Hocuspocus servera, a on je prosleđuje svim ostalim korisnicima koji rade na istom dokumentu.** Klijenti nikada ne komuniciraju direktno jedan sa drugim.

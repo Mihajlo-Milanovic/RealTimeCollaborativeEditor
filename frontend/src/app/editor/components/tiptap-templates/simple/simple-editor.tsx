@@ -65,7 +65,7 @@ import Underline from "@tiptap/extension-underline"
 import Link from "@tiptap/extension-link"
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import Collaboration from "@tiptap/extension-collaboration";
-import {useSelectedFile} from "../../../../../store/selectedFile"
+// import {useSelectedFile} from "../../../../../store/selectedFile"
 import {CollabUser} from "../../../../../models/interfaces/CollabUser";
 import {user} from "../../../../../store/user";
 import {getRandomColor} from "../../../../../lib/awarenessColors";
@@ -186,7 +186,7 @@ export function EditorInner() {
     const provider = useHocuspocusProvider();
     const userAwareness = provider.awareness?.getLocalState() as CollabUser | null;
     // const awareness = useHocuspocusAwareness();
-    const {selectedFileId} = useSelectedFile();
+    // const {selectedFileId} = useSelectedFile();
 
     // Ista boja i username koji se već koriste u OnlineUsers.tsx:
     // - prvo uzmemo vrednost iz awareness-a (mehanizam koji već postoji),
@@ -199,7 +199,6 @@ export function EditorInner() {
     // Odluku o pravu na izmenu dokumenta donosi Proxy (kontrola pristupa).
     // Viewer dobija read-only editor (lokalne Yjs transakcije se ne kreiraju).
     const canEdit = useCanAccess("document:edit");
-
     // const [isLoading, setIsLoading] = useState(true);
     const editor = useEditor({
         immediatelyRender: false,
@@ -265,7 +264,7 @@ export function EditorInner() {
                 },
             }),
         ],
-    })
+    }, [provider]);
 
     // Ako se uloga promeni dok je editor otvoren, ažuriraj read-only stanje.
     useEffect(() => {
