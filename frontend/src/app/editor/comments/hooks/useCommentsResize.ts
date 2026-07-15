@@ -4,6 +4,9 @@ type TUseCommentsResizeOptions = {
     initialWidth?: number;
     minWidth?: number;
     maxWidth?: number;
+    // uz koju ivicu prozora je panel prikačen (određuje kako se
+    // iz pozicije miša računa širina panela)
+    side?: "left" | "right";
 };
 
 type TUseCommentsResize = {
@@ -13,16 +16,17 @@ type TUseCommentsResize = {
 };
 
 /**
- * Sva logika za promenu širine panela sa komentarima.
+ * Sva logika za promenu širine bočnog panela prevlačenjem.
  *
  * - drži trenutnu širinu panela u state-u,
  * - startResize() pokreće resize operaciju (poziva se iz onMouseDown na handle-u),
  * - dok je resize aktivan sluša pomeranje miša na celom prozoru,
- * - računa novu širinu na osnovu pozicije miša (panel je uz desnu ivicu),
+ * - računa novu širinu na osnovu pozicije miša i ivice uz koju je panel
+ *   prikačen (side: "right" za komentare, "left" za file explorer),
  * - ograničava širinu na [minWidth, maxWidth],
  * - završava resize na otpuštanje miša.
  *
- * page.tsx samo poziva ovaj hook i koristi vraćene vrednosti.
+ * Pozivaoci (page.tsx, Sidebar.tsx) samo koriste vraćene vrednosti.
  */
 export function useCommentsResize(
     options: TUseCommentsResizeOptions = {}
@@ -32,6 +36,7 @@ export function useCommentsResize(
         initialWidth = 384,
         minWidth = 250,
         maxWidth = 800,
+        side = "right",
     } = options;
 
     const [width, setWidth] = useState<number>(initialWidth);
@@ -50,9 +55,10 @@ export function useCommentsResize(
 
         const handleMouseMove = (e: MouseEvent) => {
             if (!isResizingRef.current) return;
-            // panel je prikačen uz desnu ivicu, pa je širina razdaljina
-            // od kursora do desne ivice prozora
-            const newWidth = window.innerWidth - e.clientX;
+            // širina = razdaljina od kursora do ivice uz koju je panel prikačen
+            const newWidth = side === "left"
+                ? e.clientX
+                : window.innerWidth - e.clientX;
             setWidth(Math.max(minWidth, Math.min(maxWidth, newWidth)));
         };
 
@@ -73,7 +79,7 @@ export function useCommentsResize(
             window.removeEventListener("mouseup", stopResize);
             document.body.style.userSelect = previousUserSelect;
         };
-    }, [isResizing, minWidth, maxWidth]);
+    }, [isResizing, minWidth, maxWidth, side]);
 
     return {width, isResizing, startResize};
 }

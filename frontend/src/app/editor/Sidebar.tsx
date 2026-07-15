@@ -6,6 +6,7 @@ import {signOut} from "next-auth/react";
 import {useRouter} from "next/navigation";
 import {useSelectedFile} from "../../store/selectedFile";
 import {user} from "../../store/user"
+import {useCommentsResize} from "./comments/hooks/useCommentsResize";
 
 interface SidebarProps {
     // user: UserView;
@@ -24,16 +25,16 @@ export const Sidebar: React.FC<SidebarProps> = (
 ) => {
 
     const [explorerCollapsed, setExplorerCollapsed] = useState(false);
-    const [explorerWidth, setExplorerWidth] = useState(320);
-    const [isResizingExplorer, setIsResizingExplorer] = useState(false);
 
     const {selectedFileId} = useSelectedFile();
 
-    const resize = (e: React.MouseEvent) => {
-        if (isResizingExplorer) {
-            setExplorerWidth(Math.max(200, Math.min(600, e.clientX)));
-        }
-    };
+    // isti hook kao za panel sa komentarima, samo prikačen uz levu ivicu
+    const {width: explorerWidth, startResize: startExplorerResize} = useCommentsResize({
+        initialWidth: 320,
+        minWidth: 200,
+        maxWidth: 600,
+        side: "left",
+    });
 
     const router = useRouter();
 
@@ -44,13 +45,6 @@ export const Sidebar: React.FC<SidebarProps> = (
     };
 
     return (<>
-        {/*// <div className={"border-r flex"}*/}
-        {/*//         style={{width: explorerWidth}}*/}
-        {/*// onMouseMove={resize}*/}
-        {/*// onMouseUp={() => {*/}
-        {/*//     setIsResizingExplorer(false);*/}
-        {/*//     setIsResizingComments(false);*/}
-        {/*// }}>*/}
         {explorerCollapsed && (<aside
                 className="w-16 border-r border-slate-800 bg-slate-900/80 flex flex-col items-center py-4 gap-4 shrink-0"
             >
@@ -84,7 +78,7 @@ export const Sidebar: React.FC<SidebarProps> = (
 
         {!explorerCollapsed && (<aside
                 style={{width: explorerWidth}}
-                className="min-w-sm w-sm border-r border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"
+                className="border-r border-slate-800 bg-slate-900/50 flex flex-col relative shrink-0"
             >
                 <div className="p-4 border-b border-slate-800 flex justify-between items-center">
                     <button
@@ -118,12 +112,11 @@ export const Sidebar: React.FC<SidebarProps> = (
                 </div>
 
                 <div
-                    onMouseDown={() => setIsResizingExplorer(true)}
-                    className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize"
+                    onMouseDown={startExplorerResize}
+                    className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
                 />
             </aside>
         )}
-    {/*</div>*/}
         </>
     )
 }

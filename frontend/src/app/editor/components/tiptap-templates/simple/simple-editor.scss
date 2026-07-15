@@ -37,8 +37,19 @@ body {
   font-family: "DM Sans", sans-serif;
 }
 
+/* Popunjava <main> (flex kolonu) i daje deci definisanu visinu,
+   da bi .content-wrapper mogao da bude pravi scroll container.
+   min-height: 0 dozvoljava flex detetu da se skupi ispod visine sadržaja. */
+.editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
 .content-wrapper {
-  height: calc(100% - var(--tt-toolbar-height));
+  flex: 1 1 0%;
+  min-height: 0;
   overflow-y: auto;
   background-color: #020617; /* slate-950 */
 
