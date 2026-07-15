@@ -101,6 +101,27 @@ export function useOrganizationExplorer(userId: string) {
         if (isSearchOpen) setVisibleOrganizations(filterOrganizations(organizations));
     }, [queryString, isSearchOpen]);
 
+    /**
+     * Realtime promena uloga (poziva MembersRealtime kada stigne Yjs update):
+     * upiše novo stanje članova u state organizacija. Zamena selectedOrganization
+     * novim objektom okida postojeći efekat iznad, koji (na jedinom mestu upisa)
+     * postavi novu ulogu trenutnog korisnika u accessStore — editor, Proxy i
+     * dugmad odmah koriste novu privilegiju, bez refresh-a.
+     */
+    const applyMembersUpdate = (orgId: string, roles: Map<string, OrganizationRole>) => {
+        const patch = (orgs: OrganizationView[]) => orgs.map(org =>
+            org.id === orgId
+                ? {...org, members: new Map<string, string>(roles)}
+                : org
+        );
+        setOrganizations(prev => patch(prev));
+        setVisibleOrganizations(prev => patch(prev));
+        setSelectedOrganization(prev =>
+            prev && prev.id === orgId
+                ? {...prev, members: new Map<string, string>(roles)}
+                : prev
+        );
+    };
 
     return {
         organizationExplorerCollapsed: isOpen,
@@ -114,6 +135,7 @@ export function useOrganizationExplorer(userId: string) {
         queryOrganizations: (query: string) => setQueryString(query),
         selectOrganization,
         refresh: fetchOrganizations,
-        toggleOrganizationExplorer
+        toggleOrganizationExplorer,
+        applyMembersUpdate
     }
 }

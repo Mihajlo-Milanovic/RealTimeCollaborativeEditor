@@ -1,14 +1,21 @@
 import { useState, useCallback, useEffect } from "react";
+import { useHocuspocusProvider } from "@hocuspocus/provider-react";
 import { getRequestSingle, putRequest } from "../../../api/serverRequests/methods";
 import {OrganizationView} from "../../../../models/types/views/OrganizationView";
 import {OrganizationMember} from "../../../../models/types/views/OrganizationMember";
 import {OrganizationRole} from "../../../../models/types/OrganizationRole";
 import {UserView} from "../../../../models/types/views/UserView";
+import {membersStore} from "../../../../store/members";
 
 
 export function useOrganizationMembers(organization: OrganizationView | null, currentUserId?: string) {
     const [members, setMembers] = useState<OrganizationMember[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Soba organizacije čiji se članovi prikazuju (dijalog je uvek unutar
+    // <HocuspocusRoom name={organization.id}>). Kroz njen shared dokument se
+    // backendom potvrđene uloge objavljuju svim klijentima organizacije.
+    const provider = useHocuspocusProvider();
 
     const loadMembers = useCallback(async (org: OrganizationView) => {
         setIsLoading(true);
@@ -28,6 +35,10 @@ export function useOrganizationMembers(organization: OrganizationView | null, cu
                 } else {
                     orgMemMap = new Map();
                 }
+
+                // Objavi sveže (backendom potvrđeno) stanje uloga u shared
+                // Y.Map — Hocuspocus ga prosledi svim klijentima u sobi.
+                membersStore.publish(provider.document, orgMemMap);
 
                 if (orgMemMap.size) {
                     const params = new URLSearchParams();
@@ -56,7 +67,7 @@ export function useOrganizationMembers(organization: OrganizationView | null, cu
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [provider.document]);
 
     useEffect(() => {
         if (organization) {
@@ -66,10 +77,25 @@ export function useOrganizationMembers(organization: OrganizationView | null, cu
         }
     }, [organization, loadMembers]);
 
+    // Realtime: kada bilo koji klijent objavi promenu uloga u shared mapu,
+    // osveži listu članova sa backenda (izvor istine) — lista u otvorenom
+    // dijalogu se ažurira bez refresh-a.
+    useEffect(() => {
+        if (!organization) return;
+
+        return membersStore.subscribe(provider.document, () => {
+            void loadMembers(organization);
+        });
+    }, [organization, provider.document, loadMembers]);
+
     const changeRole = async (memberId: string, role: OrganizationRole) => {
-        if (!organization) return false;
+        if (!organization || !currentUserId) return false;
+        // "admin" se ne može dodeliti — backend ovo takođe odbija (autoritet),
+        // ovde samo štedimo uzaludan zahtev.
+        if (role === "admin") return false;
         const res = await putRequest(`organizations/${organization.id}/addMembers`, {
             members: [{ userId: memberId, role }],
+            applicantId: currentUserId,
         });
         if (res.ok) {
             await loadMembers(organization);
@@ -95,9 +121,11 @@ export function useOrganizationMembers(organization: OrganizationView | null, cu
     };
 
     const addMemberByUsername = async (username: string, role: OrganizationRole) => {
-        if (!organization) return false;
+        if (!organization || !currentUserId) return false;
+        if (role === "admin") return false;
         const res = await putRequest(`organizations/${organization.id}/addMembersByUsername`, {
             members: [{ username, role }],
+            applicantId: currentUserId,
         });
         if (res.ok) {
             await loadMembers(organization);

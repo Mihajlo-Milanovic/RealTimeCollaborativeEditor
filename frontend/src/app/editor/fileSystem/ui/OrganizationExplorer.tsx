@@ -11,6 +11,7 @@ import {useState} from "react";
 import {OrganizationRole} from "../../../../models/types/OrganizationRole";
 import {OrganizationView} from "../../../../models/types/views/OrganizationView";
 import FileTree from "./FileTree";
+import MembersRealtime from "./MembersRealtime";
 import {OrganizationMembers} from "./OrganizationMembers";
 import {ImExit} from "react-icons/im";
 import {AiOutlineDown, AiOutlineRight} from "react-icons/ai";
@@ -41,6 +42,7 @@ export default function OrganizationExplorer() {
         selectOrganization,
         toggleOrganizationExplorer,
         refresh,
+        applyMembersUpdate,
     } = useOrganizationExplorer(user.id);
 
     // organizacija čiji je "Manage members" dijalog trenutno otvoren
@@ -173,25 +175,43 @@ export default function OrganizationExplorer() {
                     </ul>
                 )}
             </div>
-            <HocuspocusRoom
-                name={fsRoom}
-            >
-                <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/60 p-2">
-                    <FileTree
-                        organization={selected}
-                        onCloseCurrentOrganizationFSAction={() => selectOrganization(null)}
-                    />
-                </div>
-            </HocuspocusRoom>
+            {/* Sobe se mount-uju kroz jedinstven skup imena jer @hocuspocus/provider
+                ne dozvoljava dva provider-a sa istim imenom sobe na istoj konekciji:
+                - soba fajl-sistema (fsRoom = izabrana organizacija ili lični prostor)
+                  nosi FileTree i realtime sync uloga (MembersRealtime),
+                - "Manage members" dijalog živi u sobi SVOJE organizacije (kroz nju
+                  objavljuje promene uloga); kada je to ista organizacija koja je
+                  izabrana, deli već mount-ovanu sobu umesto da otvara duplu. */}
+            {[...new Set([fsRoom, ...(membersOrg ? [membersOrg.id] : [])])].map((roomName) => (
+                <HocuspocusRoom
+                    key={roomName}
+                    name={roomName}
+                >
+                    {roomName === fsRoom && (
+                        <>
+                            <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900/60 p-2">
+                                <FileTree
+                                    organization={selected}
+                                    onCloseCurrentOrganizationFSAction={() => selectOrganization(null)}
+                                />
+                            </div>
+                            <MembersRealtime
+                                organization={selected}
+                                onMembersChangedAction={applyMembersUpdate}
+                            />
+                        </>
+                    )}
 
-            {membersOrg && (
-                <OrganizationMembers
-                    organization={membersOrg}
-                    currentUserId={user.id}
-                    onClose={() => setMembersOrg(null)}
-                    onRefreshOrganizations={refresh}
-                />
-            )}
+                    {membersOrg && membersOrg.id === roomName && (
+                        <OrganizationMembers
+                            organization={membersOrg}
+                            currentUserId={user.id}
+                            onClose={() => setMembersOrg(null)}
+                            onRefreshOrganizations={refresh}
+                        />
+                    )}
+                </HocuspocusRoom>
+            ))}
         </div>
     )
 }

@@ -109,10 +109,15 @@ export const OrganizationMembers: React.FC<OrganizationMembersProps> = ({
                             <MemberItem
                                 key={member.id}
                                 member={member}
-                                showChangeRoleAndRemove={organization.members.get(currentUserId) == "admin"}
+                                // Admin (jedini — kreator) nema opcije nad sopstvenim
+                                // nalogom: uloga mu se ne može menjati niti se može ukloniti.
+                                showChangeRoleAndRemove={
+                                    organization.members.get(currentUserId) == "admin"
+                                    && member.role !== "admin"
+                                }
                                 onChangeRole={(m) => {
                                     setMemberForRoleChange(m);
-                                    setSelectedRole(m.role);
+                                    setSelectedRole(m.role === "admin" ? "viewer" : m.role);
                                 }}
                                 onRemove={handleRemove}
                             />
@@ -128,7 +133,8 @@ export const OrganizationMembers: React.FC<OrganizationMembersProps> = ({
                         <h4 className="text-sm font-semibold text-slate-100 mb-1">Change Role</h4>
                         <p className="text-xs text-slate-400 mb-3">{memberForRoleChange.username}</p>
                         <div className="space-y-2">
-                            {(["admin", "editor", "viewer"] as OrganizationRole[]).map((roleOption) => (
+                            {/* "admin" se ne nudi: jedini admin je kreator organizacije */}
+                            {(["editor", "viewer"] as OrganizationRole[]).map((roleOption) => (
                                 <label key={roleOption} className="flex items-center gap-2 text-sm text-slate-200 cursor-pointer">
                                     <input
                                         type="radio"

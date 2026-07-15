@@ -78,14 +78,11 @@ export async function updateOrganization(organizationId: string, organizationUpd
 
     if (organizationUpdate.name != "")
         org.name = organizationUpdate.name;
-    if (organizationUpdate.organizer.length > 0) {
-        const newAdmin = await User.findById(organizationUpdate.organizer).exec();
-        if (newAdmin != null) {
-            newAdmin.organizations.set(org.name, 'admin')
-            await newAdmin.save();
-            org.organizer = newAdmin._id;
-        }
-    }
+    // Jedini admin je kreator organizacije; promena organizer-a bi napravila
+    // drugog admina, pa je transfer admin uloge zabranjen.
+    if (organizationUpdate.organizer.length > 0
+        && organizationUpdate.organizer !== org.organizer.toHexString())
+        return Error('Admin role cannot be transferred to another user.');
     await org.save();
     await org.populate(["children", "projections", "organizer"]);
     return toOrganizationView(org);
@@ -136,13 +133,42 @@ export async function removeFromChildrenByIds(organizationId: string, childrenId
     return null;
 }
 
-export async function addMembersByIds(organizationId: string, membersIdsAndPrivileges: Map<string, UserPrivileges>) {
+/**
+ * Invarijanta "tačno jedan admin" (kreator organizacije):
+ * - uloge sme da menja/dodeljuje samo admin (applicant),
+ * - uloga "admin" se ne može dodeliti,
+ * - adminu (jedinom) niko ne može promeniti ulogu — ni on sam sebi.
+ */
+function checkMembersMutationAllowed(
+    org: IOrganization,
+    applicantId: string,
+    targetIdsAndRoles: Map<string, UserPrivileges>
+): Error | null {
+
+    if (org.members.get(applicantId) !== 'admin')
+        return Error('Only the organization admin can manage member roles.');
+
+    for (const [targetId, role] of targetIdsAndRoles) {
+        if (role === 'admin')
+            return Error('The admin role cannot be assigned.');
+        if (org.members.get(targetId) === 'admin')
+            return Error("The admin's role cannot be changed.");
+    }
+
+    return null;
+}
+
+export async function addMembersByIds(organizationId: string, membersIdsAndPrivileges: Map<string, UserPrivileges>, applicantId: string) {
 
     const org: IOrganization | null = await Organization.findById(organizationId)
         .populate(["children", "projections", "organizer"])
         .exec();
 
     if (org != null) {
+
+        const denial = checkMembersMutationAllowed(org, applicantId, membersIdsAndPrivileges);
+        if (denial != null)
+            return denial;
 
         const users: IUser[] | null = await User.find({_id: {$in: [...membersIdsAndPrivileges.keys()]}}).exec();
         if (users != null) {
@@ -160,7 +186,7 @@ export async function addMembersByIds(organizationId: string, membersIdsAndPrivi
     return null;
 }
 
-export async function addMembersByUsername(organizationId: string, usernamesAndRoles: Map<string, UserPrivileges>) {
+export async function addMembersByUsername(organizationId: string, usernamesAndRoles: Map<string, UserPrivileges>, applicantId: string) {
     const org: IOrganization | null = await Organization.findById(organizationId)
         .populate(["children", "projections", "organizer"])
         .exec();
@@ -168,6 +194,16 @@ export async function addMembersByUsername(organizationId: string, usernamesAndR
     if (org != null) {
 
         const users: IUser[] | null = await User.find({username: {$in: [...usernamesAndRoles.keys()]}}).exec();
+
+        // Iste provere kao za addMembersByIds — username-ovi se prvo
+        // prevedu u id-jeve, pa se invarijanta proveri PRE bilo koje izmene.
+        const targetIdsAndRoles = new Map<string, UserPrivileges>(
+            (users ?? []).map(u => [u.id, usernamesAndRoles.get(u.username) as UserPrivileges])
+        );
+        const denial = checkMembersMutationAllowed(org, applicantId, targetIdsAndRoles);
+        if (denial != null)
+            return denial;
+
         if (users != null) {
             for (const u of users) {
                 org.members.set(u.id, usernamesAndRoles.get(u.username) as UserPrivileges);
@@ -183,12 +219,24 @@ export async function addMembersByUsername(organizationId: string, usernamesAndR
     return null;
 }
 
-export async function removeFromMembersByIds(organizationId: string, membersIdsToRemove: Array<string>) {
+export async function removeFromMembersByIds(organizationId: string, membersIdsToRemove: Array<string>, applicantId: string) {
 
     const org: IOrganization | null = await Organization.findById(organizationId)
         .exec();
 
     if (org != null) {
+
+        // Članove sme da uklanja samo admin; jedini izuzetak je član koji
+        // uklanja samog sebe (postojeći "leave organization" tok).
+        const removesOnlySelf = membersIdsToRemove.length === 1
+            && membersIdsToRemove[0] === applicantId;
+        if (org.members.get(applicantId) !== 'admin' && !removesOnlySelf)
+            return Error('Only the organization admin can remove members.');
+
+        // Admin (kreator) se ne može ukloniti — organizacija bi ostala bez
+        // admina. Admin napušta organizaciju isključivo njenim brisanjem.
+        if (membersIdsToRemove.some(id => org.members.get(id) === 'admin'))
+            return Error('The admin cannot be removed from the organization.');
 
         const users: IUser[] | null = await User.find({_id: {$in: membersIdsToRemove}}).exec();
         if (users != null) {

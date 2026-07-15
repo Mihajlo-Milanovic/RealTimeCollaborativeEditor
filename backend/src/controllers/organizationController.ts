@@ -169,15 +169,21 @@ export async function addMembersByIds (req: Request, res: Response, next: NextFu
             members: [{
                 userId: string,
                 role: UserPrivileges
-            }]
+            }],
+            applicantId: string
         } = matchedData(req);
 
         const map = new Map();
         for (const member of data.members) {
             map.set(member.userId, member.role);
         }
-        const result = await os.addMembersByIds(data.id, map as Map<string, UserPrivileges>);
-        if (result)
+        const result = await os.addMembersByIds(data.id, map as Map<string, UserPrivileges>, data.applicantId);
+        if (result instanceof Error)
+            res.status(403).json({
+                success: false,
+                message: result.message,
+            });
+        else if (result)
             res.status(200).json({
                 success: true,
                 data: result,
@@ -204,15 +210,21 @@ export async function addMembersByUsername(req: Request, res: Response, next: Ne
             members: [{
                 username: string,
                 role: UserPrivileges
-            }]
+            }],
+            applicantId: string
         } = matchedData(req);
 
         const map = new Map();
         for (const member of data.members) {
             map.set(member.username, member.role);
         }
-        const result = await os.addMembersByUsername(data.id, map as Map<string, UserPrivileges>);
-        if (result)
+        const result = await os.addMembersByUsername(data.id, map as Map<string, UserPrivileges>, data.applicantId);
+        if (result instanceof Error)
+            res.status(403).json({
+                success: false,
+                message: result.message,
+            });
+        else if (result)
             res.status(200).json({
                 success: true,
                 data: result,
@@ -234,9 +246,14 @@ export async function removeFromMembersByIds (req: Request, res: Response, next:
         return;
 
     try {
-        const data: {id: string, members: Array<string>} = matchedData(req);
-        const result: OrganizationView | null = await os.removeFromMembersByIds(data.id, data.members);
-        if (result)
+        const data: {id: string, members: Array<string>, applicantId: string} = matchedData(req);
+        const result = await os.removeFromMembersByIds(data.id, data.members, data.applicantId);
+        if (result instanceof Error)
+            res.status(403).json({
+                success: false,
+                message: result.message,
+            });
+        else if (result)
             res.status(200).json({
                 success: true,
                 data: result,

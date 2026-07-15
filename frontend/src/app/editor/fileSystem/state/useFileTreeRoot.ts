@@ -52,7 +52,10 @@ export function useFileTreeRoot(userId: string, organization: OrganizationView |
                 }
             });
 
-    }, [userId, organization, provider.document]);
+        // Zavisnost je organization?.id (ne ceo objekat): realtime promena uloge
+        // zameni objekat organizacije novim (isti id), a stablo ne treba ponovo
+        // učitavati — menja se samo prikaz dugmadi po ulozi.
+    }, [userId, organization?.id, provider.document]);
 
     return {
         root,

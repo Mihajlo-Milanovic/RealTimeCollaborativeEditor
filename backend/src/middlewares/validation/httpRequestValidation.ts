@@ -287,6 +287,8 @@ export function validateMembersIdsAndRoles(){
                 }
             },
 
+            // "admin" namerno NIJE dozvoljen: admin je isključivo kreator
+            // organizacije i ta uloga se ne može dodeliti kroz API.
             "members.*.role": {
                 in: ["body"],
                 isString: true,
@@ -294,10 +296,12 @@ export function validateMembersIdsAndRoles(){
                     errorMessage: "role is required"
                 },
                 isIn: {
-                    options: [["admin", "editor", "viewer"]],
+                    options: [["editor", "viewer"]],
                     errorMessage: "invalid role"
                 }
-            }
+            },
+
+            applicantId: mongoIdObject('applicantId'),
         },
         ["body"]
     );
@@ -323,6 +327,7 @@ export function validateMembersByUsernames(){
                 }
             },
 
+            // "admin" namerno NIJE dozvoljen (vidi validateMembersIdsAndRoles).
             "members.*.role": {
                 in: ["body"],
                 isString: true,
@@ -331,10 +336,12 @@ export function validateMembersByUsernames(){
                     errorMessage: "role is required"
                 },
                 isIn: {
-                    options: [["admin", "editor", "viewer"]],
+                    options: [["editor", "viewer"]],
                     errorMessage: "invalid role"
                 }
-            }
+            },
+
+            applicantId: mongoIdObject('applicantId'),
         },
         ["body"]
     );
