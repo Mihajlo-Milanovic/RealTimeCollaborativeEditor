@@ -13,10 +13,10 @@ export function useFileSystemMap(selectedFile: string) {
             return;
         }
 
-        setCurrentFile(fileSystemStore.fsMap.has(selectedFile) ? selectedFile : "");
+        setCurrentFile(fileSystemStore.fsMap?.has(selectedFile) ? selectedFile : "");
 
         const observer = () => {
-            const fileExists = fileSystemStore.fsMap.has(selectedFile);
+            const fileExists = fileSystemStore.fsMap?.has(selectedFile);
             setCurrentFile(fileExists ? selectedFile : "");
         };
 

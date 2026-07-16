@@ -24,7 +24,7 @@ export default function EditorPage() {
 
     // sva logika za promenu širine panela je izdvojena u hook
     const {width: commentsWidth, startResize} = useCommentsResize();
-    const {currentFile} = useFileSystemMap(selectedFileId)
+    const {currentFile} = useFileSystemMap(selectedFileId ?? "");
 
     useEffect(() => {
 

@@ -38,7 +38,7 @@ export function useFileTreeRoot(userId: string, organization: OrganizationView |
                 parents: "",
             };
 
-            fileSystemStore.fsMap.set("", [rootNode]);
+            fileSystemStore.fsMap?.set("", [rootNode]);
             setRoot(rootNode);
             setLoading(false);
 
@@ -46,7 +46,7 @@ export function useFileTreeRoot(userId: string, organization: OrganizationView |
             apiClient.explorer.getRootDirectory().then((rootNode) => {
                 if (rootNode) {
 
-                    fileSystemStore.fsMap.set("", [rootNode]);
+                    fileSystemStore.fsMap?.set("", [rootNode]);
                     setRoot(rootNode);
                     setLoading(false);
                 }

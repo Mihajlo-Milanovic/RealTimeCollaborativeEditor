@@ -65,7 +65,7 @@ export const apiClient = {
                         type: NodeType.FILE,
                     } as FileNode;
 
-                    fileSystemStore.fsMap.set(fileNode.id, []);
+                    fileSystemStore.fsMap?.set(fileNode.id, []);
 
                     break;
 
@@ -116,19 +116,19 @@ export const apiClient = {
 
             if (Array.isArray(fileNode.parents))
                 fileNode.parents.forEach(parent => {
-                    const childrenArray = fileSystemStore.fsMap.get(parent);
+                    const childrenArray = fileSystemStore.fsMap?.get(parent);
                     if (childrenArray)
-                        fileSystemStore.fsMap.set(parent, [...childrenArray, fileNode]);
+                        fileSystemStore.fsMap?.set(parent, [...childrenArray, fileNode]);
                     else {
-                        fileSystemStore.fsMap.set(parent, [fileNode]);
+                        fileSystemStore.fsMap?.set(parent, [fileNode]);
                     }
                 });
             else {
-                const childrenArray = fileSystemStore.fsMap.get(fileNode.parents);
+                const childrenArray = fileSystemStore.fsMap?.get(fileNode.parents);
                 if (childrenArray)
-                    fileSystemStore.fsMap.set(fileNode.parents, [...childrenArray, fileNode]);
+                    fileSystemStore.fsMap?.set(fileNode.parents, [...childrenArray, fileNode]);
                 else {
-                    fileSystemStore.fsMap.set(fileNode.parents, [fileNode]);
+                    fileSystemStore.fsMap?.set(fileNode.parents, [fileNode]);
                 }
             }
             return true;
@@ -154,11 +154,10 @@ export const apiClient = {
                     const deletedDir = resDir.deleted
 
                     if (deletedDir) {
-
                         deletedDir.parents.forEach(parent => {
-                            const childrenArray = fileSystemStore.fsMap.get(parent);
+                            const childrenArray = fileSystemStore.fsMap?.get(parent);
                             if (childrenArray)
-                                fileSystemStore.fsMap.set(parent, [...childrenArray.filter(c => c.id !== id)]);
+                                fileSystemStore.fsMap?.set(parent, [...childrenArray.filter(c => c.id !== id)]);
                         });
 
                         return true;
@@ -172,11 +171,11 @@ export const apiClient = {
                     console.log("deleted file: ", resFile)
 
                     if (resFile) {
-                        fileSystemStore.fsMap.delete(id);
+                        fileSystemStore.fsMap?.delete(id);
                         const parentId = resFile.parentId;
-                        const childrenArray = fileSystemStore.fsMap.get(parentId);
+                        const childrenArray = fileSystemStore.fsMap?.get(parentId);
                         if (childrenArray)
-                            fileSystemStore.fsMap.set(parentId, childrenArray.filter(c => c.id !== id));
+                            fileSystemStore.fsMap?.set(parentId, childrenArray.filter(c => c.id !== id));
                         return true;
                     }
                     break;
@@ -247,8 +246,8 @@ export const apiClient = {
                     ));
 
                    dirFiles.forEach(file => {
-                       if (!fileSystemStore.fsMap.has(file.id))
-                           fileSystemStore.fsMap.set(file.id, []);
+                       if (!fileSystemStore.fsMap?.has(file.id))
+                           fileSystemStore.fsMap?.set(file.id, []);
                    });
 
                     children = [...dirFolders, ...dirFiles];
@@ -280,10 +279,10 @@ export const apiClient = {
 
             // console.log("CHILDREN :::::: >>>>>", children)
 
-            // const childrenArray = fileSystemStore.fsMap.get(nodeId)
+            // const childrenArray = fileSystemStore.fsMap?.get(nodeId)
             const sorted = children.sort((a, b) => a.name.localeCompare(b.name));
 
-            fileSystemStore.fsMap.set(nodeId, sorted)
+            fileSystemStore.fsMap?.set(nodeId, sorted)
 
             //fileSystemStore.notifyObservers()
         },

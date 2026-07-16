@@ -1,7 +1,7 @@
 import { Schema, SchemaTypes, model } from 'mongoose';
 import { IFile } from "../interfaces/IFile";
 
-const FileSchema: Schema<IFile> = new Schema({
+const FileSchema/*: Schema<IFile>*/ = new Schema({
     name: {
         type: SchemaTypes.String,
         required: true
@@ -28,7 +28,7 @@ const FileSchema: Schema<IFile> = new Schema({
     version: {
         type: SchemaTypes.Number,
         default: 1
-    },
+    }
 
 }, { timestamps: true });
 

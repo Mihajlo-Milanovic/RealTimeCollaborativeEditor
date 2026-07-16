@@ -5,8 +5,8 @@ import {YMapEvent} from "yjs";
 class FileSystemStore {
     private static instance: FileSystemStore;
 
-    private _doc: Y.Doc | null;
-    private _map: Y.Map<FileNode[]> | null;
+    private _doc: Y.Doc | null = null;
+    private _map: Y.Map<FileNode[]> | null = null;
     private _observers = new Map<() => void, (event: YMapEvent<FileNode[]>) => void>();
     static getInstance(): FileSystemStore {
         if (!FileSystemStore.instance) {
@@ -48,14 +48,17 @@ class FileSystemStore {
                     observer()
             });
         });
-        this._map.observe(this._observers.get(observer));
+        const o = this._observers.get(observer);
+        if (o) {
+            this._map!.observe(o);
+        }
     }
 
     unsubscribe(observer: () => void) {
         const o = this._observers.get(observer);
         if (o) {
-            this._map.unobserve(o);
-            this._observers.delete(observer);
+            this._map!.unobserve(o);
+            this._observers!.delete(observer);
         }
     }
 

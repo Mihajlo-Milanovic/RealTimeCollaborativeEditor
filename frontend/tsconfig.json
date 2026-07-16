@@ -37,7 +37,8 @@
     "next-env.d.ts",
     "src/app/providers.tsx",
     ".next-3001/types/**/*.ts",
-    ".next-3000/dev/types/**/*.ts"
+    ".next-3000/dev/types/**/*.ts",
+    ".next-3000/dev/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

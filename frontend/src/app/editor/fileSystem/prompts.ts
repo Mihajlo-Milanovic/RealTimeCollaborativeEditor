@@ -13,7 +13,8 @@ export const prompts = {
         }
     },
 
-    async addFolderToFileNode(parentNode: FileNode, userId: string, refresh: () => void) {
+    async addFolderToFileNode(parentNode: FileNode | null, userId: string, refresh: () => void) {
+        if (!parentNode) return;
         const folderName = (prompt("Enter folder name:") || "")?.trim();
         if (!folderName) return;
         const success = await apiClient.explorer.createNode(userId, folderName, NodeType.DIR, parentNode.id, parentNode.type);

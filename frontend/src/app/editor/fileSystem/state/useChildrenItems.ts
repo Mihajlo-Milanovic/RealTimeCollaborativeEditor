@@ -3,7 +3,7 @@ import {FileNode} from "../../../../models/interfaces/FileNode";
 import {fileSystemStore} from "../../../../store/fileSystem";
 
 
-export function useChildrenItems(parent: FileNode, isLoading: boolean) {
+export function useChildrenItems(parent: FileNode | null, isLoading: boolean) {
 
     const [children, setChildren] = useState<FileNode[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -13,11 +13,10 @@ export function useChildrenItems(parent: FileNode, isLoading: boolean) {
             return;
 
         const observer = () => {
-            setChildren(fileSystemStore.fsMap.get(parent.id) || []);
+            setChildren(fileSystemStore.fsMap?.get(parent.id) || []);
         }
 
         fileSystemStore.subscribe(parent.id, observer);
-        fileSystemStore.notifyObservers()
         console.log("children for: ", parent.id, " => ", children);
 
         return () => {
